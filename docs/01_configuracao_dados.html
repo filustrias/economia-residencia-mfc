@@ -1,0 +1,2702 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Configuração e Dados de Entrada – Análise de Custo-Benefício da Residência em MFC</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./02_metodologia_funcoes.html" rel="next">
+<link href="./00_sumario_executivo.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-065a5179aebd64318d7ea99d77b64a9e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-edaf08ed7d27d62012077beed0893dcb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_configuracao_dados.html"><span class="chapter-title">Configuração e Dados de Entrada</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Procurar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Análise de Custo-Benefício da Residência em MFC</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Procurar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Análise de Custo-Benefício da Residência em MFC</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_sumario_executivo.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Sumário Executivo</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_configuracao_dados.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Configuração e Dados de Entrada</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_metodologia_funcoes.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Metodologia e Funções de Cálculo</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_simulacao_cenarios.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cálculo da Economia em Saúde</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_indicadores_economicos.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Indicadores Econômicos</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04b_cenario_instantaneo.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cenário Instantâneo</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_analise_sensibilidade.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Análise de Sensibilidade</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05b_cenario_combinado.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cenário Combinado: Investimento em Formação e Fixação</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_visualizacoes.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Visualizações</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_discussao_conclusoes.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Discussão e Conclusões</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Referências</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Apêndices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./A_metodologia_detalhada.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Metodologia Detalhada</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./B_tabelas_completas.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Tabelas Completas</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice</h2>
+   
+  <ul>
+  <li><a href="#introdução" id="toc-introdução" class="nav-link active" data-scroll-target="#introdução">Introdução</a></li>
+  <li><a href="#preparação" id="toc-preparação" class="nav-link" data-scroll-target="#preparação">Preparação</a></li>
+  <li><a href="#o-município-simulado" id="toc-o-município-simulado" class="nav-link" data-scroll-target="#o-município-simulado">1. O Município Simulado</a></li>
+  <li><a href="#custos-de-pessoal" id="toc-custos-de-pessoal" class="nav-link" data-scroll-target="#custos-de-pessoal">2. Custos de Pessoal</a>
+  <ul class="collapse">
+  <li><a href="#médico-da-estratégia-saúde-da-família" id="toc-médico-da-estratégia-saúde-da-família" class="nav-link" data-scroll-target="#médico-da-estratégia-saúde-da-família">Médico da Estratégia Saúde da Família</a>
+  <ul class="collapse">
+  <li><a href="#custo-do-médico-clt" id="toc-custo-do-médico-clt" class="nav-link" data-scroll-target="#custo-do-médico-clt">Custo do Médico CLT</a></li>
+  <li><a href="#custo-do-preceptor" id="toc-custo-do-preceptor" class="nav-link" data-scroll-target="#custo-do-preceptor">Custo do Preceptor</a></li>
+  <li><a href="#bolsa-do-residente" id="toc-bolsa-do-residente" class="nav-link" data-scroll-target="#bolsa-do-residente">Bolsa do Residente</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#estrutura-do-programa-de-residência" id="toc-estrutura-do-programa-de-residência" class="nav-link" data-scroll-target="#estrutura-do-programa-de-residência">3. Estrutura do Programa de Residência</a>
+  <ul class="collapse">
+  <li><a href="#estrutura-do-programa" id="toc-estrutura-do-programa" class="nav-link" data-scroll-target="#estrutura-do-programa">Estrutura do Programa</a></li>
+  <li><a href="#modelo-de-supervisão" id="toc-modelo-de-supervisão" class="nav-link" data-scroll-target="#modelo-de-supervisão">Modelo de Supervisão</a></li>
+  <li><a href="#incentivo-federal" id="toc-incentivo-federal" class="nav-link" data-scroll-target="#incentivo-federal">Incentivo Federal</a></li>
+  <li><a href="#custos-operacionais" id="toc-custos-operacionais" class="nav-link" data-scroll-target="#custos-operacionais">Custos Operacionais</a></li>
+  </ul></li>
+  <li><a href="#parâmetros-econômicos" id="toc-parâmetros-econômicos" class="nav-link" data-scroll-target="#parâmetros-econômicos">4. Parâmetros Econômicos</a></li>
+  <li><a href="#dados-epidemiológicos" id="toc-dados-epidemiológicos" class="nav-link" data-scroll-target="#dados-epidemiológicos">5. Dados Epidemiológicos</a>
+  <ul class="collapse">
+  <li><a href="#fonte-dos-dados" id="toc-fonte-dos-dados" class="nav-link" data-scroll-target="#fonte-dos-dados">Fonte dos Dados</a>
+  <ul class="collapse">
+  <li><a href="#os-três-estudos" id="toc-os-três-estudos" class="nav-link" data-scroll-target="#os-três-estudos">Os Três Estudos</a></li>
+  <li><a href="#interpretação-do-risco-relativo-rr" id="toc-interpretação-do-risco-relativo-rr" class="nav-link" data-scroll-target="#interpretação-do-risco-relativo-rr">Interpretação do Risco Relativo (RR)</a></li>
+  </ul></li>
+  <li><a href="#encaminhamentos-ambulatoriais" id="toc-encaminhamentos-ambulatoriais" class="nav-link" data-scroll-target="#encaminhamentos-ambulatoriais">Encaminhamentos Ambulatoriais</a></li>
+  <li><a href="#encaminhamentos-cirúrgicos" id="toc-encaminhamentos-cirúrgicos" class="nav-link" data-scroll-target="#encaminhamentos-cirúrgicos">Encaminhamentos Cirúrgicos</a></li>
+  <li><a href="#exames-diagnósticos" id="toc-exames-diagnósticos" class="nav-link" data-scroll-target="#exames-diagnósticos">Exames Diagnósticos</a></li>
+  <li><a href="#exames-laboratoriais" id="toc-exames-laboratoriais" class="nav-link" data-scroll-target="#exames-laboratoriais">Exames Laboratoriais</a></li>
+  <li><a href="#internações-por-condições-sensíveis-à-aps-icsap" id="toc-internações-por-condições-sensíveis-à-aps-icsap" class="nav-link" data-scroll-target="#internações-por-condições-sensíveis-à-aps-icsap">Internações por Condições Sensíveis à APS (ICSAP)</a></li>
+  </ul></li>
+  <li><a href="#custos-unitários" id="toc-custos-unitários" class="nav-link" data-scroll-target="#custos-unitários">6. Custos Unitários</a>
+  <ul class="collapse">
+  <li><a href="#consultas-especializadas" id="toc-consultas-especializadas" class="nav-link" data-scroll-target="#consultas-especializadas">Consultas Especializadas</a></li>
+  <li><a href="#resumo-dos-custos-de-internação" id="toc-resumo-dos-custos-de-internação" class="nav-link" data-scroll-target="#resumo-dos-custos-de-internação">Resumo dos Custos de Internação</a></li>
+  </ul></li>
+  <li><a href="#resumo-economia-do-modelo-de-residência" id="toc-resumo-economia-do-modelo-de-residência" class="nav-link" data-scroll-target="#resumo-economia-do-modelo-de-residência">7. Resumo: Economia do Modelo de Residência</a></li>
+  <li><a href="#objetos-criados" id="toc-objetos-criados" class="nav-link" data-scroll-target="#objetos-criados">8. Objetos Criados</a></li>
+  <li><a href="#próximos-passos" id="toc-próximos-passos" class="nav-link" data-scroll-target="#próximos-passos">Próximos Passos</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-title">Configuração e Dados de Entrada</span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Código</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Mostrar o código</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Esconder o código</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">Ver o código fonte</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introdução" class="level1">
+<h1>Introdução</h1>
+<p>Este capítulo apresenta todos os dados de entrada necessários para o modelo econômico da Residência em Medicina de Família e Comunidade (MFC).</p>
+<p><strong>Objetivo:</strong> Documentar de forma transparente e reproduzível:</p>
+<ol type="1">
+<li>Os parâmetros do município simulado</li>
+<li>Os custos de pessoal e do programa</li>
+<li>Os dados epidemiológicos dos estudos originais</li>
+<li>Os custos unitários de procedimentos</li>
+</ol>
+<hr>
+</section>
+<section id="preparação" class="level1">
+<h1>Preparação</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">OutDec =</span> <span class="st">","</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a>formatar_numero <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">decimais =</span> <span class="dv">0</span>) {</span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="fu">format</span>(<span class="fu">round</span>(x, decimais), <span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>, <span class="at">nsmall =</span> decimais)</span>
+<span id="cb1-5"><a href="#cb1-5"></a>}</span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a>formatar_moeda <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="fu">paste0</span>(<span class="st">"R$ "</span>, <span class="fu">formatar_numero</span>(x))</span>
+<span id="cb1-9"><a href="#cb1-9"></a>}</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<hr>
+</section>
+<section id="o-município-simulado" class="level1">
+<h1>1. O Município Simulado</h1>
+<p>O modelo foi desenvolvido para um município fictício chamado <strong>Esperança</strong>, com características típicas de um município brasileiro de médio porte.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>municipio <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="at">nome =</span> <span class="st">"Esperança"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="at">populacao =</span> <span class="dv">500000</span>,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">n_equipes =</span> <span class="dv">100</span>,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="at">pop_por_equipe =</span> <span class="dv">5000</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parâmetro</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Nome</td>
+<td>Esperança</td>
+</tr>
+<tr class="even">
+<td>População</td>
+<td>5e+05 habitantes</td>
+</tr>
+<tr class="odd">
+<td>Equipes de APS</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td>População por equipe</td>
+<td>5.000 habitantes</td>
+</tr>
+<tr class="odd">
+<td>Cobertura MFC inicial</td>
+<td>0%</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="custos-de-pessoal" class="level1">
+<h1>2. Custos de Pessoal</h1>
+<section id="médico-da-estratégia-saúde-da-família" class="level2">
+<h2 class="anchored" data-anchor-id="médico-da-estratégia-saúde-da-família">Médico da Estratégia Saúde da Família</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>custos_pessoal <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="co"># Salário base</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="at">salario_base_medico =</span> <span class="dv">16000</span>,</span>
+<span id="cb3-4"><a href="#cb3-4"></a>  </span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a>  <span class="co"># Encargos trabalhistas (INSS patronal, FGTS, férias, 13º, etc.)</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="at">encargos_trabalhistas_pct =</span> <span class="fl">0.70</span>,</span>
+<span id="cb3-8"><a href="#cb3-8"></a>  </span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="co"># Adicional de preceptoria (sobre o salário base)</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>  <span class="at">adicional_preceptoria_pct =</span> <span class="fl">0.10</span>,</span>
+<span id="cb3-11"><a href="#cb3-11"></a>  </span>
+<span id="cb3-12"><a href="#cb3-12"></a>  <span class="co"># Bolsa do residente</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>  <span class="at">bolsa_mec =</span> <span class="fl">4106.90</span>,</span>
+<span id="cb3-14"><a href="#cb3-14"></a>  <span class="at">complemento_ms =</span> <span class="fl">4000.00</span>,</span>
+<span id="cb3-15"><a href="#cb3-15"></a>  <span class="at">complemento_municipal =</span> <span class="fl">2000.00</span>  <span class="co"># Opcional</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>)</span>
+<span id="cb3-17"><a href="#cb3-17"></a></span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="co"># Cálculos derivados</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>custos_pessoal<span class="sc">$</span>custo_medico_total <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>salario_base_medico <span class="sc">*</span> </span>
+<span id="cb3-20"><a href="#cb3-20"></a>                                      (<span class="dv">1</span> <span class="sc">+</span> custos_pessoal<span class="sc">$</span>encargos_trabalhistas_pct)</span>
+<span id="cb3-21"><a href="#cb3-21"></a></span>
+<span id="cb3-22"><a href="#cb3-22"></a>custos_pessoal<span class="sc">$</span>adicional_preceptoria_valor <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>salario_base_medico <span class="sc">*</span> </span>
+<span id="cb3-23"><a href="#cb3-23"></a>                                               custos_pessoal<span class="sc">$</span>adicional_preceptoria_pct</span>
+<span id="cb3-24"><a href="#cb3-24"></a></span>
+<span id="cb3-25"><a href="#cb3-25"></a>custos_pessoal<span class="sc">$</span>custo_preceptor_total <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>custo_medico_total <span class="sc">+</span> </span>
+<span id="cb3-26"><a href="#cb3-26"></a>                                         custos_pessoal<span class="sc">$</span>adicional_preceptoria_valor <span class="sc">*</span> </span>
+<span id="cb3-27"><a href="#cb3-27"></a>                                         (<span class="dv">1</span> <span class="sc">+</span> custos_pessoal<span class="sc">$</span>encargos_trabalhistas_pct)</span>
+<span id="cb3-28"><a href="#cb3-28"></a></span>
+<span id="cb3-29"><a href="#cb3-29"></a>custos_pessoal<span class="sc">$</span>bolsa_total_mec_ms <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>bolsa_mec <span class="sc">+</span> custos_pessoal<span class="sc">$</span>complemento_ms</span>
+<span id="cb3-30"><a href="#cb3-30"></a></span>
+<span id="cb3-31"><a href="#cb3-31"></a>custos_pessoal<span class="sc">$</span>bolsa_total_completa <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>bolsa_total_mec_ms <span class="sc">+</span> </span>
+<span id="cb3-32"><a href="#cb3-32"></a>                                        custos_pessoal<span class="sc">$</span>complemento_municipal</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="custo-do-médico-clt" class="level3">
+<h3 class="anchored" data-anchor-id="custo-do-médico-clt">Custo do Médico CLT</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Valor Mensal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Salário base</td>
+<td>R$ 16.000</td>
+</tr>
+<tr class="even">
+<td>Encargos trabalhistas (70%)</td>
+<td>R$ 11.200</td>
+</tr>
+<tr class="odd">
+<td><strong>Custo total médico CLT</strong></td>
+<td><strong>R$ 27.200</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nota sobre encargos trabalhistas:</strong></p>
+<p>Os 70% de encargos incluem:</p>
+<ul>
+<li>INSS patronal (20%)</li>
+<li>FGTS (8%)</li>
+<li>Férias + 1/3 constitucional (11,1%)</li>
+<li>13º salário (8,3%)</li>
+<li>Provisão para rescisão (estimado)</li>
+<li>Outros encargos (SAT, Sistema S, etc.)</li>
+</ul>
+</section>
+<section id="custo-do-preceptor" class="level3">
+<h3 class="anchored" data-anchor-id="custo-do-preceptor">Custo do Preceptor</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Valor Mensal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Custo base (médico CLT)</td>
+<td>R$ 27.200</td>
+</tr>
+<tr class="even">
+<td>Adicional preceptoria (10% do salário base)</td>
+<td>R$ 1.600</td>
+</tr>
+<tr class="odd">
+<td>Encargos sobre adicional (70%)</td>
+<td>R$ 1.120</td>
+</tr>
+<tr class="even">
+<td><strong>Custo total preceptor</strong></td>
+<td><strong>R$ 29.920</strong></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="bolsa-do-residente" class="level3">
+<h3 class="anchored" data-anchor-id="bolsa-do-residente">Bolsa do Residente</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Fonte</th>
+<th>Valor Mensal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bolsa MEC</td>
+<td>R$ 4.107</td>
+</tr>
+<tr class="even">
+<td>Complemento Ministério da Saúde</td>
+<td>R$ 4.000</td>
+</tr>
+<tr class="odd">
+<td><strong>Bolsa total (MEC + MS)</strong></td>
+<td><strong>R$ 8.107</strong></td>
+</tr>
+<tr class="even">
+<td>Complemento municipal (opcional)</td>
+<td>R$ 2.000</td>
+</tr>
+<tr class="odd">
+<td>Bolsa total com complemento municipal</td>
+<td>R$ 10.107</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Importante:</strong> A bolsa do residente não tem encargos trabalhistas, pois não é relação de emprego CLT.</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="estrutura-do-programa-de-residência" class="level1">
+<h1>3. Estrutura do Programa de Residência</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>programa <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="co"># Estrutura</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="at">preceptores_ano1 =</span> <span class="dv">4</span>,</span>
+<span id="cb4-4"><a href="#cb4-4"></a>  <span class="at">preceptores_ano2 =</span> <span class="dv">8</span>,</span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="at">equipes_por_preceptor =</span> <span class="dv">2</span>,</span>
+<span id="cb4-6"><a href="#cb4-6"></a>  <span class="at">residentes_por_equipe =</span> <span class="dv">2</span>,</span>
+<span id="cb4-7"><a href="#cb4-7"></a>  <span class="at">duracao_residencia =</span> <span class="dv">2</span>,  <span class="co"># anos</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>  </span>
+<span id="cb4-9"><a href="#cb4-9"></a>  <span class="co"># Retenção</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a>  <span class="at">taxa_retencao_base =</span> <span class="fl">0.60</span>,</span>
+<span id="cb4-11"><a href="#cb4-11"></a>  </span>
+<span id="cb4-12"><a href="#cb4-12"></a>  <span class="co"># Custos</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>  <span class="at">custo_operacional_anual =</span> <span class="dv">50000</span>,</span>
+<span id="cb4-14"><a href="#cb4-14"></a>  </span>
+<span id="cb4-15"><a href="#cb4-15"></a>  <span class="co"># Incentivo federal</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>  <span class="at">incentivo_equipe_residente =</span> <span class="dv">4500</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>)</span>
+<span id="cb4-18"><a href="#cb4-18"></a></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="co"># Cálculos derivados</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a>programa<span class="sc">$</span>equipes_escola_ano1 <span class="ot">&lt;-</span> programa<span class="sc">$</span>preceptores_ano1 <span class="sc">*</span> programa<span class="sc">$</span>equipes_por_preceptor</span>
+<span id="cb4-21"><a href="#cb4-21"></a>programa<span class="sc">$</span>equipes_escola_ano2 <span class="ot">&lt;-</span> programa<span class="sc">$</span>preceptores_ano2 <span class="sc">*</span> programa<span class="sc">$</span>equipes_por_preceptor</span>
+<span id="cb4-22"><a href="#cb4-22"></a>programa<span class="sc">$</span>residentes_ano1 <span class="ot">&lt;-</span> programa<span class="sc">$</span>equipes_escola_ano1 <span class="sc">*</span> programa<span class="sc">$</span>residentes_por_equipe</span>
+<span id="cb4-23"><a href="#cb4-23"></a>programa<span class="sc">$</span>residentes_ano2 <span class="ot">&lt;-</span> programa<span class="sc">$</span>equipes_escola_ano2 <span class="sc">*</span> programa<span class="sc">$</span>residentes_por_equipe</span>
+<span id="cb4-24"><a href="#cb4-24"></a>programa<span class="sc">$</span>formados_por_ano <span class="ot">&lt;-</span> programa<span class="sc">$</span>residentes_ano2 <span class="sc">/</span> programa<span class="sc">$</span>duracao_residencia</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="estrutura-do-programa" class="level3">
+<h3 class="anchored" data-anchor-id="estrutura-do-programa">Estrutura do Programa</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parâmetro</th>
+<th>Ano 1</th>
+<th>Ano 2 em diante</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Preceptores</td>
+<td>4</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td>Equipes-escola</td>
+<td>8</td>
+<td>16</td>
+</tr>
+<tr class="odd">
+<td>Residentes (R1 + R2)</td>
+<td>16</td>
+<td>32</td>
+</tr>
+<tr class="even">
+<td>Formados por ano</td>
+<td>-</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="modelo-de-supervisão" class="level3">
+<h3 class="anchored" data-anchor-id="modelo-de-supervisão">Modelo de Supervisão</h3>
+<ul>
+<li>Cada <strong>preceptor</strong> supervisiona <strong>2 equipes-escola</strong></li>
+<li>Cada <strong>equipe-escola</strong> tem <strong>2 residentes</strong> (1 R1 + 1 R2)</li>
+<li><strong>1 preceptor</strong> faz o trabalho de <strong>2 médicos</strong> (com apoio dos residentes)</li>
+</ul>
+</section>
+<section id="incentivo-federal" class="level3">
+<h3 class="anchored" data-anchor-id="incentivo-federal">Incentivo Federal</h3>
+<p>O Ministério da Saúde paga um incentivo de <strong>R$ 4.500/mês</strong> por equipe com residente, conforme Portaria GM/MS nº 1.248/2013.</p>
+</section>
+<section id="custos-operacionais" class="level3">
+<h3 class="anchored" data-anchor-id="custos-operacionais">Custos Operacionais</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Valor Anual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Coordenação, materiais, eventos, etc.</td>
+<td>R$ 50.000</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="parâmetros-econômicos" class="level1">
+<h1>4. Parâmetros Econômicos</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>economico <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-2"><a href="#cb5-2"></a>  <span class="at">taxa_desconto =</span> <span class="fl">0.05</span>,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  <span class="at">horizonte_anos =</span> <span class="dv">10</span>,</span>
+<span id="cb5-4"><a href="#cb5-4"></a>  <span class="at">fator_correcao_aih =</span> <span class="fl">1.5</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 21%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parâmetro</th>
+<th>Valor</th>
+<th>Justificativa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Taxa de desconto</td>
+<td>5% ao ano</td>
+<td>Recomendação do Ministério da Saúde para avaliações econômicas</td>
+</tr>
+<tr class="even">
+<td>Horizonte de análise</td>
+<td>10 anos</td>
+<td>Tempo suficiente para avaliar o ciclo completo do programa</td>
+</tr>
+<tr class="odd">
+<td>Fator de correção AIH</td>
+<td>1.5</td>
+<td>Corrige defasagem da tabela SUS em relação aos custos reais</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sobre o fator de correção AIH:</strong></p>
+<p>Os valores da tabela SUS (SIGTAP) para internações estão significativamente defasados em relação aos custos reais. O fator de 1,5 é uma estimativa conservadora baseada em estudos que mostram que os custos reais de internação podem ser 50% a 100% maiores que os valores pagos pelo SUS.</p>
+<hr>
+</section>
+<section id="dados-epidemiológicos" class="level1">
+<h1>5. Dados Epidemiológicos</h1>
+<section id="fonte-dos-dados" class="level2">
+<h2 class="anchored" data-anchor-id="fonte-dos-dados">Fonte dos Dados</h2>
+<p>Os dados epidemiológicos provêm de <strong>três estudos de coorte retrospectivos</strong> realizados no Rio de Janeiro:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>estudo <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="at">populacao =</span> <span class="dv">600000</span>,</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="at">prop_mfc =</span> <span class="fl">0.336</span>,</span>
+<span id="cb6-4"><a href="#cb6-4"></a>  <span class="at">prop_gen =</span> <span class="fl">0.664</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parâmetro</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>População do estudo</td>
+<td>6e+05 pacientes</td>
+</tr>
+<tr class="even">
+<td>Pacientes atendidos por MFC</td>
+<td>33.6%</td>
+</tr>
+<tr class="odd">
+<td>Pacientes atendidos por generalistas</td>
+<td>66.4%</td>
+</tr>
+</tbody>
+</table>
+<section id="os-três-estudos" class="level3">
+<h3 class="anchored" data-anchor-id="os-três-estudos">Os Três Estudos</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 33%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Estudo</th>
+<th>Desfecho</th>
+<th>Publicação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Internações por Condições Sensíveis à APS (ICSAP)</td>
+<td>PLOS Global Public Health, 2023</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Encaminhamentos e exames diagnósticos</td>
+<td>BMJ Open, 2023</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Exames laboratoriais</td>
+<td>BMC Primary Care, 2024</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="interpretação-do-risco-relativo-rr" class="level3">
+<h3 class="anchored" data-anchor-id="interpretação-do-risco-relativo-rr">Interpretação do Risco Relativo (RR)</h3>
+<p><span class="math display">\[RR = \frac{\text{Taxa em pacientes de MFC}}{\text{Taxa em pacientes de generalistas}}\]</span></p>
+<ul>
+<li><strong>RR = 1,00</strong>: Sem diferença</li>
+<li><strong>RR &lt; 1,00</strong>: MFC tem <strong>menor</strong> taxa (economia)</li>
+<li><strong>RR &gt; 1,00</strong>: MFC tem <strong>maior</strong> taxa (custo adicional)</li>
+</ul>
+<p><strong>Exemplo:</strong> RR = 0,50 significa que pacientes de MFC têm metade da taxa de eventos.</p>
+<hr>
+</section>
+</section>
+<section id="encaminhamentos-ambulatoriais" class="level2">
+<h2 class="anchored" data-anchor-id="encaminhamentos-ambulatoriais">Encaminhamentos Ambulatoriais</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>enc_ambulatoriais <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="at">especialidade =</span> <span class="fu">c</span>(</span>
+<span id="cb7-3"><a href="#cb7-3"></a>    <span class="st">"Cardiologia"</span>, <span class="st">"Neurologia"</span>, <span class="st">"Psiquiatria"</span>, <span class="st">"Dermatologia"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4"></a>    <span class="st">"Pneumologia"</span>, <span class="st">"Doenças infecciosas"</span>, <span class="st">"Urologia"</span>, <span class="st">"Alergologia"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5"></a>    <span class="st">"Nefrologia"</span>, <span class="st">"Endocrinologia"</span>, <span class="st">"Gastroenterologia"</span>, <span class="st">"Angiologia"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6"></a>    <span class="st">"Reumatologia"</span>, <span class="st">"Fisioterapia"</span>, <span class="st">"Reabilitação"</span>, <span class="st">"Oftalmologia"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7"></a>    <span class="st">"ORL"</span>, <span class="st">"Ortopedia"</span>, <span class="st">"Ginecologia"</span>, <span class="st">"Pré-natal alto risco"</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>  ),</span>
+<span id="cb7-9"><a href="#cb7-9"></a>  <span class="at">rr =</span> <span class="fu">c</span>(</span>
+<span id="cb7-10"><a href="#cb7-10"></a>    <span class="fl">0.40</span>, <span class="fl">0.50</span>, <span class="fl">0.45</span>, <span class="fl">0.49</span>, <span class="fl">0.54</span>, <span class="fl">0.74</span>, <span class="fl">0.57</span>, <span class="fl">0.54</span>,</span>
+<span id="cb7-11"><a href="#cb7-11"></a>    <span class="fl">0.63</span>, <span class="fl">0.42</span>, <span class="fl">0.38</span>, <span class="fl">0.35</span>, <span class="fl">0.47</span>, <span class="fl">1.17</span>, <span class="fl">1.68</span>, <span class="fl">1.09</span>,</span>
+<span id="cb7-12"><a href="#cb7-12"></a>    <span class="fl">0.71</span>, <span class="fl">0.52</span>, <span class="fl">0.86</span>, <span class="fl">0.66</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>  ),</span>
+<span id="cb7-14"><a href="#cb7-14"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(</span>
+<span id="cb7-15"><a href="#cb7-15"></a>    <span class="dv">2008</span>, <span class="dv">1835</span>, <span class="dv">897</span>, <span class="dv">4144</span>, <span class="dv">903</span>, <span class="dv">290</span>, <span class="dv">1762</span>, <span class="dv">480</span>,</span>
+<span id="cb7-16"><a href="#cb7-16"></a>    <span class="dv">603</span>, <span class="dv">1021</span>, <span class="dv">867</span>, <span class="dv">1030</span>, <span class="dv">830</span>, <span class="dv">2390</span>, <span class="dv">1173</span>, <span class="dv">8713</span>,</span>
+<span id="cb7-17"><a href="#cb7-17"></a>    <span class="dv">2269</span>, <span class="dv">4934</span>, <span class="dv">738</span>, <span class="dv">991</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a>  ),</span>
+<span id="cb7-19"><a href="#cb7-19"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb7-20"><a href="#cb7-20"></a>)</span>
+<span id="cb7-21"><a href="#cb7-21"></a></span>
+<span id="cb7-22"><a href="#cb7-22"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb7-23"><a href="#cb7-23"></a>  enc_ambulatoriais,</span>
+<span id="cb7-24"><a href="#cb7-24"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Especialidade"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>),</span>
+<span id="cb7-25"><a href="#cb7-25"></a>  <span class="at">caption =</span> <span class="st">"Encaminhamentos ambulatoriais (20 especialidades)"</span></span>
+<span id="cb7-26"><a href="#cb7-26"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Encaminhamentos ambulatoriais (20 especialidades)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Especialidade</th>
+<th style="text-align: right;">RR</th>
+<th style="text-align: right;">Eventos/ano</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Cardiologia</td>
+<td style="text-align: right;">0,40</td>
+<td style="text-align: right;">2008</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Neurologia</td>
+<td style="text-align: right;">0,50</td>
+<td style="text-align: right;">1835</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Psiquiatria</td>
+<td style="text-align: right;">0,45</td>
+<td style="text-align: right;">897</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dermatologia</td>
+<td style="text-align: right;">0,49</td>
+<td style="text-align: right;">4144</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pneumologia</td>
+<td style="text-align: right;">0,54</td>
+<td style="text-align: right;">903</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Doenças infecciosas</td>
+<td style="text-align: right;">0,74</td>
+<td style="text-align: right;">290</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Urologia</td>
+<td style="text-align: right;">0,57</td>
+<td style="text-align: right;">1762</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alergologia</td>
+<td style="text-align: right;">0,54</td>
+<td style="text-align: right;">480</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nefrologia</td>
+<td style="text-align: right;">0,63</td>
+<td style="text-align: right;">603</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endocrinologia</td>
+<td style="text-align: right;">0,42</td>
+<td style="text-align: right;">1021</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gastroenterologia</td>
+<td style="text-align: right;">0,38</td>
+<td style="text-align: right;">867</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Angiologia</td>
+<td style="text-align: right;">0,35</td>
+<td style="text-align: right;">1030</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reumatologia</td>
+<td style="text-align: right;">0,47</td>
+<td style="text-align: right;">830</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fisioterapia</td>
+<td style="text-align: right;">1,17</td>
+<td style="text-align: right;">2390</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reabilitação</td>
+<td style="text-align: right;">1,68</td>
+<td style="text-align: right;">1173</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Oftalmologia</td>
+<td style="text-align: right;">1,09</td>
+<td style="text-align: right;">8713</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ORL</td>
+<td style="text-align: right;">0,71</td>
+<td style="text-align: right;">2269</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ortopedia</td>
+<td style="text-align: right;">0,52</td>
+<td style="text-align: right;">4934</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ginecologia</td>
+<td style="text-align: right;">0,86</td>
+<td style="text-align: right;">738</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pré-natal alto risco</td>
+<td style="text-align: right;">0,66</td>
+<td style="text-align: right;">991</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Nota:</strong> RR &gt; 1 em Fisioterapia, Reabilitação e Oftalmologia sugere que MFC identifica mais necessidades nestas áreas.</p>
+<hr>
+</section>
+<section id="encaminhamentos-cirúrgicos" class="level2">
+<h2 class="anchored" data-anchor-id="encaminhamentos-cirúrgicos">Encaminhamentos Cirúrgicos</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>enc_cirurgicos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="at">especialidade =</span> <span class="fu">c</span>(</span>
+<span id="cb8-3"><a href="#cb8-3"></a>    <span class="st">"Cirurgia geral"</span>, <span class="st">"Cirurgia vascular"</span>, <span class="st">"Neurocirurgia"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4"></a>    <span class="st">"Proctologia"</span>, <span class="st">"Cirurgia cabeça/pescoço"</span>, <span class="st">"Mastologia"</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>  ),</span>
+<span id="cb8-6"><a href="#cb8-6"></a>  <span class="at">rr =</span> <span class="fu">c</span>(<span class="fl">1.21</span>, <span class="fl">0.87</span>, <span class="fl">1.22</span>, <span class="fl">0.91</span>, <span class="fl">1.19</span>, <span class="fl">0.87</span>),</span>
+<span id="cb8-7"><a href="#cb8-7"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(<span class="dv">4458</span>, <span class="dv">989</span>, <span class="dv">147</span>, <span class="dv">1968</span>, <span class="dv">859</span>, <span class="dv">359</span>),</span>
+<span id="cb8-8"><a href="#cb8-8"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>)</span>
+<span id="cb8-10"><a href="#cb8-10"></a></span>
+<span id="cb8-11"><a href="#cb8-11"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb8-12"><a href="#cb8-12"></a>  enc_cirurgicos,</span>
+<span id="cb8-13"><a href="#cb8-13"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Especialidade"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>),</span>
+<span id="cb8-14"><a href="#cb8-14"></a>  <span class="at">caption =</span> <span class="st">"Encaminhamentos cirúrgicos (6 especialidades)"</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Encaminhamentos cirúrgicos (6 especialidades)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Especialidade</th>
+<th style="text-align: right;">RR</th>
+<th style="text-align: right;">Eventos/ano</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Cirurgia geral</td>
+<td style="text-align: right;">1,21</td>
+<td style="text-align: right;">4458</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cirurgia vascular</td>
+<td style="text-align: right;">0,87</td>
+<td style="text-align: right;">989</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Neurocirurgia</td>
+<td style="text-align: right;">1,22</td>
+<td style="text-align: right;">147</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Proctologia</td>
+<td style="text-align: right;">0,91</td>
+<td style="text-align: right;">1968</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cirurgia cabeça/pescoço</td>
+<td style="text-align: right;">1,19</td>
+<td style="text-align: right;">859</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mastologia</td>
+<td style="text-align: right;">0,87</td>
+<td style="text-align: right;">359</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+<section id="exames-diagnósticos" class="level2">
+<h2 class="anchored" data-anchor-id="exames-diagnósticos">Exames Diagnósticos</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>exames_diagnosticos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="at">exame =</span> <span class="fu">c</span>(</span>
+<span id="cb9-3"><a href="#cb9-3"></a>    <span class="st">"Ecocardiograma"</span>, <span class="st">"Eletroencefalograma"</span>, <span class="st">"Endoscopia digestiva"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4"></a>    <span class="st">"Ultrassonografia"</span>, <span class="st">"Radiografia"</span>, <span class="st">"Outros diagnósticos"</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  ),</span>
+<span id="cb9-6"><a href="#cb9-6"></a>  <span class="at">rr =</span> <span class="fu">c</span>(<span class="fl">0.66</span>, <span class="fl">0.96</span>, <span class="fl">0.76</span>, <span class="fl">0.49</span>, <span class="fl">0.72</span>, <span class="fl">0.98</span>),</span>
+<span id="cb9-7"><a href="#cb9-7"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(<span class="dv">1201</span>, <span class="dv">385</span>, <span class="dv">510</span>, <span class="dv">1090</span>, <span class="dv">431</span>, <span class="dv">2424</span>),</span>
+<span id="cb9-8"><a href="#cb9-8"></a>  <span class="at">custo_unitario =</span> <span class="fu">c</span>(<span class="fl">39.94</span>, <span class="fl">13.20</span>, <span class="fl">86.00</span>, <span class="fl">48.16</span>, <span class="fl">30.00</span>, <span class="fl">45.00</span>),</span>
+<span id="cb9-9"><a href="#cb9-9"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>)</span>
+<span id="cb9-11"><a href="#cb9-11"></a></span>
+<span id="cb9-12"><a href="#cb9-12"></a>exames_diagnosticos<span class="sc">$</span>custo_fmt <span class="ot">&lt;-</span> <span class="fu">formatar_moeda</span>(exames_diagnosticos<span class="sc">$</span>custo_unitario)</span>
+<span id="cb9-13"><a href="#cb9-13"></a></span>
+<span id="cb9-14"><a href="#cb9-14"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb9-15"><a href="#cb9-15"></a>  exames_diagnosticos[, <span class="fu">c</span>(<span class="st">"exame"</span>, <span class="st">"rr"</span>, <span class="st">"eventos_ano"</span>, <span class="st">"custo_fmt"</span>)],</span>
+<span id="cb9-16"><a href="#cb9-16"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Exame"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>, <span class="st">"Custo Unitário"</span>),</span>
+<span id="cb9-17"><a href="#cb9-17"></a>  <span class="at">caption =</span> <span class="st">"Exames diagnósticos (6 tipos)"</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Exames diagnósticos (6 tipos)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Exame</th>
+<th style="text-align: right;">RR</th>
+<th style="text-align: right;">Eventos/ano</th>
+<th style="text-align: left;">Custo Unitário</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Ecocardiograma</td>
+<td style="text-align: right;">0,66</td>
+<td style="text-align: right;">1201</td>
+<td style="text-align: left;">R$ 40</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Eletroencefalograma</td>
+<td style="text-align: right;">0,96</td>
+<td style="text-align: right;">385</td>
+<td style="text-align: left;">R$ 13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Endoscopia digestiva</td>
+<td style="text-align: right;">0,76</td>
+<td style="text-align: right;">510</td>
+<td style="text-align: left;">R$ 86</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ultrassonografia</td>
+<td style="text-align: right;">0,49</td>
+<td style="text-align: right;">1090</td>
+<td style="text-align: left;">R$ 48</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Radiografia</td>
+<td style="text-align: right;">0,72</td>
+<td style="text-align: right;">431</td>
+<td style="text-align: left;">R$ 30</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outros diagnósticos</td>
+<td style="text-align: right;">0,98</td>
+<td style="text-align: right;">2424</td>
+<td style="text-align: left;">R$ 45</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+<section id="exames-laboratoriais" class="level2">
+<h2 class="anchored" data-anchor-id="exames-laboratoriais">Exames Laboratoriais</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>exames_laboratoriais <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="at">exame =</span> <span class="fu">c</span>(</span>
+<span id="cb10-3"><a href="#cb10-3"></a>    <span class="st">"Hemograma"</span>, <span class="st">"Glicemia jejum"</span>, <span class="st">"Colesterol total"</span>, <span class="st">"HDL"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4"></a>    <span class="st">"LDL"</span>, <span class="st">"Triglicerídeos"</span>, <span class="st">"Creatinina"</span>, <span class="st">"Ureia"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5"></a>    <span class="st">"TGO"</span>, <span class="st">"TGP"</span>, <span class="st">"GGT"</span>, <span class="st">"Bilirrubinas"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6"></a>    <span class="st">"Ácido úrico"</span>, <span class="st">"TSH"</span>, <span class="st">"T4 livre"</span>, <span class="st">"PSA"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7"></a>    <span class="st">"Hemoglobina glicada"</span>, <span class="st">"Glicemia pós-prandial"</span>, <span class="st">"Curva glicêmica"</span>, <span class="st">"Frutosamina"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8"></a>    <span class="st">"Sódio"</span>, <span class="st">"Potássio"</span>, <span class="st">"Cálcio"</span>, <span class="st">"EAS"</span>,</span>
+<span id="cb10-9"><a href="#cb10-9"></a>    <span class="st">"Urocultura"</span>, <span class="st">"Vitamina D"</span>, <span class="st">"Vitamina B12"</span>, <span class="st">"Ferritina"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10"></a>    <span class="st">"Ferro sérico"</span>, <span class="st">"Fosfatase alcalina"</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a>  ),</span>
+<span id="cb10-12"><a href="#cb10-12"></a>  <span class="at">rr =</span> <span class="fu">c</span>(</span>
+<span id="cb10-13"><a href="#cb10-13"></a>    <span class="fl">0.53</span>, <span class="fl">0.85</span>, <span class="fl">0.29</span>, <span class="fl">0.42</span>, <span class="fl">0.73</span>, <span class="fl">0.46</span>, <span class="fl">0.64</span>, <span class="fl">0.81</span>,</span>
+<span id="cb10-14"><a href="#cb10-14"></a>    <span class="fl">0.94</span>, <span class="fl">0.41</span>, <span class="fl">0.82</span>, <span class="fl">0.23</span>, <span class="fl">0.71</span>, <span class="fl">0.08</span>, <span class="fl">0.13</span>, <span class="fl">0.56</span>,</span>
+<span id="cb10-15"><a href="#cb10-15"></a>    <span class="fl">0.78</span>, <span class="fl">0.48</span>, <span class="fl">0.47</span>, <span class="fl">0.69</span>, <span class="fl">0.64</span>, <span class="fl">0.74</span>, <span class="fl">0.09</span>, <span class="fl">0.67</span>,</span>
+<span id="cb10-16"><a href="#cb10-16"></a>    <span class="fl">0.44</span>, <span class="fl">0.56</span>, <span class="fl">0.60</span>, <span class="fl">0.48</span>, <span class="fl">0.47</span>, <span class="fl">0.36</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a>  ),</span>
+<span id="cb10-18"><a href="#cb10-18"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(</span>
+<span id="cb10-19"><a href="#cb10-19"></a>    <span class="dv">51757</span>, <span class="dv">43746</span>, <span class="dv">22577</span>, <span class="dv">10517</span>, <span class="dv">18265</span>, <span class="dv">9072</span>, <span class="dv">25720</span>, <span class="dv">34673</span>,</span>
+<span id="cb10-20"><a href="#cb10-20"></a>    <span class="dv">31127</span>, <span class="dv">22163</span>, <span class="dv">33828</span>, <span class="dv">15603</span>, <span class="dv">11679</span>, <span class="dv">791</span>, <span class="dv">886</span>, <span class="dv">5432</span>,</span>
+<span id="cb10-21"><a href="#cb10-21"></a>    <span class="dv">2304</span>, <span class="dv">9181</span>, <span class="dv">9363</span>, <span class="dv">3505</span>, <span class="dv">4386</span>, <span class="dv">1957</span>, <span class="dv">604</span>, <span class="dv">41333</span>,</span>
+<span id="cb10-22"><a href="#cb10-22"></a>    <span class="dv">1866</span>, <span class="dv">674</span>, <span class="dv">863</span>, <span class="dv">210</span>, <span class="dv">216</span>, <span class="dv">4365</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a>  ),</span>
+<span id="cb10-24"><a href="#cb10-24"></a>  <span class="at">custo_unitario =</span> <span class="fu">c</span>(</span>
+<span id="cb10-25"><a href="#cb10-25"></a>    <span class="fl">4.11</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">7.86</span>, <span class="fl">1.85</span>,</span>
+<span id="cb10-26"><a href="#cb10-26"></a>    <span class="fl">3.51</span>, <span class="fl">3.51</span>, <span class="fl">3.51</span>, <span class="fl">1.85</span>, <span class="fl">8.96</span>, <span class="fl">8.71</span>, <span class="fl">8.71</span>, <span class="fl">11.60</span>,</span>
+<span id="cb10-27"><a href="#cb10-27"></a>    <span class="fl">2.01</span>, <span class="fl">2.01</span>, <span class="fl">2.01</span>, <span class="fl">2.01</span>, <span class="fl">3.51</span>, <span class="fl">2.63</span>, <span class="fl">1.65</span>, <span class="fl">3.70</span>,</span>
+<span id="cb10-28"><a href="#cb10-28"></a>    <span class="fl">1.85</span>, <span class="fl">10.15</span>, <span class="fl">10.15</span>, <span class="fl">18.55</span>, <span class="fl">18.55</span>, <span class="fl">16.42</span></span>
+<span id="cb10-29"><a href="#cb10-29"></a>  ),</span>
+<span id="cb10-30"><a href="#cb10-30"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb10-31"><a href="#cb10-31"></a>)</span>
+<span id="cb10-32"><a href="#cb10-32"></a></span>
+<span id="cb10-33"><a href="#cb10-33"></a>exames_laboratoriais<span class="sc">$</span>custo_fmt <span class="ot">&lt;-</span> <span class="fu">formatar_moeda</span>(exames_laboratoriais<span class="sc">$</span>custo_unitario)</span>
+<span id="cb10-34"><a href="#cb10-34"></a></span>
+<span id="cb10-35"><a href="#cb10-35"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb10-36"><a href="#cb10-36"></a>  exames_laboratoriais[, <span class="fu">c</span>(<span class="st">"exame"</span>, <span class="st">"rr"</span>, <span class="st">"eventos_ano"</span>, <span class="st">"custo_fmt"</span>)],</span>
+<span id="cb10-37"><a href="#cb10-37"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Exame"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>, <span class="st">"Custo Unitário"</span>),</span>
+<span id="cb10-38"><a href="#cb10-38"></a>  <span class="at">caption =</span> <span class="st">"Exames laboratoriais (30 tipos)"</span></span>
+<span id="cb10-39"><a href="#cb10-39"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Exames laboratoriais (30 tipos)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Exame</th>
+<th style="text-align: right;">RR</th>
+<th style="text-align: right;">Eventos/ano</th>
+<th style="text-align: left;">Custo Unitário</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Hemograma</td>
+<td style="text-align: right;">0,53</td>
+<td style="text-align: right;">51757</td>
+<td style="text-align: left;">R$ 4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Glicemia jejum</td>
+<td style="text-align: right;">0,85</td>
+<td style="text-align: right;">43746</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Colesterol total</td>
+<td style="text-align: right;">0,29</td>
+<td style="text-align: right;">22577</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HDL</td>
+<td style="text-align: right;">0,42</td>
+<td style="text-align: right;">10517</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">LDL</td>
+<td style="text-align: right;">0,73</td>
+<td style="text-align: right;">18265</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Triglicerídeos</td>
+<td style="text-align: right;">0,46</td>
+<td style="text-align: right;">9072</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Creatinina</td>
+<td style="text-align: right;">0,64</td>
+<td style="text-align: right;">25720</td>
+<td style="text-align: left;">R$ 8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ureia</td>
+<td style="text-align: right;">0,81</td>
+<td style="text-align: right;">34673</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TGO</td>
+<td style="text-align: right;">0,94</td>
+<td style="text-align: right;">31127</td>
+<td style="text-align: left;">R$ 4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TGP</td>
+<td style="text-align: right;">0,41</td>
+<td style="text-align: right;">22163</td>
+<td style="text-align: left;">R$ 4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GGT</td>
+<td style="text-align: right;">0,82</td>
+<td style="text-align: right;">33828</td>
+<td style="text-align: left;">R$ 4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bilirrubinas</td>
+<td style="text-align: right;">0,23</td>
+<td style="text-align: right;">15603</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ácido úrico</td>
+<td style="text-align: right;">0,71</td>
+<td style="text-align: right;">11679</td>
+<td style="text-align: left;">R$ 9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TSH</td>
+<td style="text-align: right;">0,08</td>
+<td style="text-align: right;">791</td>
+<td style="text-align: left;">R$ 9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T4 livre</td>
+<td style="text-align: right;">0,13</td>
+<td style="text-align: right;">886</td>
+<td style="text-align: left;">R$ 9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PSA</td>
+<td style="text-align: right;">0,56</td>
+<td style="text-align: right;">5432</td>
+<td style="text-align: left;">R$ 12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hemoglobina glicada</td>
+<td style="text-align: right;">0,78</td>
+<td style="text-align: right;">2304</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Glicemia pós-prandial</td>
+<td style="text-align: right;">0,48</td>
+<td style="text-align: right;">9181</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Curva glicêmica</td>
+<td style="text-align: right;">0,47</td>
+<td style="text-align: right;">9363</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Frutosamina</td>
+<td style="text-align: right;">0,69</td>
+<td style="text-align: right;">3505</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sódio</td>
+<td style="text-align: right;">0,64</td>
+<td style="text-align: right;">4386</td>
+<td style="text-align: left;">R$ 4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Potássio</td>
+<td style="text-align: right;">0,74</td>
+<td style="text-align: right;">1957</td>
+<td style="text-align: left;">R$ 3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cálcio</td>
+<td style="text-align: right;">0,09</td>
+<td style="text-align: right;">604</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EAS</td>
+<td style="text-align: right;">0,67</td>
+<td style="text-align: right;">41333</td>
+<td style="text-align: left;">R$ 4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Urocultura</td>
+<td style="text-align: right;">0,44</td>
+<td style="text-align: right;">1866</td>
+<td style="text-align: left;">R$ 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vitamina D</td>
+<td style="text-align: right;">0,56</td>
+<td style="text-align: right;">674</td>
+<td style="text-align: left;">R$ 10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Vitamina B12</td>
+<td style="text-align: right;">0,60</td>
+<td style="text-align: right;">863</td>
+<td style="text-align: left;">R$ 10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ferritina</td>
+<td style="text-align: right;">0,48</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: left;">R$ 19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ferro sérico</td>
+<td style="text-align: right;">0,47</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: left;">R$ 19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fosfatase alcalina</td>
+<td style="text-align: right;">0,36</td>
+<td style="text-align: right;">4365</td>
+<td style="text-align: left;">R$ 16</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Destaques:</strong></p>
+<ul>
+<li><strong>TSH (RR = 0,08):</strong> MFC solicita 92% menos dosagens de TSH</li>
+<li><strong>Cálcio (RR = 0,09):</strong> MFC solicita 91% menos dosagens de cálcio</li>
+<li><strong>Colesterol total (RR = 0,29):</strong> MFC solicita 71% menos dosagens de colesterol</li>
+</ul>
+<hr>
+</section>
+<section id="internações-por-condições-sensíveis-à-aps-icsap" class="level2">
+<h2 class="anchored" data-anchor-id="internações-por-condições-sensíveis-à-aps-icsap">Internações por Condições Sensíveis à APS (ICSAP)</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>icsap <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="at">condicao =</span> <span class="fu">c</span>(</span>
+<span id="cb11-3"><a href="#cb11-3"></a>    <span class="st">"Doenças imunopreveníveis"</span>, <span class="st">"Gastroenterites"</span>, <span class="st">"Anemia"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4"></a>    <span class="st">"Deficiências nutricionais"</span>, <span class="st">"Infecções ouvido/vias aéreas"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5"></a>    <span class="st">"Pneumonias bacterianas"</span>, <span class="st">"Asma"</span>, <span class="st">"Doenças pulmonares"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6"></a>    <span class="st">"Hipertensão"</span>, <span class="st">"Angina"</span>, <span class="st">"Insuficiência cardíaca"</span>,</span>
+<span id="cb11-7"><a href="#cb11-7"></a>    <span class="st">"Doenças cerebrovasculares"</span>, <span class="st">"Diabetes mellitus"</span>, <span class="st">"Epilepsias"</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>  ),</span>
+<span id="cb11-9"><a href="#cb11-9"></a>  <span class="at">rr =</span> <span class="fu">c</span>(</span>
+<span id="cb11-10"><a href="#cb11-10"></a>    <span class="fl">0.83</span>, <span class="fl">0.76</span>, <span class="fl">0.74</span>, <span class="fl">0.62</span>, <span class="fl">0.52</span>, <span class="fl">0.79</span>, <span class="fl">0.35</span>, <span class="fl">0.78</span>,</span>
+<span id="cb11-11"><a href="#cb11-11"></a>    <span class="fl">0.45</span>, <span class="fl">0.57</span>, <span class="fl">0.36</span>, <span class="fl">0.82</span>, <span class="fl">1.06</span>, <span class="fl">0.59</span></span>
+<span id="cb11-12"><a href="#cb11-12"></a>  ),</span>
+<span id="cb11-13"><a href="#cb11-13"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(</span>
+<span id="cb11-14"><a href="#cb11-14"></a>    <span class="dv">128</span>, <span class="dv">160</span>, <span class="dv">244</span>, <span class="dv">271</span>, <span class="dv">230</span>, <span class="dv">86</span>, <span class="dv">54</span>, <span class="dv">136</span>,</span>
+<span id="cb11-15"><a href="#cb11-15"></a>    <span class="dv">45</span>, <span class="dv">114</span>, <span class="dv">116</span>, <span class="dv">331</span>, <span class="dv">28</span>, <span class="dv">41</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a>  ),</span>
+<span id="cb11-17"><a href="#cb11-17"></a>  <span class="at">custo_medio =</span> <span class="fu">c</span>(</span>
+<span id="cb11-18"><a href="#cb11-18"></a>    <span class="fl">761.35</span>, <span class="fl">1178.17</span>, <span class="fl">1756.62</span>, <span class="fl">4774.49</span>, <span class="fl">2553.91</span>, <span class="fl">957.47</span>, <span class="fl">853.21</span>, <span class="fl">646.69</span>,</span>
+<span id="cb11-19"><a href="#cb11-19"></a>    <span class="fl">527.15</span>, <span class="fl">1969.07</span>, <span class="fl">1969.07</span>, <span class="fl">679.82</span>, <span class="fl">502.60</span>, <span class="fl">612.67</span></span>
+<span id="cb11-20"><a href="#cb11-20"></a>  ),</span>
+<span id="cb11-21"><a href="#cb11-21"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb11-22"><a href="#cb11-22"></a>)</span>
+<span id="cb11-23"><a href="#cb11-23"></a></span>
+<span id="cb11-24"><a href="#cb11-24"></a>icsap<span class="sc">$</span>custo_fmt <span class="ot">&lt;-</span> <span class="fu">formatar_moeda</span>(icsap<span class="sc">$</span>custo_medio)</span>
+<span id="cb11-25"><a href="#cb11-25"></a></span>
+<span id="cb11-26"><a href="#cb11-26"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb11-27"><a href="#cb11-27"></a>  icsap[, <span class="fu">c</span>(<span class="st">"condicao"</span>, <span class="st">"rr"</span>, <span class="st">"eventos_ano"</span>, <span class="st">"custo_fmt"</span>)],</span>
+<span id="cb11-28"><a href="#cb11-28"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Condição"</span>, <span class="st">"RR"</span>, <span class="st">"Internações/ano"</span>, <span class="st">"Custo Médio"</span>),</span>
+<span id="cb11-29"><a href="#cb11-29"></a>  <span class="at">caption =</span> <span class="st">"Internações por Condições Sensíveis à APS (14 grupos)"</span></span>
+<span id="cb11-30"><a href="#cb11-30"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Internações por Condições Sensíveis à APS (14 grupos)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Condição</th>
+<th style="text-align: right;">RR</th>
+<th style="text-align: right;">Internações/ano</th>
+<th style="text-align: left;">Custo Médio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Doenças imunopreveníveis</td>
+<td style="text-align: right;">0,83</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: left;">R$ 761</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gastroenterites</td>
+<td style="text-align: right;">0,76</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: left;">R$ 1.178</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Anemia</td>
+<td style="text-align: right;">0,74</td>
+<td style="text-align: right;">244</td>
+<td style="text-align: left;">R$ 1.757</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Deficiências nutricionais</td>
+<td style="text-align: right;">0,62</td>
+<td style="text-align: right;">271</td>
+<td style="text-align: left;">R$ 4.774</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Infecções ouvido/vias aéreas</td>
+<td style="text-align: right;">0,52</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: left;">R$ 2.554</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pneumonias bacterianas</td>
+<td style="text-align: right;">0,79</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: left;">R$ 957</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Asma</td>
+<td style="text-align: right;">0,35</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: left;">R$ 853</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Doenças pulmonares</td>
+<td style="text-align: right;">0,78</td>
+<td style="text-align: right;">136</td>
+<td style="text-align: left;">R$ 647</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hipertensão</td>
+<td style="text-align: right;">0,45</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: left;">R$ 527</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Angina</td>
+<td style="text-align: right;">0,57</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: left;">R$ 1.969</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Insuficiência cardíaca</td>
+<td style="text-align: right;">0,36</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: left;">R$ 1.969</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Doenças cerebrovasculares</td>
+<td style="text-align: right;">0,82</td>
+<td style="text-align: right;">331</td>
+<td style="text-align: left;">R$ 680</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Diabetes mellitus</td>
+<td style="text-align: right;">1,06</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: left;">R$ 503</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Epilepsias</td>
+<td style="text-align: right;">0,59</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: left;">R$ 613</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Destaques:</strong></p>
+<ul>
+<li><strong>Asma (RR = 0,35):</strong> MFC reduz internações por asma em 65%</li>
+<li><strong>Insuficiência cardíaca (RR = 0,36):</strong> MFC reduz internações em 64%</li>
+<li><strong>Hipertensão (RR = 0,45):</strong> MFC reduz internações em 55%</li>
+<li><strong>Diabetes (RR = 1,06):</strong> Único grupo com RR &gt; 1 (sem diferença significativa)</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="custos-unitários" class="level1">
+<h1>6. Custos Unitários</h1>
+<section id="consultas-especializadas" class="level2">
+<h2 class="anchored" data-anchor-id="consultas-especializadas">Consultas Especializadas</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>custo_consulta <span class="ot">&lt;-</span> <span class="fl">50.00</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 37%">
+<col style="width: 43%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procedimento</th>
+<th>Custo Unitário</th>
+<th>Fonte</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Consulta especializada (média)</td>
+<td>R$ 50</td>
+<td>Estimativa baseada em SIGTAP</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nota:</strong> O valor de R$ 50,00 é uma média ponderada considerando consultas médicas especializadas na tabela SIGTAP.</p>
+</section>
+<section id="resumo-dos-custos-de-internação" class="level2">
+<h2 class="anchored" data-anchor-id="resumo-dos-custos-de-internação">Resumo dos Custos de Internação</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>resumo_icsap <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-2"><a href="#cb13-2"></a>  <span class="at">estatistica =</span> <span class="fu">c</span>(<span class="st">"Mínimo"</span>, <span class="st">"Mediana"</span>, <span class="st">"Média"</span>, <span class="st">"Máximo"</span>),</span>
+<span id="cb13-3"><a href="#cb13-3"></a>  <span class="at">valor =</span> <span class="fu">c</span>(</span>
+<span id="cb13-4"><a href="#cb13-4"></a>    <span class="fu">min</span>(icsap<span class="sc">$</span>custo_medio),</span>
+<span id="cb13-5"><a href="#cb13-5"></a>    <span class="fu">median</span>(icsap<span class="sc">$</span>custo_medio),</span>
+<span id="cb13-6"><a href="#cb13-6"></a>    <span class="fu">mean</span>(icsap<span class="sc">$</span>custo_medio),</span>
+<span id="cb13-7"><a href="#cb13-7"></a>    <span class="fu">max</span>(icsap<span class="sc">$</span>custo_medio)</span>
+<span id="cb13-8"><a href="#cb13-8"></a>  )</span>
+<span id="cb13-9"><a href="#cb13-9"></a>)</span>
+<span id="cb13-10"><a href="#cb13-10"></a></span>
+<span id="cb13-11"><a href="#cb13-11"></a>resumo_icsap<span class="sc">$</span>valor_fmt <span class="ot">&lt;-</span> <span class="fu">formatar_moeda</span>(resumo_icsap<span class="sc">$</span>valor)</span>
+<span id="cb13-12"><a href="#cb13-12"></a></span>
+<span id="cb13-13"><a href="#cb13-13"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb13-14"><a href="#cb13-14"></a>  resumo_icsap[, <span class="fu">c</span>(<span class="st">"estatistica"</span>, <span class="st">"valor_fmt"</span>)],</span>
+<span id="cb13-15"><a href="#cb13-15"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Estatística"</span>, <span class="st">"Custo por Internação"</span>),</span>
+<span id="cb13-16"><a href="#cb13-16"></a>  <span class="at">caption =</span> <span class="st">"Resumo dos custos de internação ICSAP"</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Resumo dos custos de internação ICSAP</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Estatística</th>
+<th style="text-align: left;">Custo por Internação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mínimo</td>
+<td style="text-align: left;">R$ 503</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mediana</td>
+<td style="text-align: left;">R$ 905</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Média</td>
+<td style="text-align: left;">R$ 1.410</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Máximo</td>
+<td style="text-align: left;">R$ 4.774</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="resumo-economia-do-modelo-de-residência" class="level1">
+<h1>7. Resumo: Economia do Modelo de Residência</h1>
+<p>O modelo de residência gera economia porque <strong>1 preceptor + 4 residentes</strong> fazem o trabalho de <strong>2 médicos</strong>.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># Modelo tradicional: 2 médicos para 2 equipes</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>custo_tradicional <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> custos_pessoal<span class="sc">$</span>custo_medico_total <span class="sc">*</span> <span class="dv">12</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="co"># Modelo residência: 1 preceptor + 4 residentes - incentivo</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>custo_residencia <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>custo_preceptor_total <span class="sc">*</span> <span class="dv">12</span> <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>                     <span class="dv">4</span> <span class="sc">*</span> custos_pessoal<span class="sc">$</span>bolsa_total_mec_ms <span class="sc">*</span> <span class="dv">12</span> <span class="sc">-</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>                     <span class="dv">2</span> <span class="sc">*</span> programa<span class="sc">$</span>incentivo_equipe_residente <span class="sc">*</span> <span class="dv">12</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a></span>
+<span id="cb14-9"><a href="#cb14-9"></a>economia_por_par <span class="ot">&lt;-</span> custo_tradicional <span class="sc">-</span> custo_residencia</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Modelo</th>
+<th>Custo Anual (2 equipes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tradicional (2 médicos CLT)</td>
+<td>R$ 652.800</td>
+</tr>
+<tr class="even">
+<td>Residência (1 preceptor + 4 residentes)</td>
+<td>R$ 640.171</td>
+</tr>
+<tr class="odd">
+<td><strong>Economia por par de equipes</strong></td>
+<td><strong>R$ 12.629</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="objetos-criados" class="level1">
+<h1>8. Objetos Criados</h1>
+<p>Este capítulo criou os seguintes objetos R para uso nos capítulos seguintes:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Objeto</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>municipio</code></td>
+<td>Parâmetros do município simulado</td>
+</tr>
+<tr class="even">
+<td><code>custos_pessoal</code></td>
+<td>Custos de médicos, preceptores e residentes</td>
+</tr>
+<tr class="odd">
+<td><code>programa</code></td>
+<td>Estrutura do programa de residência</td>
+</tr>
+<tr class="even">
+<td><code>economico</code></td>
+<td>Parâmetros econômicos (taxa de desconto, horizonte)</td>
+</tr>
+<tr class="odd">
+<td><code>estudo</code></td>
+<td>Parâmetros do estudo original</td>
+</tr>
+<tr class="even">
+<td><code>enc_ambulatoriais</code></td>
+<td>Dados de encaminhamentos ambulatoriais</td>
+</tr>
+<tr class="odd">
+<td><code>enc_cirurgicos</code></td>
+<td>Dados de encaminhamentos cirúrgicos</td>
+</tr>
+<tr class="even">
+<td><code>exames_diagnosticos</code></td>
+<td>Dados de exames diagnósticos</td>
+</tr>
+<tr class="odd">
+<td><code>exames_laboratoriais</code></td>
+<td>Dados de exames laboratoriais</td>
+</tr>
+<tr class="even">
+<td><code>icsap</code></td>
+<td>Dados de internações por ICSAP</td>
+</tr>
+<tr class="odd">
+<td><code>custo_consulta</code></td>
+<td>Custo unitário de consulta especializada</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="próximos-passos" class="level1">
+<h1>Próximos Passos</h1>
+<p>Com os dados configurados, os próximos capítulos irão:</p>
+<ol type="1">
+<li><strong>Capítulo 02:</strong> Explicar a metodologia de conversão para baseline</li>
+<li><strong>Capítulo 03:</strong> Calcular a economia potencial em saúde</li>
+<li><strong>Capítulo 04:</strong> Calcular os indicadores econômicos do programa</li>
+<li><strong>Capítulo 05:</strong> Realizar análise de sensibilidade</li>
+<li><strong>Capítulo 06:</strong> Apresentar visualizações dos resultados</li>
+<li><strong>Capítulo 07:</strong> Discutir conclusões e implicações</li>
+</ol>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./00_sumario_executivo.html" class="pagination-link" aria-label="Sumário Executivo">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Sumário Executivo</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./02_metodologia_funcoes.html" class="pagination-link" aria-label="Metodologia e Funções de Cálculo">
+        <span class="nav-page-text"><span class="chapter-title">Metodologia e Funções de Cálculo</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Código fonte</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">---</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="an">title:</span><span class="co"> "Configuração e Dados de Entrada"</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="co">---</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="fu"># Introdução</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a></span>
+<span id="cb15-7"><a href="#cb15-7"></a>Este capítulo apresenta todos os dados de entrada necessários para o modelo econômico da Residência em Medicina de Família e Comunidade (MFC).</span>
+<span id="cb15-8"><a href="#cb15-8"></a></span>
+<span id="cb15-9"><a href="#cb15-9"></a>**Objetivo:** Documentar de forma transparente e reproduzível:</span>
+<span id="cb15-10"><a href="#cb15-10"></a></span>
+<span id="cb15-11"><a href="#cb15-11"></a><span class="ss">1. </span>Os parâmetros do município simulado</span>
+<span id="cb15-12"><a href="#cb15-12"></a><span class="ss">2. </span>Os custos de pessoal e do programa</span>
+<span id="cb15-13"><a href="#cb15-13"></a><span class="ss">3. </span>Os dados epidemiológicos dos estudos originais</span>
+<span id="cb15-14"><a href="#cb15-14"></a><span class="ss">4. </span>Os custos unitários de procedimentos</span>
+<span id="cb15-15"><a href="#cb15-15"></a></span>
+<span id="cb15-16"><a href="#cb15-16"></a>---</span>
+<span id="cb15-17"><a href="#cb15-17"></a></span>
+<span id="cb15-18"><a href="#cb15-18"></a><span class="fu"># Preparação</span></span>
+<span id="cb15-19"><a href="#cb15-19"></a></span>
+<span id="cb15-22"><a href="#cb15-22"></a><span class="in">```{r}</span></span>
+<span id="cb15-23"><a href="#cb15-23"></a><span class="co">#| label: setup</span></span>
+<span id="cb15-24"><a href="#cb15-24"></a><span class="co">#| include: true</span></span>
+<span id="cb15-25"><a href="#cb15-25"></a><span class="co">#| message: false</span></span>
+<span id="cb15-26"><a href="#cb15-26"></a><span class="co">#| warning: false</span></span>
+<span id="cb15-27"><a href="#cb15-27"></a></span>
+<span id="cb15-28"><a href="#cb15-28"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">OutDec =</span> <span class="st">","</span>)</span>
+<span id="cb15-29"><a href="#cb15-29"></a></span>
+<span id="cb15-30"><a href="#cb15-30"></a>formatar_numero <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">decimais =</span> <span class="dv">0</span>) {</span>
+<span id="cb15-31"><a href="#cb15-31"></a>  <span class="fu">format</span>(<span class="fu">round</span>(x, decimais), <span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>, <span class="at">nsmall =</span> decimais)</span>
+<span id="cb15-32"><a href="#cb15-32"></a>}</span>
+<span id="cb15-33"><a href="#cb15-33"></a></span>
+<span id="cb15-34"><a href="#cb15-34"></a>formatar_moeda <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb15-35"><a href="#cb15-35"></a>  <span class="fu">paste0</span>(<span class="st">"R$ "</span>, <span class="fu">formatar_numero</span>(x))</span>
+<span id="cb15-36"><a href="#cb15-36"></a>}</span>
+<span id="cb15-37"><a href="#cb15-37"></a><span class="in">```</span></span>
+<span id="cb15-38"><a href="#cb15-38"></a></span>
+<span id="cb15-39"><a href="#cb15-39"></a>---</span>
+<span id="cb15-40"><a href="#cb15-40"></a></span>
+<span id="cb15-41"><a href="#cb15-41"></a><span class="fu"># 1. O Município Simulado</span></span>
+<span id="cb15-42"><a href="#cb15-42"></a></span>
+<span id="cb15-43"><a href="#cb15-43"></a>O modelo foi desenvolvido para um município fictício chamado **Esperança**, com características típicas de um município brasileiro de médio porte.</span>
+<span id="cb15-44"><a href="#cb15-44"></a></span>
+<span id="cb15-47"><a href="#cb15-47"></a><span class="in">```{r}</span></span>
+<span id="cb15-48"><a href="#cb15-48"></a><span class="co">#| label: municipio</span></span>
+<span id="cb15-49"><a href="#cb15-49"></a></span>
+<span id="cb15-50"><a href="#cb15-50"></a>municipio <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb15-51"><a href="#cb15-51"></a>  <span class="at">nome =</span> <span class="st">"Esperança"</span>,</span>
+<span id="cb15-52"><a href="#cb15-52"></a>  <span class="at">populacao =</span> <span class="dv">500000</span>,</span>
+<span id="cb15-53"><a href="#cb15-53"></a>  <span class="at">n_equipes =</span> <span class="dv">100</span>,</span>
+<span id="cb15-54"><a href="#cb15-54"></a>  <span class="at">pop_por_equipe =</span> <span class="dv">5000</span></span>
+<span id="cb15-55"><a href="#cb15-55"></a>)</span>
+<span id="cb15-56"><a href="#cb15-56"></a><span class="in">```</span></span>
+<span id="cb15-57"><a href="#cb15-57"></a></span>
+<span id="cb15-58"><a href="#cb15-58"></a><span class="pp">|</span> Parâmetro <span class="pp">|</span> Valor <span class="pp">|</span></span>
+<span id="cb15-59"><a href="#cb15-59"></a><span class="pp">|-----------|-------|</span></span>
+<span id="cb15-60"><a href="#cb15-60"></a><span class="pp">|</span> Nome <span class="pp">|</span> <span class="in">`r municipio$nome`</span> <span class="pp">|</span></span>
+<span id="cb15-61"><a href="#cb15-61"></a><span class="pp">|</span> População <span class="pp">|</span> <span class="in">`r formatar_numero(municipio$populacao)`</span> habitantes <span class="pp">|</span></span>
+<span id="cb15-62"><a href="#cb15-62"></a><span class="pp">|</span> Equipes de APS <span class="pp">|</span> <span class="in">`r municipio$n_equipes`</span> <span class="pp">|</span></span>
+<span id="cb15-63"><a href="#cb15-63"></a><span class="pp">|</span> População por equipe <span class="pp">|</span> <span class="in">`r formatar_numero(municipio$pop_por_equipe)`</span> habitantes <span class="pp">|</span></span>
+<span id="cb15-64"><a href="#cb15-64"></a><span class="pp">|</span> Cobertura MFC inicial <span class="pp">|</span> 0% <span class="pp">|</span></span>
+<span id="cb15-65"><a href="#cb15-65"></a></span>
+<span id="cb15-66"><a href="#cb15-66"></a>---</span>
+<span id="cb15-67"><a href="#cb15-67"></a></span>
+<span id="cb15-68"><a href="#cb15-68"></a><span class="fu"># 2. Custos de Pessoal</span></span>
+<span id="cb15-69"><a href="#cb15-69"></a></span>
+<span id="cb15-70"><a href="#cb15-70"></a><span class="fu">## Médico da Estratégia Saúde da Família</span></span>
+<span id="cb15-71"><a href="#cb15-71"></a></span>
+<span id="cb15-74"><a href="#cb15-74"></a><span class="in">```{r}</span></span>
+<span id="cb15-75"><a href="#cb15-75"></a><span class="co">#| label: custos-medico</span></span>
+<span id="cb15-76"><a href="#cb15-76"></a></span>
+<span id="cb15-77"><a href="#cb15-77"></a>custos_pessoal <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb15-78"><a href="#cb15-78"></a>  <span class="co"># Salário base</span></span>
+<span id="cb15-79"><a href="#cb15-79"></a>  <span class="at">salario_base_medico =</span> <span class="dv">16000</span>,</span>
+<span id="cb15-80"><a href="#cb15-80"></a>  </span>
+<span id="cb15-81"><a href="#cb15-81"></a></span>
+<span id="cb15-82"><a href="#cb15-82"></a>  <span class="co"># Encargos trabalhistas (INSS patronal, FGTS, férias, 13º, etc.)</span></span>
+<span id="cb15-83"><a href="#cb15-83"></a>  <span class="at">encargos_trabalhistas_pct =</span> <span class="fl">0.70</span>,</span>
+<span id="cb15-84"><a href="#cb15-84"></a>  </span>
+<span id="cb15-85"><a href="#cb15-85"></a>  <span class="co"># Adicional de preceptoria (sobre o salário base)</span></span>
+<span id="cb15-86"><a href="#cb15-86"></a>  <span class="at">adicional_preceptoria_pct =</span> <span class="fl">0.10</span>,</span>
+<span id="cb15-87"><a href="#cb15-87"></a>  </span>
+<span id="cb15-88"><a href="#cb15-88"></a>  <span class="co"># Bolsa do residente</span></span>
+<span id="cb15-89"><a href="#cb15-89"></a>  <span class="at">bolsa_mec =</span> <span class="fl">4106.90</span>,</span>
+<span id="cb15-90"><a href="#cb15-90"></a>  <span class="at">complemento_ms =</span> <span class="fl">4000.00</span>,</span>
+<span id="cb15-91"><a href="#cb15-91"></a>  <span class="at">complemento_municipal =</span> <span class="fl">2000.00</span>  <span class="co"># Opcional</span></span>
+<span id="cb15-92"><a href="#cb15-92"></a>)</span>
+<span id="cb15-93"><a href="#cb15-93"></a></span>
+<span id="cb15-94"><a href="#cb15-94"></a><span class="co"># Cálculos derivados</span></span>
+<span id="cb15-95"><a href="#cb15-95"></a>custos_pessoal<span class="sc">$</span>custo_medico_total <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>salario_base_medico <span class="sc">*</span> </span>
+<span id="cb15-96"><a href="#cb15-96"></a>                                      (<span class="dv">1</span> <span class="sc">+</span> custos_pessoal<span class="sc">$</span>encargos_trabalhistas_pct)</span>
+<span id="cb15-97"><a href="#cb15-97"></a></span>
+<span id="cb15-98"><a href="#cb15-98"></a>custos_pessoal<span class="sc">$</span>adicional_preceptoria_valor <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>salario_base_medico <span class="sc">*</span> </span>
+<span id="cb15-99"><a href="#cb15-99"></a>                                               custos_pessoal<span class="sc">$</span>adicional_preceptoria_pct</span>
+<span id="cb15-100"><a href="#cb15-100"></a></span>
+<span id="cb15-101"><a href="#cb15-101"></a>custos_pessoal<span class="sc">$</span>custo_preceptor_total <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>custo_medico_total <span class="sc">+</span> </span>
+<span id="cb15-102"><a href="#cb15-102"></a>                                         custos_pessoal<span class="sc">$</span>adicional_preceptoria_valor <span class="sc">*</span> </span>
+<span id="cb15-103"><a href="#cb15-103"></a>                                         (<span class="dv">1</span> <span class="sc">+</span> custos_pessoal<span class="sc">$</span>encargos_trabalhistas_pct)</span>
+<span id="cb15-104"><a href="#cb15-104"></a></span>
+<span id="cb15-105"><a href="#cb15-105"></a>custos_pessoal<span class="sc">$</span>bolsa_total_mec_ms <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>bolsa_mec <span class="sc">+</span> custos_pessoal<span class="sc">$</span>complemento_ms</span>
+<span id="cb15-106"><a href="#cb15-106"></a></span>
+<span id="cb15-107"><a href="#cb15-107"></a>custos_pessoal<span class="sc">$</span>bolsa_total_completa <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>bolsa_total_mec_ms <span class="sc">+</span> </span>
+<span id="cb15-108"><a href="#cb15-108"></a>                                        custos_pessoal<span class="sc">$</span>complemento_municipal</span>
+<span id="cb15-109"><a href="#cb15-109"></a><span class="in">```</span></span>
+<span id="cb15-110"><a href="#cb15-110"></a></span>
+<span id="cb15-111"><a href="#cb15-111"></a><span class="fu">### Custo do Médico CLT</span></span>
+<span id="cb15-112"><a href="#cb15-112"></a></span>
+<span id="cb15-113"><a href="#cb15-113"></a><span class="pp">|</span> Item <span class="pp">|</span> Valor Mensal <span class="pp">|</span></span>
+<span id="cb15-114"><a href="#cb15-114"></a><span class="pp">|------|--------------|</span></span>
+<span id="cb15-115"><a href="#cb15-115"></a><span class="pp">|</span> Salário base <span class="pp">|</span> <span class="in">`r formatar_moeda(custos_pessoal$salario_base_medico)`</span> <span class="pp">|</span></span>
+<span id="cb15-116"><a href="#cb15-116"></a><span class="pp">|</span> Encargos trabalhistas (70%) <span class="pp">|</span> <span class="in">`r formatar_moeda(custos_pessoal$salario_base_medico * custos_pessoal$encargos_trabalhistas_pct)`</span> <span class="pp">|</span></span>
+<span id="cb15-117"><a href="#cb15-117"></a><span class="pp">|</span> **Custo total médico CLT** | **`r formatar_moeda(custos_pessoal$custo_medico_total)`** <span class="pp">|</span></span>
+<span id="cb15-118"><a href="#cb15-118"></a></span>
+<span id="cb15-119"><a href="#cb15-119"></a>**Nota sobre encargos trabalhistas:**</span>
+<span id="cb15-120"><a href="#cb15-120"></a></span>
+<span id="cb15-121"><a href="#cb15-121"></a>Os 70% de encargos incluem:</span>
+<span id="cb15-122"><a href="#cb15-122"></a></span>
+<span id="cb15-123"><a href="#cb15-123"></a><span class="ss">- </span>INSS patronal (20%)</span>
+<span id="cb15-124"><a href="#cb15-124"></a><span class="ss">- </span>FGTS (8%)</span>
+<span id="cb15-125"><a href="#cb15-125"></a><span class="ss">- </span>Férias + 1/3 constitucional (11,1%)</span>
+<span id="cb15-126"><a href="#cb15-126"></a><span class="ss">- </span>13º salário (8,3%)</span>
+<span id="cb15-127"><a href="#cb15-127"></a><span class="ss">- </span>Provisão para rescisão (estimado)</span>
+<span id="cb15-128"><a href="#cb15-128"></a><span class="ss">- </span>Outros encargos (SAT, Sistema S, etc.)</span>
+<span id="cb15-129"><a href="#cb15-129"></a></span>
+<span id="cb15-130"><a href="#cb15-130"></a><span class="fu">### Custo do Preceptor</span></span>
+<span id="cb15-131"><a href="#cb15-131"></a></span>
+<span id="cb15-132"><a href="#cb15-132"></a><span class="pp">|</span> Item <span class="pp">|</span> Valor Mensal <span class="pp">|</span></span>
+<span id="cb15-133"><a href="#cb15-133"></a><span class="pp">|------|--------------|</span></span>
+<span id="cb15-134"><a href="#cb15-134"></a><span class="pp">|</span> Custo base (médico CLT) <span class="pp">|</span> <span class="in">`r formatar_moeda(custos_pessoal$custo_medico_total)`</span> <span class="pp">|</span></span>
+<span id="cb15-135"><a href="#cb15-135"></a><span class="pp">|</span> Adicional preceptoria (10% do salário base) <span class="pp">|</span> <span class="in">`r formatar_moeda(custos_pessoal$adicional_preceptoria_valor)`</span> <span class="pp">|</span></span>
+<span id="cb15-136"><a href="#cb15-136"></a><span class="pp">|</span> Encargos sobre adicional (70%) <span class="pp">|</span> <span class="in">`r formatar_moeda(custos_pessoal$adicional_preceptoria_valor * custos_pessoal$encargos_trabalhistas_pct)`</span> <span class="pp">|</span></span>
+<span id="cb15-137"><a href="#cb15-137"></a><span class="pp">|</span> **Custo total preceptor** | **`r formatar_moeda(custos_pessoal$custo_preceptor_total)`** <span class="pp">|</span></span>
+<span id="cb15-138"><a href="#cb15-138"></a></span>
+<span id="cb15-139"><a href="#cb15-139"></a><span class="fu">### Bolsa do Residente</span></span>
+<span id="cb15-140"><a href="#cb15-140"></a></span>
+<span id="cb15-141"><a href="#cb15-141"></a><span class="pp">|</span> Fonte <span class="pp">|</span> Valor Mensal <span class="pp">|</span></span>
+<span id="cb15-142"><a href="#cb15-142"></a><span class="pp">|-------|--------------|</span></span>
+<span id="cb15-143"><a href="#cb15-143"></a><span class="pp">|</span> Bolsa MEC <span class="pp">|</span> <span class="in">`r formatar_moeda(custos_pessoal$bolsa_mec)`</span> <span class="pp">|</span></span>
+<span id="cb15-144"><a href="#cb15-144"></a><span class="pp">|</span> Complemento Ministério da Saúde <span class="pp">|</span> <span class="in">`r formatar_moeda(custos_pessoal$complemento_ms)`</span> <span class="pp">|</span></span>
+<span id="cb15-145"><a href="#cb15-145"></a><span class="pp">|</span> **Bolsa total (MEC + MS)** | **`r formatar_moeda(custos_pessoal$bolsa_total_mec_ms)`** <span class="pp">|</span></span>
+<span id="cb15-146"><a href="#cb15-146"></a><span class="pp">|</span> Complemento municipal (opcional) <span class="pp">|</span> <span class="in">`r formatar_moeda(custos_pessoal$complemento_municipal)`</span> <span class="pp">|</span></span>
+<span id="cb15-147"><a href="#cb15-147"></a><span class="pp">|</span> Bolsa total com complemento municipal <span class="pp">|</span> <span class="in">`r formatar_moeda(custos_pessoal$bolsa_total_completa)`</span> <span class="pp">|</span></span>
+<span id="cb15-148"><a href="#cb15-148"></a></span>
+<span id="cb15-149"><a href="#cb15-149"></a>**Importante:** A bolsa do residente não tem encargos trabalhistas, pois não é relação de emprego CLT.</span>
+<span id="cb15-150"><a href="#cb15-150"></a></span>
+<span id="cb15-151"><a href="#cb15-151"></a>---</span>
+<span id="cb15-152"><a href="#cb15-152"></a></span>
+<span id="cb15-153"><a href="#cb15-153"></a><span class="fu"># 3. Estrutura do Programa de Residência</span></span>
+<span id="cb15-154"><a href="#cb15-154"></a></span>
+<span id="cb15-157"><a href="#cb15-157"></a><span class="in">```{r}</span></span>
+<span id="cb15-158"><a href="#cb15-158"></a><span class="co">#| label: programa</span></span>
+<span id="cb15-159"><a href="#cb15-159"></a></span>
+<span id="cb15-160"><a href="#cb15-160"></a>programa <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb15-161"><a href="#cb15-161"></a>  <span class="co"># Estrutura</span></span>
+<span id="cb15-162"><a href="#cb15-162"></a>  <span class="at">preceptores_ano1 =</span> <span class="dv">4</span>,</span>
+<span id="cb15-163"><a href="#cb15-163"></a>  <span class="at">preceptores_ano2 =</span> <span class="dv">8</span>,</span>
+<span id="cb15-164"><a href="#cb15-164"></a>  <span class="at">equipes_por_preceptor =</span> <span class="dv">2</span>,</span>
+<span id="cb15-165"><a href="#cb15-165"></a>  <span class="at">residentes_por_equipe =</span> <span class="dv">2</span>,</span>
+<span id="cb15-166"><a href="#cb15-166"></a>  <span class="at">duracao_residencia =</span> <span class="dv">2</span>,  <span class="co"># anos</span></span>
+<span id="cb15-167"><a href="#cb15-167"></a>  </span>
+<span id="cb15-168"><a href="#cb15-168"></a>  <span class="co"># Retenção</span></span>
+<span id="cb15-169"><a href="#cb15-169"></a>  <span class="at">taxa_retencao_base =</span> <span class="fl">0.60</span>,</span>
+<span id="cb15-170"><a href="#cb15-170"></a>  </span>
+<span id="cb15-171"><a href="#cb15-171"></a>  <span class="co"># Custos</span></span>
+<span id="cb15-172"><a href="#cb15-172"></a>  <span class="at">custo_operacional_anual =</span> <span class="dv">50000</span>,</span>
+<span id="cb15-173"><a href="#cb15-173"></a>  </span>
+<span id="cb15-174"><a href="#cb15-174"></a>  <span class="co"># Incentivo federal</span></span>
+<span id="cb15-175"><a href="#cb15-175"></a>  <span class="at">incentivo_equipe_residente =</span> <span class="dv">4500</span></span>
+<span id="cb15-176"><a href="#cb15-176"></a>)</span>
+<span id="cb15-177"><a href="#cb15-177"></a></span>
+<span id="cb15-178"><a href="#cb15-178"></a><span class="co"># Cálculos derivados</span></span>
+<span id="cb15-179"><a href="#cb15-179"></a>programa<span class="sc">$</span>equipes_escola_ano1 <span class="ot">&lt;-</span> programa<span class="sc">$</span>preceptores_ano1 <span class="sc">*</span> programa<span class="sc">$</span>equipes_por_preceptor</span>
+<span id="cb15-180"><a href="#cb15-180"></a>programa<span class="sc">$</span>equipes_escola_ano2 <span class="ot">&lt;-</span> programa<span class="sc">$</span>preceptores_ano2 <span class="sc">*</span> programa<span class="sc">$</span>equipes_por_preceptor</span>
+<span id="cb15-181"><a href="#cb15-181"></a>programa<span class="sc">$</span>residentes_ano1 <span class="ot">&lt;-</span> programa<span class="sc">$</span>equipes_escola_ano1 <span class="sc">*</span> programa<span class="sc">$</span>residentes_por_equipe</span>
+<span id="cb15-182"><a href="#cb15-182"></a>programa<span class="sc">$</span>residentes_ano2 <span class="ot">&lt;-</span> programa<span class="sc">$</span>equipes_escola_ano2 <span class="sc">*</span> programa<span class="sc">$</span>residentes_por_equipe</span>
+<span id="cb15-183"><a href="#cb15-183"></a>programa<span class="sc">$</span>formados_por_ano <span class="ot">&lt;-</span> programa<span class="sc">$</span>residentes_ano2 <span class="sc">/</span> programa<span class="sc">$</span>duracao_residencia</span>
+<span id="cb15-184"><a href="#cb15-184"></a><span class="in">```</span></span>
+<span id="cb15-185"><a href="#cb15-185"></a></span>
+<span id="cb15-186"><a href="#cb15-186"></a><span class="fu">### Estrutura do Programa</span></span>
+<span id="cb15-187"><a href="#cb15-187"></a></span>
+<span id="cb15-188"><a href="#cb15-188"></a><span class="pp">|</span> Parâmetro <span class="pp">|</span> Ano 1 <span class="pp">|</span> Ano 2 em diante <span class="pp">|</span></span>
+<span id="cb15-189"><a href="#cb15-189"></a><span class="pp">|-----------|-------|-----------------|</span></span>
+<span id="cb15-190"><a href="#cb15-190"></a><span class="pp">|</span> Preceptores <span class="pp">|</span> <span class="in">`r programa$preceptores_ano1`</span> <span class="pp">|</span> <span class="in">`r programa$preceptores_ano2`</span> <span class="pp">|</span></span>
+<span id="cb15-191"><a href="#cb15-191"></a><span class="pp">|</span> Equipes-escola <span class="pp">|</span> <span class="in">`r programa$equipes_escola_ano1`</span> <span class="pp">|</span> <span class="in">`r programa$equipes_escola_ano2`</span> <span class="pp">|</span></span>
+<span id="cb15-192"><a href="#cb15-192"></a><span class="pp">|</span> Residentes (R1 + R2) <span class="pp">|</span> <span class="in">`r programa$residentes_ano1`</span> <span class="pp">|</span> <span class="in">`r programa$residentes_ano2`</span> <span class="pp">|</span></span>
+<span id="cb15-193"><a href="#cb15-193"></a><span class="pp">|</span> Formados por ano <span class="pp">|</span> - <span class="pp">|</span> <span class="in">`r programa$formados_por_ano`</span> <span class="pp">|</span></span>
+<span id="cb15-194"><a href="#cb15-194"></a></span>
+<span id="cb15-195"><a href="#cb15-195"></a><span class="fu">### Modelo de Supervisão</span></span>
+<span id="cb15-196"><a href="#cb15-196"></a></span>
+<span id="cb15-197"><a href="#cb15-197"></a><span class="ss">- </span>Cada **preceptor** supervisiona **`r programa$equipes_por_preceptor` equipes-escola**</span>
+<span id="cb15-198"><a href="#cb15-198"></a><span class="ss">- </span>Cada **equipe-escola** tem **`r programa$residentes_por_equipe` residentes** (1 R1 + 1 R2)</span>
+<span id="cb15-199"><a href="#cb15-199"></a><span class="ss">- </span>**1 preceptor** faz o trabalho de **2 médicos** (com apoio dos residentes)</span>
+<span id="cb15-200"><a href="#cb15-200"></a></span>
+<span id="cb15-201"><a href="#cb15-201"></a><span class="fu">### Incentivo Federal</span></span>
+<span id="cb15-202"><a href="#cb15-202"></a></span>
+<span id="cb15-203"><a href="#cb15-203"></a>O Ministério da Saúde paga um incentivo de **`r formatar_moeda(programa$incentivo_equipe_residente)`/mês** por equipe com residente, conforme Portaria GM/MS nº 1.248/2013.</span>
+<span id="cb15-204"><a href="#cb15-204"></a></span>
+<span id="cb15-205"><a href="#cb15-205"></a><span class="fu">### Custos Operacionais</span></span>
+<span id="cb15-206"><a href="#cb15-206"></a></span>
+<span id="cb15-207"><a href="#cb15-207"></a><span class="pp">|</span> Item <span class="pp">|</span> Valor Anual <span class="pp">|</span></span>
+<span id="cb15-208"><a href="#cb15-208"></a><span class="pp">|------|-------------|</span></span>
+<span id="cb15-209"><a href="#cb15-209"></a><span class="pp">|</span> Coordenação, materiais, eventos, etc. <span class="pp">|</span> <span class="in">`r formatar_moeda(programa$custo_operacional_anual)`</span> <span class="pp">|</span></span>
+<span id="cb15-210"><a href="#cb15-210"></a></span>
+<span id="cb15-211"><a href="#cb15-211"></a>---</span>
+<span id="cb15-212"><a href="#cb15-212"></a></span>
+<span id="cb15-213"><a href="#cb15-213"></a><span class="fu"># 4. Parâmetros Econômicos</span></span>
+<span id="cb15-214"><a href="#cb15-214"></a></span>
+<span id="cb15-217"><a href="#cb15-217"></a><span class="in">```{r}</span></span>
+<span id="cb15-218"><a href="#cb15-218"></a><span class="co">#| label: economico</span></span>
+<span id="cb15-219"><a href="#cb15-219"></a></span>
+<span id="cb15-220"><a href="#cb15-220"></a>economico <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb15-221"><a href="#cb15-221"></a>  <span class="at">taxa_desconto =</span> <span class="fl">0.05</span>,</span>
+<span id="cb15-222"><a href="#cb15-222"></a>  <span class="at">horizonte_anos =</span> <span class="dv">10</span>,</span>
+<span id="cb15-223"><a href="#cb15-223"></a>  <span class="at">fator_correcao_aih =</span> <span class="fl">1.5</span></span>
+<span id="cb15-224"><a href="#cb15-224"></a>)</span>
+<span id="cb15-225"><a href="#cb15-225"></a><span class="in">```</span></span>
+<span id="cb15-226"><a href="#cb15-226"></a></span>
+<span id="cb15-227"><a href="#cb15-227"></a><span class="pp">|</span> Parâmetro <span class="pp">|</span> Valor <span class="pp">|</span> Justificativa <span class="pp">|</span></span>
+<span id="cb15-228"><a href="#cb15-228"></a><span class="pp">|-----------|-------|---------------|</span></span>
+<span id="cb15-229"><a href="#cb15-229"></a><span class="pp">|</span> Taxa de desconto <span class="pp">|</span> <span class="in">`r economico$taxa_desconto * 100`</span>% ao ano <span class="pp">|</span> Recomendação do Ministério da Saúde para avaliações econômicas <span class="pp">|</span></span>
+<span id="cb15-230"><a href="#cb15-230"></a><span class="pp">|</span> Horizonte de análise <span class="pp">|</span> <span class="in">`r economico$horizonte_anos`</span> anos <span class="pp">|</span> Tempo suficiente para avaliar o ciclo completo do programa <span class="pp">|</span></span>
+<span id="cb15-231"><a href="#cb15-231"></a><span class="pp">|</span> Fator de correção AIH <span class="pp">|</span> <span class="in">`r economico$fator_correcao_aih`</span> <span class="pp">|</span> Corrige defasagem da tabela SUS em relação aos custos reais <span class="pp">|</span></span>
+<span id="cb15-232"><a href="#cb15-232"></a></span>
+<span id="cb15-233"><a href="#cb15-233"></a>**Sobre o fator de correção AIH:**</span>
+<span id="cb15-234"><a href="#cb15-234"></a></span>
+<span id="cb15-235"><a href="#cb15-235"></a>Os valores da tabela SUS (SIGTAP) para internações estão significativamente defasados em relação aos custos reais. O fator de 1,5 é uma estimativa conservadora baseada em estudos que mostram que os custos reais de internação podem ser 50% a 100% maiores que os valores pagos pelo SUS.</span>
+<span id="cb15-236"><a href="#cb15-236"></a></span>
+<span id="cb15-237"><a href="#cb15-237"></a>---</span>
+<span id="cb15-238"><a href="#cb15-238"></a></span>
+<span id="cb15-239"><a href="#cb15-239"></a><span class="fu"># 5. Dados Epidemiológicos</span></span>
+<span id="cb15-240"><a href="#cb15-240"></a></span>
+<span id="cb15-241"><a href="#cb15-241"></a><span class="fu">## Fonte dos Dados</span></span>
+<span id="cb15-242"><a href="#cb15-242"></a></span>
+<span id="cb15-243"><a href="#cb15-243"></a>Os dados epidemiológicos provêm de **três estudos de coorte retrospectivos** realizados no Rio de Janeiro:</span>
+<span id="cb15-244"><a href="#cb15-244"></a></span>
+<span id="cb15-247"><a href="#cb15-247"></a><span class="in">```{r}</span></span>
+<span id="cb15-248"><a href="#cb15-248"></a><span class="co">#| label: estudo-original</span></span>
+<span id="cb15-249"><a href="#cb15-249"></a></span>
+<span id="cb15-250"><a href="#cb15-250"></a>estudo <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb15-251"><a href="#cb15-251"></a>  <span class="at">populacao =</span> <span class="dv">600000</span>,</span>
+<span id="cb15-252"><a href="#cb15-252"></a>  <span class="at">prop_mfc =</span> <span class="fl">0.336</span>,</span>
+<span id="cb15-253"><a href="#cb15-253"></a>  <span class="at">prop_gen =</span> <span class="fl">0.664</span></span>
+<span id="cb15-254"><a href="#cb15-254"></a>)</span>
+<span id="cb15-255"><a href="#cb15-255"></a><span class="in">```</span></span>
+<span id="cb15-256"><a href="#cb15-256"></a></span>
+<span id="cb15-257"><a href="#cb15-257"></a><span class="pp">|</span> Parâmetro <span class="pp">|</span> Valor <span class="pp">|</span></span>
+<span id="cb15-258"><a href="#cb15-258"></a><span class="pp">|-----------|-------|</span></span>
+<span id="cb15-259"><a href="#cb15-259"></a><span class="pp">|</span> População do estudo <span class="pp">|</span> <span class="in">`r formatar_numero(estudo$populacao)`</span> pacientes <span class="pp">|</span></span>
+<span id="cb15-260"><a href="#cb15-260"></a><span class="pp">|</span> Pacientes atendidos por MFC <span class="pp">|</span> <span class="in">`r estudo$prop_mfc * 100`</span>% <span class="pp">|</span></span>
+<span id="cb15-261"><a href="#cb15-261"></a><span class="pp">|</span> Pacientes atendidos por generalistas <span class="pp">|</span> <span class="in">`r estudo$prop_gen * 100`</span>% <span class="pp">|</span></span>
+<span id="cb15-262"><a href="#cb15-262"></a></span>
+<span id="cb15-263"><a href="#cb15-263"></a><span class="fu">### Os Três Estudos</span></span>
+<span id="cb15-264"><a href="#cb15-264"></a></span>
+<span id="cb15-265"><a href="#cb15-265"></a><span class="pp">|</span> Estudo <span class="pp">|</span> Desfecho <span class="pp">|</span> Publicação <span class="pp">|</span></span>
+<span id="cb15-266"><a href="#cb15-266"></a><span class="pp">|--------|----------|------------|</span></span>
+<span id="cb15-267"><a href="#cb15-267"></a><span class="pp">|</span> 1 <span class="pp">|</span> Internações por Condições Sensíveis à APS (ICSAP) <span class="pp">|</span> PLOS Global Public Health, 2023 <span class="pp">|</span></span>
+<span id="cb15-268"><a href="#cb15-268"></a><span class="pp">|</span> 2 <span class="pp">|</span> Encaminhamentos e exames diagnósticos <span class="pp">|</span> BMJ Open, 2023 <span class="pp">|</span></span>
+<span id="cb15-269"><a href="#cb15-269"></a><span class="pp">|</span> 3 <span class="pp">|</span> Exames laboratoriais <span class="pp">|</span> BMC Primary Care, 2024 <span class="pp">|</span></span>
+<span id="cb15-270"><a href="#cb15-270"></a></span>
+<span id="cb15-271"><a href="#cb15-271"></a><span class="fu">### Interpretação do Risco Relativo (RR)</span></span>
+<span id="cb15-272"><a href="#cb15-272"></a></span>
+<span id="cb15-273"><a href="#cb15-273"></a>$$RR = \frac{\text{Taxa em pacientes de MFC}}{\text{Taxa em pacientes de generalistas}}$$</span>
+<span id="cb15-274"><a href="#cb15-274"></a></span>
+<span id="cb15-275"><a href="#cb15-275"></a><span class="ss">- </span>**RR = 1,00**: Sem diferença</span>
+<span id="cb15-276"><a href="#cb15-276"></a><span class="ss">- </span>**RR &lt; 1,00**: MFC tem **menor** taxa (economia)</span>
+<span id="cb15-277"><a href="#cb15-277"></a><span class="ss">- </span>**RR &gt; 1,00**: MFC tem **maior** taxa (custo adicional)</span>
+<span id="cb15-278"><a href="#cb15-278"></a></span>
+<span id="cb15-279"><a href="#cb15-279"></a>**Exemplo:** RR = 0,50 significa que pacientes de MFC têm metade da taxa de eventos.</span>
+<span id="cb15-280"><a href="#cb15-280"></a></span>
+<span id="cb15-281"><a href="#cb15-281"></a>---</span>
+<span id="cb15-282"><a href="#cb15-282"></a></span>
+<span id="cb15-283"><a href="#cb15-283"></a><span class="fu">## Encaminhamentos Ambulatoriais</span></span>
+<span id="cb15-284"><a href="#cb15-284"></a></span>
+<span id="cb15-287"><a href="#cb15-287"></a><span class="in">```{r}</span></span>
+<span id="cb15-288"><a href="#cb15-288"></a><span class="co">#| label: enc-ambulatoriais</span></span>
+<span id="cb15-289"><a href="#cb15-289"></a></span>
+<span id="cb15-290"><a href="#cb15-290"></a>enc_ambulatoriais <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb15-291"><a href="#cb15-291"></a>  <span class="at">especialidade =</span> <span class="fu">c</span>(</span>
+<span id="cb15-292"><a href="#cb15-292"></a>    <span class="st">"Cardiologia"</span>, <span class="st">"Neurologia"</span>, <span class="st">"Psiquiatria"</span>, <span class="st">"Dermatologia"</span>,</span>
+<span id="cb15-293"><a href="#cb15-293"></a>    <span class="st">"Pneumologia"</span>, <span class="st">"Doenças infecciosas"</span>, <span class="st">"Urologia"</span>, <span class="st">"Alergologia"</span>,</span>
+<span id="cb15-294"><a href="#cb15-294"></a>    <span class="st">"Nefrologia"</span>, <span class="st">"Endocrinologia"</span>, <span class="st">"Gastroenterologia"</span>, <span class="st">"Angiologia"</span>,</span>
+<span id="cb15-295"><a href="#cb15-295"></a>    <span class="st">"Reumatologia"</span>, <span class="st">"Fisioterapia"</span>, <span class="st">"Reabilitação"</span>, <span class="st">"Oftalmologia"</span>,</span>
+<span id="cb15-296"><a href="#cb15-296"></a>    <span class="st">"ORL"</span>, <span class="st">"Ortopedia"</span>, <span class="st">"Ginecologia"</span>, <span class="st">"Pré-natal alto risco"</span></span>
+<span id="cb15-297"><a href="#cb15-297"></a>  ),</span>
+<span id="cb15-298"><a href="#cb15-298"></a>  <span class="at">rr =</span> <span class="fu">c</span>(</span>
+<span id="cb15-299"><a href="#cb15-299"></a>    <span class="fl">0.40</span>, <span class="fl">0.50</span>, <span class="fl">0.45</span>, <span class="fl">0.49</span>, <span class="fl">0.54</span>, <span class="fl">0.74</span>, <span class="fl">0.57</span>, <span class="fl">0.54</span>,</span>
+<span id="cb15-300"><a href="#cb15-300"></a>    <span class="fl">0.63</span>, <span class="fl">0.42</span>, <span class="fl">0.38</span>, <span class="fl">0.35</span>, <span class="fl">0.47</span>, <span class="fl">1.17</span>, <span class="fl">1.68</span>, <span class="fl">1.09</span>,</span>
+<span id="cb15-301"><a href="#cb15-301"></a>    <span class="fl">0.71</span>, <span class="fl">0.52</span>, <span class="fl">0.86</span>, <span class="fl">0.66</span></span>
+<span id="cb15-302"><a href="#cb15-302"></a>  ),</span>
+<span id="cb15-303"><a href="#cb15-303"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(</span>
+<span id="cb15-304"><a href="#cb15-304"></a>    <span class="dv">2008</span>, <span class="dv">1835</span>, <span class="dv">897</span>, <span class="dv">4144</span>, <span class="dv">903</span>, <span class="dv">290</span>, <span class="dv">1762</span>, <span class="dv">480</span>,</span>
+<span id="cb15-305"><a href="#cb15-305"></a>    <span class="dv">603</span>, <span class="dv">1021</span>, <span class="dv">867</span>, <span class="dv">1030</span>, <span class="dv">830</span>, <span class="dv">2390</span>, <span class="dv">1173</span>, <span class="dv">8713</span>,</span>
+<span id="cb15-306"><a href="#cb15-306"></a>    <span class="dv">2269</span>, <span class="dv">4934</span>, <span class="dv">738</span>, <span class="dv">991</span></span>
+<span id="cb15-307"><a href="#cb15-307"></a>  ),</span>
+<span id="cb15-308"><a href="#cb15-308"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb15-309"><a href="#cb15-309"></a>)</span>
+<span id="cb15-310"><a href="#cb15-310"></a></span>
+<span id="cb15-311"><a href="#cb15-311"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb15-312"><a href="#cb15-312"></a>  enc_ambulatoriais,</span>
+<span id="cb15-313"><a href="#cb15-313"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Especialidade"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>),</span>
+<span id="cb15-314"><a href="#cb15-314"></a>  <span class="at">caption =</span> <span class="st">"Encaminhamentos ambulatoriais (20 especialidades)"</span></span>
+<span id="cb15-315"><a href="#cb15-315"></a>)</span>
+<span id="cb15-316"><a href="#cb15-316"></a><span class="in">```</span></span>
+<span id="cb15-317"><a href="#cb15-317"></a></span>
+<span id="cb15-318"><a href="#cb15-318"></a>**Nota:** RR &gt; 1 em Fisioterapia, Reabilitação e Oftalmologia sugere que MFC identifica mais necessidades nestas áreas.</span>
+<span id="cb15-319"><a href="#cb15-319"></a></span>
+<span id="cb15-320"><a href="#cb15-320"></a>---</span>
+<span id="cb15-321"><a href="#cb15-321"></a></span>
+<span id="cb15-322"><a href="#cb15-322"></a><span class="fu">## Encaminhamentos Cirúrgicos</span></span>
+<span id="cb15-323"><a href="#cb15-323"></a></span>
+<span id="cb15-326"><a href="#cb15-326"></a><span class="in">```{r}</span></span>
+<span id="cb15-327"><a href="#cb15-327"></a><span class="co">#| label: enc-cirurgicos</span></span>
+<span id="cb15-328"><a href="#cb15-328"></a></span>
+<span id="cb15-329"><a href="#cb15-329"></a>enc_cirurgicos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb15-330"><a href="#cb15-330"></a>  <span class="at">especialidade =</span> <span class="fu">c</span>(</span>
+<span id="cb15-331"><a href="#cb15-331"></a>    <span class="st">"Cirurgia geral"</span>, <span class="st">"Cirurgia vascular"</span>, <span class="st">"Neurocirurgia"</span>,</span>
+<span id="cb15-332"><a href="#cb15-332"></a>    <span class="st">"Proctologia"</span>, <span class="st">"Cirurgia cabeça/pescoço"</span>, <span class="st">"Mastologia"</span></span>
+<span id="cb15-333"><a href="#cb15-333"></a>  ),</span>
+<span id="cb15-334"><a href="#cb15-334"></a>  <span class="at">rr =</span> <span class="fu">c</span>(<span class="fl">1.21</span>, <span class="fl">0.87</span>, <span class="fl">1.22</span>, <span class="fl">0.91</span>, <span class="fl">1.19</span>, <span class="fl">0.87</span>),</span>
+<span id="cb15-335"><a href="#cb15-335"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(<span class="dv">4458</span>, <span class="dv">989</span>, <span class="dv">147</span>, <span class="dv">1968</span>, <span class="dv">859</span>, <span class="dv">359</span>),</span>
+<span id="cb15-336"><a href="#cb15-336"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb15-337"><a href="#cb15-337"></a>)</span>
+<span id="cb15-338"><a href="#cb15-338"></a></span>
+<span id="cb15-339"><a href="#cb15-339"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb15-340"><a href="#cb15-340"></a>  enc_cirurgicos,</span>
+<span id="cb15-341"><a href="#cb15-341"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Especialidade"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>),</span>
+<span id="cb15-342"><a href="#cb15-342"></a>  <span class="at">caption =</span> <span class="st">"Encaminhamentos cirúrgicos (6 especialidades)"</span></span>
+<span id="cb15-343"><a href="#cb15-343"></a>)</span>
+<span id="cb15-344"><a href="#cb15-344"></a><span class="in">```</span></span>
+<span id="cb15-345"><a href="#cb15-345"></a></span>
+<span id="cb15-346"><a href="#cb15-346"></a>---</span>
+<span id="cb15-347"><a href="#cb15-347"></a></span>
+<span id="cb15-348"><a href="#cb15-348"></a><span class="fu">## Exames Diagnósticos</span></span>
+<span id="cb15-349"><a href="#cb15-349"></a></span>
+<span id="cb15-352"><a href="#cb15-352"></a><span class="in">```{r}</span></span>
+<span id="cb15-353"><a href="#cb15-353"></a><span class="co">#| label: exames-diagnosticos</span></span>
+<span id="cb15-354"><a href="#cb15-354"></a></span>
+<span id="cb15-355"><a href="#cb15-355"></a>exames_diagnosticos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb15-356"><a href="#cb15-356"></a>  <span class="at">exame =</span> <span class="fu">c</span>(</span>
+<span id="cb15-357"><a href="#cb15-357"></a>    <span class="st">"Ecocardiograma"</span>, <span class="st">"Eletroencefalograma"</span>, <span class="st">"Endoscopia digestiva"</span>,</span>
+<span id="cb15-358"><a href="#cb15-358"></a>    <span class="st">"Ultrassonografia"</span>, <span class="st">"Radiografia"</span>, <span class="st">"Outros diagnósticos"</span></span>
+<span id="cb15-359"><a href="#cb15-359"></a>  ),</span>
+<span id="cb15-360"><a href="#cb15-360"></a>  <span class="at">rr =</span> <span class="fu">c</span>(<span class="fl">0.66</span>, <span class="fl">0.96</span>, <span class="fl">0.76</span>, <span class="fl">0.49</span>, <span class="fl">0.72</span>, <span class="fl">0.98</span>),</span>
+<span id="cb15-361"><a href="#cb15-361"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(<span class="dv">1201</span>, <span class="dv">385</span>, <span class="dv">510</span>, <span class="dv">1090</span>, <span class="dv">431</span>, <span class="dv">2424</span>),</span>
+<span id="cb15-362"><a href="#cb15-362"></a>  <span class="at">custo_unitario =</span> <span class="fu">c</span>(<span class="fl">39.94</span>, <span class="fl">13.20</span>, <span class="fl">86.00</span>, <span class="fl">48.16</span>, <span class="fl">30.00</span>, <span class="fl">45.00</span>),</span>
+<span id="cb15-363"><a href="#cb15-363"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb15-364"><a href="#cb15-364"></a>)</span>
+<span id="cb15-365"><a href="#cb15-365"></a></span>
+<span id="cb15-366"><a href="#cb15-366"></a>exames_diagnosticos<span class="sc">$</span>custo_fmt <span class="ot">&lt;-</span> <span class="fu">formatar_moeda</span>(exames_diagnosticos<span class="sc">$</span>custo_unitario)</span>
+<span id="cb15-367"><a href="#cb15-367"></a></span>
+<span id="cb15-368"><a href="#cb15-368"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb15-369"><a href="#cb15-369"></a>  exames_diagnosticos[, <span class="fu">c</span>(<span class="st">"exame"</span>, <span class="st">"rr"</span>, <span class="st">"eventos_ano"</span>, <span class="st">"custo_fmt"</span>)],</span>
+<span id="cb15-370"><a href="#cb15-370"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Exame"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>, <span class="st">"Custo Unitário"</span>),</span>
+<span id="cb15-371"><a href="#cb15-371"></a>  <span class="at">caption =</span> <span class="st">"Exames diagnósticos (6 tipos)"</span></span>
+<span id="cb15-372"><a href="#cb15-372"></a>)</span>
+<span id="cb15-373"><a href="#cb15-373"></a><span class="in">```</span></span>
+<span id="cb15-374"><a href="#cb15-374"></a></span>
+<span id="cb15-375"><a href="#cb15-375"></a>---</span>
+<span id="cb15-376"><a href="#cb15-376"></a></span>
+<span id="cb15-377"><a href="#cb15-377"></a><span class="fu">## Exames Laboratoriais</span></span>
+<span id="cb15-378"><a href="#cb15-378"></a></span>
+<span id="cb15-381"><a href="#cb15-381"></a><span class="in">```{r}</span></span>
+<span id="cb15-382"><a href="#cb15-382"></a><span class="co">#| label: exames-laboratoriais</span></span>
+<span id="cb15-383"><a href="#cb15-383"></a></span>
+<span id="cb15-384"><a href="#cb15-384"></a>exames_laboratoriais <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb15-385"><a href="#cb15-385"></a>  <span class="at">exame =</span> <span class="fu">c</span>(</span>
+<span id="cb15-386"><a href="#cb15-386"></a>    <span class="st">"Hemograma"</span>, <span class="st">"Glicemia jejum"</span>, <span class="st">"Colesterol total"</span>, <span class="st">"HDL"</span>,</span>
+<span id="cb15-387"><a href="#cb15-387"></a>    <span class="st">"LDL"</span>, <span class="st">"Triglicerídeos"</span>, <span class="st">"Creatinina"</span>, <span class="st">"Ureia"</span>,</span>
+<span id="cb15-388"><a href="#cb15-388"></a>    <span class="st">"TGO"</span>, <span class="st">"TGP"</span>, <span class="st">"GGT"</span>, <span class="st">"Bilirrubinas"</span>,</span>
+<span id="cb15-389"><a href="#cb15-389"></a>    <span class="st">"Ácido úrico"</span>, <span class="st">"TSH"</span>, <span class="st">"T4 livre"</span>, <span class="st">"PSA"</span>,</span>
+<span id="cb15-390"><a href="#cb15-390"></a>    <span class="st">"Hemoglobina glicada"</span>, <span class="st">"Glicemia pós-prandial"</span>, <span class="st">"Curva glicêmica"</span>, <span class="st">"Frutosamina"</span>,</span>
+<span id="cb15-391"><a href="#cb15-391"></a>    <span class="st">"Sódio"</span>, <span class="st">"Potássio"</span>, <span class="st">"Cálcio"</span>, <span class="st">"EAS"</span>,</span>
+<span id="cb15-392"><a href="#cb15-392"></a>    <span class="st">"Urocultura"</span>, <span class="st">"Vitamina D"</span>, <span class="st">"Vitamina B12"</span>, <span class="st">"Ferritina"</span>,</span>
+<span id="cb15-393"><a href="#cb15-393"></a>    <span class="st">"Ferro sérico"</span>, <span class="st">"Fosfatase alcalina"</span></span>
+<span id="cb15-394"><a href="#cb15-394"></a>  ),</span>
+<span id="cb15-395"><a href="#cb15-395"></a>  <span class="at">rr =</span> <span class="fu">c</span>(</span>
+<span id="cb15-396"><a href="#cb15-396"></a>    <span class="fl">0.53</span>, <span class="fl">0.85</span>, <span class="fl">0.29</span>, <span class="fl">0.42</span>, <span class="fl">0.73</span>, <span class="fl">0.46</span>, <span class="fl">0.64</span>, <span class="fl">0.81</span>,</span>
+<span id="cb15-397"><a href="#cb15-397"></a>    <span class="fl">0.94</span>, <span class="fl">0.41</span>, <span class="fl">0.82</span>, <span class="fl">0.23</span>, <span class="fl">0.71</span>, <span class="fl">0.08</span>, <span class="fl">0.13</span>, <span class="fl">0.56</span>,</span>
+<span id="cb15-398"><a href="#cb15-398"></a>    <span class="fl">0.78</span>, <span class="fl">0.48</span>, <span class="fl">0.47</span>, <span class="fl">0.69</span>, <span class="fl">0.64</span>, <span class="fl">0.74</span>, <span class="fl">0.09</span>, <span class="fl">0.67</span>,</span>
+<span id="cb15-399"><a href="#cb15-399"></a>    <span class="fl">0.44</span>, <span class="fl">0.56</span>, <span class="fl">0.60</span>, <span class="fl">0.48</span>, <span class="fl">0.47</span>, <span class="fl">0.36</span></span>
+<span id="cb15-400"><a href="#cb15-400"></a>  ),</span>
+<span id="cb15-401"><a href="#cb15-401"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(</span>
+<span id="cb15-402"><a href="#cb15-402"></a>    <span class="dv">51757</span>, <span class="dv">43746</span>, <span class="dv">22577</span>, <span class="dv">10517</span>, <span class="dv">18265</span>, <span class="dv">9072</span>, <span class="dv">25720</span>, <span class="dv">34673</span>,</span>
+<span id="cb15-403"><a href="#cb15-403"></a>    <span class="dv">31127</span>, <span class="dv">22163</span>, <span class="dv">33828</span>, <span class="dv">15603</span>, <span class="dv">11679</span>, <span class="dv">791</span>, <span class="dv">886</span>, <span class="dv">5432</span>,</span>
+<span id="cb15-404"><a href="#cb15-404"></a>    <span class="dv">2304</span>, <span class="dv">9181</span>, <span class="dv">9363</span>, <span class="dv">3505</span>, <span class="dv">4386</span>, <span class="dv">1957</span>, <span class="dv">604</span>, <span class="dv">41333</span>,</span>
+<span id="cb15-405"><a href="#cb15-405"></a>    <span class="dv">1866</span>, <span class="dv">674</span>, <span class="dv">863</span>, <span class="dv">210</span>, <span class="dv">216</span>, <span class="dv">4365</span></span>
+<span id="cb15-406"><a href="#cb15-406"></a>  ),</span>
+<span id="cb15-407"><a href="#cb15-407"></a>  <span class="at">custo_unitario =</span> <span class="fu">c</span>(</span>
+<span id="cb15-408"><a href="#cb15-408"></a>    <span class="fl">4.11</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">7.86</span>, <span class="fl">1.85</span>,</span>
+<span id="cb15-409"><a href="#cb15-409"></a>    <span class="fl">3.51</span>, <span class="fl">3.51</span>, <span class="fl">3.51</span>, <span class="fl">1.85</span>, <span class="fl">8.96</span>, <span class="fl">8.71</span>, <span class="fl">8.71</span>, <span class="fl">11.60</span>,</span>
+<span id="cb15-410"><a href="#cb15-410"></a>    <span class="fl">2.01</span>, <span class="fl">2.01</span>, <span class="fl">2.01</span>, <span class="fl">2.01</span>, <span class="fl">3.51</span>, <span class="fl">2.63</span>, <span class="fl">1.65</span>, <span class="fl">3.70</span>,</span>
+<span id="cb15-411"><a href="#cb15-411"></a>    <span class="fl">1.85</span>, <span class="fl">10.15</span>, <span class="fl">10.15</span>, <span class="fl">18.55</span>, <span class="fl">18.55</span>, <span class="fl">16.42</span></span>
+<span id="cb15-412"><a href="#cb15-412"></a>  ),</span>
+<span id="cb15-413"><a href="#cb15-413"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb15-414"><a href="#cb15-414"></a>)</span>
+<span id="cb15-415"><a href="#cb15-415"></a></span>
+<span id="cb15-416"><a href="#cb15-416"></a>exames_laboratoriais<span class="sc">$</span>custo_fmt <span class="ot">&lt;-</span> <span class="fu">formatar_moeda</span>(exames_laboratoriais<span class="sc">$</span>custo_unitario)</span>
+<span id="cb15-417"><a href="#cb15-417"></a></span>
+<span id="cb15-418"><a href="#cb15-418"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb15-419"><a href="#cb15-419"></a>  exames_laboratoriais[, <span class="fu">c</span>(<span class="st">"exame"</span>, <span class="st">"rr"</span>, <span class="st">"eventos_ano"</span>, <span class="st">"custo_fmt"</span>)],</span>
+<span id="cb15-420"><a href="#cb15-420"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Exame"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>, <span class="st">"Custo Unitário"</span>),</span>
+<span id="cb15-421"><a href="#cb15-421"></a>  <span class="at">caption =</span> <span class="st">"Exames laboratoriais (30 tipos)"</span></span>
+<span id="cb15-422"><a href="#cb15-422"></a>)</span>
+<span id="cb15-423"><a href="#cb15-423"></a><span class="in">```</span></span>
+<span id="cb15-424"><a href="#cb15-424"></a></span>
+<span id="cb15-425"><a href="#cb15-425"></a>**Destaques:**</span>
+<span id="cb15-426"><a href="#cb15-426"></a></span>
+<span id="cb15-427"><a href="#cb15-427"></a><span class="ss">- </span>**TSH (RR = 0,08):** MFC solicita 92% menos dosagens de TSH</span>
+<span id="cb15-428"><a href="#cb15-428"></a><span class="ss">- </span>**Cálcio (RR = 0,09):** MFC solicita 91% menos dosagens de cálcio</span>
+<span id="cb15-429"><a href="#cb15-429"></a><span class="ss">- </span>**Colesterol total (RR = 0,29):** MFC solicita 71% menos dosagens de colesterol</span>
+<span id="cb15-430"><a href="#cb15-430"></a></span>
+<span id="cb15-431"><a href="#cb15-431"></a>---</span>
+<span id="cb15-432"><a href="#cb15-432"></a></span>
+<span id="cb15-433"><a href="#cb15-433"></a><span class="fu">## Internações por Condições Sensíveis à APS (ICSAP)</span></span>
+<span id="cb15-434"><a href="#cb15-434"></a></span>
+<span id="cb15-437"><a href="#cb15-437"></a><span class="in">```{r}</span></span>
+<span id="cb15-438"><a href="#cb15-438"></a><span class="co">#| label: icsap</span></span>
+<span id="cb15-439"><a href="#cb15-439"></a></span>
+<span id="cb15-440"><a href="#cb15-440"></a>icsap <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb15-441"><a href="#cb15-441"></a>  <span class="at">condicao =</span> <span class="fu">c</span>(</span>
+<span id="cb15-442"><a href="#cb15-442"></a>    <span class="st">"Doenças imunopreveníveis"</span>, <span class="st">"Gastroenterites"</span>, <span class="st">"Anemia"</span>,</span>
+<span id="cb15-443"><a href="#cb15-443"></a>    <span class="st">"Deficiências nutricionais"</span>, <span class="st">"Infecções ouvido/vias aéreas"</span>,</span>
+<span id="cb15-444"><a href="#cb15-444"></a>    <span class="st">"Pneumonias bacterianas"</span>, <span class="st">"Asma"</span>, <span class="st">"Doenças pulmonares"</span>,</span>
+<span id="cb15-445"><a href="#cb15-445"></a>    <span class="st">"Hipertensão"</span>, <span class="st">"Angina"</span>, <span class="st">"Insuficiência cardíaca"</span>,</span>
+<span id="cb15-446"><a href="#cb15-446"></a>    <span class="st">"Doenças cerebrovasculares"</span>, <span class="st">"Diabetes mellitus"</span>, <span class="st">"Epilepsias"</span></span>
+<span id="cb15-447"><a href="#cb15-447"></a>  ),</span>
+<span id="cb15-448"><a href="#cb15-448"></a>  <span class="at">rr =</span> <span class="fu">c</span>(</span>
+<span id="cb15-449"><a href="#cb15-449"></a>    <span class="fl">0.83</span>, <span class="fl">0.76</span>, <span class="fl">0.74</span>, <span class="fl">0.62</span>, <span class="fl">0.52</span>, <span class="fl">0.79</span>, <span class="fl">0.35</span>, <span class="fl">0.78</span>,</span>
+<span id="cb15-450"><a href="#cb15-450"></a>    <span class="fl">0.45</span>, <span class="fl">0.57</span>, <span class="fl">0.36</span>, <span class="fl">0.82</span>, <span class="fl">1.06</span>, <span class="fl">0.59</span></span>
+<span id="cb15-451"><a href="#cb15-451"></a>  ),</span>
+<span id="cb15-452"><a href="#cb15-452"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(</span>
+<span id="cb15-453"><a href="#cb15-453"></a>    <span class="dv">128</span>, <span class="dv">160</span>, <span class="dv">244</span>, <span class="dv">271</span>, <span class="dv">230</span>, <span class="dv">86</span>, <span class="dv">54</span>, <span class="dv">136</span>,</span>
+<span id="cb15-454"><a href="#cb15-454"></a>    <span class="dv">45</span>, <span class="dv">114</span>, <span class="dv">116</span>, <span class="dv">331</span>, <span class="dv">28</span>, <span class="dv">41</span></span>
+<span id="cb15-455"><a href="#cb15-455"></a>  ),</span>
+<span id="cb15-456"><a href="#cb15-456"></a>  <span class="at">custo_medio =</span> <span class="fu">c</span>(</span>
+<span id="cb15-457"><a href="#cb15-457"></a>    <span class="fl">761.35</span>, <span class="fl">1178.17</span>, <span class="fl">1756.62</span>, <span class="fl">4774.49</span>, <span class="fl">2553.91</span>, <span class="fl">957.47</span>, <span class="fl">853.21</span>, <span class="fl">646.69</span>,</span>
+<span id="cb15-458"><a href="#cb15-458"></a>    <span class="fl">527.15</span>, <span class="fl">1969.07</span>, <span class="fl">1969.07</span>, <span class="fl">679.82</span>, <span class="fl">502.60</span>, <span class="fl">612.67</span></span>
+<span id="cb15-459"><a href="#cb15-459"></a>  ),</span>
+<span id="cb15-460"><a href="#cb15-460"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb15-461"><a href="#cb15-461"></a>)</span>
+<span id="cb15-462"><a href="#cb15-462"></a></span>
+<span id="cb15-463"><a href="#cb15-463"></a>icsap<span class="sc">$</span>custo_fmt <span class="ot">&lt;-</span> <span class="fu">formatar_moeda</span>(icsap<span class="sc">$</span>custo_medio)</span>
+<span id="cb15-464"><a href="#cb15-464"></a></span>
+<span id="cb15-465"><a href="#cb15-465"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb15-466"><a href="#cb15-466"></a>  icsap[, <span class="fu">c</span>(<span class="st">"condicao"</span>, <span class="st">"rr"</span>, <span class="st">"eventos_ano"</span>, <span class="st">"custo_fmt"</span>)],</span>
+<span id="cb15-467"><a href="#cb15-467"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Condição"</span>, <span class="st">"RR"</span>, <span class="st">"Internações/ano"</span>, <span class="st">"Custo Médio"</span>),</span>
+<span id="cb15-468"><a href="#cb15-468"></a>  <span class="at">caption =</span> <span class="st">"Internações por Condições Sensíveis à APS (14 grupos)"</span></span>
+<span id="cb15-469"><a href="#cb15-469"></a>)</span>
+<span id="cb15-470"><a href="#cb15-470"></a><span class="in">```</span></span>
+<span id="cb15-471"><a href="#cb15-471"></a></span>
+<span id="cb15-472"><a href="#cb15-472"></a>**Destaques:**</span>
+<span id="cb15-473"><a href="#cb15-473"></a></span>
+<span id="cb15-474"><a href="#cb15-474"></a><span class="ss">- </span>**Asma (RR = 0,35):** MFC reduz internações por asma em 65%</span>
+<span id="cb15-475"><a href="#cb15-475"></a><span class="ss">- </span>**Insuficiência cardíaca (RR = 0,36):** MFC reduz internações em 64%</span>
+<span id="cb15-476"><a href="#cb15-476"></a><span class="ss">- </span>**Hipertensão (RR = 0,45):** MFC reduz internações em 55%</span>
+<span id="cb15-477"><a href="#cb15-477"></a><span class="ss">- </span>**Diabetes (RR = 1,06):** Único grupo com RR &gt; 1 (sem diferença significativa)</span>
+<span id="cb15-478"><a href="#cb15-478"></a></span>
+<span id="cb15-479"><a href="#cb15-479"></a>---</span>
+<span id="cb15-480"><a href="#cb15-480"></a></span>
+<span id="cb15-481"><a href="#cb15-481"></a><span class="fu"># 6. Custos Unitários</span></span>
+<span id="cb15-482"><a href="#cb15-482"></a></span>
+<span id="cb15-483"><a href="#cb15-483"></a><span class="fu">## Consultas Especializadas</span></span>
+<span id="cb15-484"><a href="#cb15-484"></a></span>
+<span id="cb15-487"><a href="#cb15-487"></a><span class="in">```{r}</span></span>
+<span id="cb15-488"><a href="#cb15-488"></a><span class="co">#| label: custos-consultas</span></span>
+<span id="cb15-489"><a href="#cb15-489"></a></span>
+<span id="cb15-490"><a href="#cb15-490"></a>custo_consulta <span class="ot">&lt;-</span> <span class="fl">50.00</span></span>
+<span id="cb15-491"><a href="#cb15-491"></a><span class="in">```</span></span>
+<span id="cb15-492"><a href="#cb15-492"></a></span>
+<span id="cb15-493"><a href="#cb15-493"></a><span class="pp">|</span> Procedimento <span class="pp">|</span> Custo Unitário <span class="pp">|</span> Fonte <span class="pp">|</span></span>
+<span id="cb15-494"><a href="#cb15-494"></a><span class="pp">|--------------|----------------|-------|</span></span>
+<span id="cb15-495"><a href="#cb15-495"></a><span class="pp">|</span> Consulta especializada (média) <span class="pp">|</span> <span class="in">`r formatar_moeda(custo_consulta)`</span> <span class="pp">|</span> Estimativa baseada em SIGTAP <span class="pp">|</span></span>
+<span id="cb15-496"><a href="#cb15-496"></a></span>
+<span id="cb15-497"><a href="#cb15-497"></a>**Nota:** O valor de R$ 50,00 é uma média ponderada considerando consultas médicas especializadas na tabela SIGTAP.</span>
+<span id="cb15-498"><a href="#cb15-498"></a></span>
+<span id="cb15-499"><a href="#cb15-499"></a><span class="fu">## Resumo dos Custos de Internação</span></span>
+<span id="cb15-500"><a href="#cb15-500"></a></span>
+<span id="cb15-503"><a href="#cb15-503"></a><span class="in">```{r}</span></span>
+<span id="cb15-504"><a href="#cb15-504"></a><span class="co">#| label: resumo-custos-internacao</span></span>
+<span id="cb15-505"><a href="#cb15-505"></a></span>
+<span id="cb15-506"><a href="#cb15-506"></a>resumo_icsap <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb15-507"><a href="#cb15-507"></a>  <span class="at">estatistica =</span> <span class="fu">c</span>(<span class="st">"Mínimo"</span>, <span class="st">"Mediana"</span>, <span class="st">"Média"</span>, <span class="st">"Máximo"</span>),</span>
+<span id="cb15-508"><a href="#cb15-508"></a>  <span class="at">valor =</span> <span class="fu">c</span>(</span>
+<span id="cb15-509"><a href="#cb15-509"></a>    <span class="fu">min</span>(icsap<span class="sc">$</span>custo_medio),</span>
+<span id="cb15-510"><a href="#cb15-510"></a>    <span class="fu">median</span>(icsap<span class="sc">$</span>custo_medio),</span>
+<span id="cb15-511"><a href="#cb15-511"></a>    <span class="fu">mean</span>(icsap<span class="sc">$</span>custo_medio),</span>
+<span id="cb15-512"><a href="#cb15-512"></a>    <span class="fu">max</span>(icsap<span class="sc">$</span>custo_medio)</span>
+<span id="cb15-513"><a href="#cb15-513"></a>  )</span>
+<span id="cb15-514"><a href="#cb15-514"></a>)</span>
+<span id="cb15-515"><a href="#cb15-515"></a></span>
+<span id="cb15-516"><a href="#cb15-516"></a>resumo_icsap<span class="sc">$</span>valor_fmt <span class="ot">&lt;-</span> <span class="fu">formatar_moeda</span>(resumo_icsap<span class="sc">$</span>valor)</span>
+<span id="cb15-517"><a href="#cb15-517"></a></span>
+<span id="cb15-518"><a href="#cb15-518"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb15-519"><a href="#cb15-519"></a>  resumo_icsap[, <span class="fu">c</span>(<span class="st">"estatistica"</span>, <span class="st">"valor_fmt"</span>)],</span>
+<span id="cb15-520"><a href="#cb15-520"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Estatística"</span>, <span class="st">"Custo por Internação"</span>),</span>
+<span id="cb15-521"><a href="#cb15-521"></a>  <span class="at">caption =</span> <span class="st">"Resumo dos custos de internação ICSAP"</span></span>
+<span id="cb15-522"><a href="#cb15-522"></a>)</span>
+<span id="cb15-523"><a href="#cb15-523"></a><span class="in">```</span></span>
+<span id="cb15-524"><a href="#cb15-524"></a></span>
+<span id="cb15-525"><a href="#cb15-525"></a>---</span>
+<span id="cb15-526"><a href="#cb15-526"></a></span>
+<span id="cb15-527"><a href="#cb15-527"></a><span class="fu"># 7. Resumo: Economia do Modelo de Residência</span></span>
+<span id="cb15-528"><a href="#cb15-528"></a></span>
+<span id="cb15-529"><a href="#cb15-529"></a>O modelo de residência gera economia porque **1 preceptor + 4 residentes** fazem o trabalho de **2 médicos**.</span>
+<span id="cb15-530"><a href="#cb15-530"></a></span>
+<span id="cb15-533"><a href="#cb15-533"></a><span class="in">```{r}</span></span>
+<span id="cb15-534"><a href="#cb15-534"></a><span class="co">#| label: economia-modelo</span></span>
+<span id="cb15-535"><a href="#cb15-535"></a></span>
+<span id="cb15-536"><a href="#cb15-536"></a><span class="co"># Modelo tradicional: 2 médicos para 2 equipes</span></span>
+<span id="cb15-537"><a href="#cb15-537"></a>custo_tradicional <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> custos_pessoal<span class="sc">$</span>custo_medico_total <span class="sc">*</span> <span class="dv">12</span></span>
+<span id="cb15-538"><a href="#cb15-538"></a></span>
+<span id="cb15-539"><a href="#cb15-539"></a><span class="co"># Modelo residência: 1 preceptor + 4 residentes - incentivo</span></span>
+<span id="cb15-540"><a href="#cb15-540"></a>custo_residencia <span class="ot">&lt;-</span> custos_pessoal<span class="sc">$</span>custo_preceptor_total <span class="sc">*</span> <span class="dv">12</span> <span class="sc">+</span></span>
+<span id="cb15-541"><a href="#cb15-541"></a>                     <span class="dv">4</span> <span class="sc">*</span> custos_pessoal<span class="sc">$</span>bolsa_total_mec_ms <span class="sc">*</span> <span class="dv">12</span> <span class="sc">-</span></span>
+<span id="cb15-542"><a href="#cb15-542"></a>                     <span class="dv">2</span> <span class="sc">*</span> programa<span class="sc">$</span>incentivo_equipe_residente <span class="sc">*</span> <span class="dv">12</span></span>
+<span id="cb15-543"><a href="#cb15-543"></a></span>
+<span id="cb15-544"><a href="#cb15-544"></a>economia_por_par <span class="ot">&lt;-</span> custo_tradicional <span class="sc">-</span> custo_residencia</span>
+<span id="cb15-545"><a href="#cb15-545"></a><span class="in">```</span></span>
+<span id="cb15-546"><a href="#cb15-546"></a></span>
+<span id="cb15-547"><a href="#cb15-547"></a><span class="pp">|</span> Modelo <span class="pp">|</span> Custo Anual (2 equipes) <span class="pp">|</span></span>
+<span id="cb15-548"><a href="#cb15-548"></a><span class="pp">|--------|-------------------------|</span></span>
+<span id="cb15-549"><a href="#cb15-549"></a><span class="pp">|</span> Tradicional (2 médicos CLT) <span class="pp">|</span> <span class="in">`r formatar_moeda(custo_tradicional)`</span> <span class="pp">|</span></span>
+<span id="cb15-550"><a href="#cb15-550"></a><span class="pp">|</span> Residência (1 preceptor + 4 residentes) <span class="pp">|</span> <span class="in">`r formatar_moeda(custo_residencia)`</span> <span class="pp">|</span></span>
+<span id="cb15-551"><a href="#cb15-551"></a><span class="pp">|</span> **Economia por par de equipes** | **`r formatar_moeda(economia_por_par)`** <span class="pp">|</span></span>
+<span id="cb15-552"><a href="#cb15-552"></a></span>
+<span id="cb15-553"><a href="#cb15-553"></a>---</span>
+<span id="cb15-554"><a href="#cb15-554"></a></span>
+<span id="cb15-555"><a href="#cb15-555"></a><span class="fu"># 8. Objetos Criados</span></span>
+<span id="cb15-556"><a href="#cb15-556"></a></span>
+<span id="cb15-557"><a href="#cb15-557"></a>Este capítulo criou os seguintes objetos R para uso nos capítulos seguintes:</span>
+<span id="cb15-558"><a href="#cb15-558"></a></span>
+<span id="cb15-559"><a href="#cb15-559"></a><span class="pp">|</span> Objeto <span class="pp">|</span> Descrição <span class="pp">|</span></span>
+<span id="cb15-560"><a href="#cb15-560"></a><span class="pp">|--------|-----------|</span></span>
+<span id="cb15-561"><a href="#cb15-561"></a><span class="pp">|</span> <span class="in">`municipio`</span> <span class="pp">|</span> Parâmetros do município simulado <span class="pp">|</span></span>
+<span id="cb15-562"><a href="#cb15-562"></a><span class="pp">|</span> <span class="in">`custos_pessoal`</span> <span class="pp">|</span> Custos de médicos, preceptores e residentes <span class="pp">|</span></span>
+<span id="cb15-563"><a href="#cb15-563"></a><span class="pp">|</span> <span class="in">`programa`</span> <span class="pp">|</span> Estrutura do programa de residência <span class="pp">|</span></span>
+<span id="cb15-564"><a href="#cb15-564"></a><span class="pp">|</span> <span class="in">`economico`</span> <span class="pp">|</span> Parâmetros econômicos (taxa de desconto, horizonte) <span class="pp">|</span></span>
+<span id="cb15-565"><a href="#cb15-565"></a><span class="pp">|</span> <span class="in">`estudo`</span> <span class="pp">|</span> Parâmetros do estudo original <span class="pp">|</span></span>
+<span id="cb15-566"><a href="#cb15-566"></a><span class="pp">|</span> <span class="in">`enc_ambulatoriais`</span> <span class="pp">|</span> Dados de encaminhamentos ambulatoriais <span class="pp">|</span></span>
+<span id="cb15-567"><a href="#cb15-567"></a><span class="pp">|</span> <span class="in">`enc_cirurgicos`</span> <span class="pp">|</span> Dados de encaminhamentos cirúrgicos <span class="pp">|</span></span>
+<span id="cb15-568"><a href="#cb15-568"></a><span class="pp">|</span> <span class="in">`exames_diagnosticos`</span> <span class="pp">|</span> Dados de exames diagnósticos <span class="pp">|</span></span>
+<span id="cb15-569"><a href="#cb15-569"></a><span class="pp">|</span> <span class="in">`exames_laboratoriais`</span> <span class="pp">|</span> Dados de exames laboratoriais <span class="pp">|</span></span>
+<span id="cb15-570"><a href="#cb15-570"></a><span class="pp">|</span> <span class="in">`icsap`</span> <span class="pp">|</span> Dados de internações por ICSAP <span class="pp">|</span></span>
+<span id="cb15-571"><a href="#cb15-571"></a><span class="pp">|</span> <span class="in">`custo_consulta`</span> <span class="pp">|</span> Custo unitário de consulta especializada <span class="pp">|</span></span>
+<span id="cb15-572"><a href="#cb15-572"></a></span>
+<span id="cb15-573"><a href="#cb15-573"></a>---</span>
+<span id="cb15-574"><a href="#cb15-574"></a></span>
+<span id="cb15-575"><a href="#cb15-575"></a><span class="fu"># Próximos Passos</span></span>
+<span id="cb15-576"><a href="#cb15-576"></a></span>
+<span id="cb15-577"><a href="#cb15-577"></a>Com os dados configurados, os próximos capítulos irão:</span>
+<span id="cb15-578"><a href="#cb15-578"></a></span>
+<span id="cb15-579"><a href="#cb15-579"></a><span class="ss">1. </span>**Capítulo 02:** Explicar a metodologia de conversão para baseline</span>
+<span id="cb15-580"><a href="#cb15-580"></a><span class="ss">2. </span>**Capítulo 03:** Calcular a economia potencial em saúde</span>
+<span id="cb15-581"><a href="#cb15-581"></a><span class="ss">3. </span>**Capítulo 04:** Calcular os indicadores econômicos do programa</span>
+<span id="cb15-582"><a href="#cb15-582"></a><span class="ss">4. </span>**Capítulo 05:** Realizar análise de sensibilidade</span>
+<span id="cb15-583"><a href="#cb15-583"></a><span class="ss">5. </span>**Capítulo 06:** Apresentar visualizações dos resultados</span>
+<span id="cb15-584"><a href="#cb15-584"></a><span class="ss">6. </span>**Capítulo 07:** Discutir conclusões e implicações</span>
+</code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
