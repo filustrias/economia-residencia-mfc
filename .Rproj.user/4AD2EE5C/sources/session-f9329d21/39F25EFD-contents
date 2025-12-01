@@ -1,0 +1,812 @@
+---
+title: "Indicadores Econômicos - Cenário Gradual"
+---
+
+# Introdução
+
+Este capítulo analisa os indicadores econômicos do **cenário gradual**, que simula a implantação de um programa de residência em MFC.
+
+## Estrutura do Programa
+
+O modelo de residência tem uma lógica econômica interessante:
+
+**Composição das equipes-escola:**
+
+- Cada **preceptor** supervisiona **2 equipes** simultaneamente
+- Cada equipe tem **2 residentes** (uma dupla)
+- O preceptor atende uma equipe diretamente e supervisiona a outra (coberta pelos residentes)
+
+**Evolução do programa:**
+
+| Ano | Preceptores | Equipes-escola | Residentes | Observação |
+|-----|-------------|----------------|------------|------------|
+| 0 | 0 | 0 | 0 | Antes do programa |
+| 1 | 4 | 8 | 16 R1 | Início do programa |
+| 2 | 8 | 16 | 16 R1 + 16 R2 | Expansão completa |
+| 3+ | 8 | 16 | 32 (estável) | Formados saem, novos entram |
+
+**O "truque" econômico:**
+
+Normalmente, 2 equipes precisariam de 2 médicos (2 salários + encargos). Com o modelo:
+
+- Paga-se **1 preceptor** (salário + encargos + adicional de 10%)
+- Paga-se **4 bolsas de residente** (sem encargos trabalhistas)
+- **Economia:** 1 salário completo + encargos que deixa de pagar
+
+---
+
+# Preparação: Parâmetros e Funções
+
+```{r}
+#| label: setup-gradual
+#| include: true
+#| message: false
+#| warning: false
+
+# ============================================================
+# CONFIGURAÇÕES
+# ============================================================
+
+options(scipen = 999, digits = 2, OutDec = ",")
+
+formatar_numero <- function(x, decimais = 0) {
+  format(round(x, decimais), big.mark = ".", decimal.mark = ",", nsmall = decimais)
+}
+
+formatar_moeda <- function(x) {
+  paste0("R$ ", formatar_numero(x))
+}
+
+# ============================================================
+# PARÂMETROS DO MUNICÍPIO
+# ============================================================
+
+municipio <- list(
+  populacao = 500000,
+  n_equipes = 100
+)
+
+# ============================================================
+# PARÂMETROS DE CUSTOS DE PESSOAL
+# ============================================================
+
+custos_pessoal <- list(
+  # Médico CLT
+  salario_base_medico = 16000,
+  encargos_trabalhistas_pct = 0.70,  # 70% sobre salário (INSS, FGTS, férias, 13º, etc.)
+  
+  # Preceptor (médico + adicional)
+  adicional_preceptoria_pct = 0.10,  # 10% sobre salário base
+  
+  # Residente (bolsa, sem encargos)
+  bolsa_mec = 4106.90,
+  complemento_ms = 4000.00,
+  complemento_municipal = 2000.00
+)
+
+# Cálculos derivados
+custos_pessoal$custo_medico_total <- custos_pessoal$salario_base_medico * 
+                                      (1 + custos_pessoal$encargos_trabalhistas_pct)
+
+custos_pessoal$adicional_preceptoria <- custos_pessoal$salario_base_medico * 
+                                         custos_pessoal$adicional_preceptoria_pct
+
+custos_pessoal$custo_preceptor_total <- custos_pessoal$custo_medico_total + 
+                                         custos_pessoal$adicional_preceptoria * 
+                                         (1 + custos_pessoal$encargos_trabalhistas_pct)
+
+custos_pessoal$bolsa_total_mec_ms <- custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms
+
+# ============================================================
+# PARÂMETROS DO PROGRAMA
+# ============================================================
+
+programa <- list(
+  # Estrutura
+  residentes_por_equipe = 2,
+  equipes_por_preceptor = 2,
+  duracao_residencia = 2,
+  
+  # Fase 1 (ano 1)
+  preceptores_ano1 = 4,
+  
+  # Fase 2 (ano 2+)
+  preceptores_ano2 = 8,
+  
+  # Retenção
+  taxa_retencao = 0.60,
+  
+  # Outros custos
+  custo_operacional_anual = 50000,
+  
+  # Receita federal
+  incentivo_equipe_residente = 4500  # Por equipe com residente, mensal
+)
+
+# Cálculos derivados
+programa$equipes_escola_ano1 <- programa$preceptores_ano1 * programa$equipes_por_preceptor
+programa$equipes_escola_ano2 <- programa$preceptores_ano2 * programa$equipes_por_preceptor
+programa$residentes_ano1 <- programa$equipes_escola_ano1 * programa$residentes_por_equipe
+programa$residentes_ano2 <- programa$equipes_escola_ano2 * programa$residentes_por_equipe
+programa$vagas_por_ano <- programa$residentes_ano2 / 2  # Metade são R1, metade R2
+
+# ============================================================
+# PARÂMETROS ECONÔMICOS
+# ============================================================
+
+economico <- list(
+  taxa_desconto = 0.05,
+  horizonte_anos = 10,
+  fator_correcao_aih = 1.5
+)
+
+# ============================================================
+# FUNÇÃO: CALCULAR ECONOMIA BASE (100% MFC)
+# ============================================================
+
+converter_para_baseline <- function(valor_observado, rr, 
+                                     prop_mfc = 0.336, prop_gen = 0.664,
+                                     pop_estudo = 600000, pop_alvo = 500000) {
+  denominador <- (prop_mfc * rr) + prop_gen
+  taxa_baseline_600k <- valor_observado / denominador
+  taxa_baseline_500k <- taxa_baseline_600k * (pop_alvo / pop_estudo)
+  return(taxa_baseline_500k)
+}
+
+calcular_economia_100pct <- function(fator_aih = 1.5) {
+  
+  custo_consulta <- 50.00
+  
+  # Encaminhamentos ambulatoriais
+  enc_amb <- data.frame(
+    rr = c(0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,
+           0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,
+           0.71, 0.52, 0.86, 0.66),
+    obs = c(2008, 1835, 897, 4144, 903, 290, 1762, 480,
+            603, 1021, 867, 1030, 830, 2390, 1173, 8713,
+            2269, 4934, 738, 991)
+  )
+  enc_amb$baseline <- mapply(converter_para_baseline, enc_amb$obs, enc_amb$rr)
+  enc_amb$economia <- enc_amb$baseline * (1 - enc_amb$rr) * custo_consulta
+  
+  # Encaminhamentos cirúrgicos
+  enc_cir <- data.frame(
+    rr = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),
+    obs = c(4458, 989, 147, 1968, 859, 359)
+  )
+  enc_cir$baseline <- mapply(converter_para_baseline, enc_cir$obs, enc_cir$rr)
+  enc_cir$economia <- enc_cir$baseline * (1 - enc_cir$rr) * custo_consulta
+  
+  # Exames diagnósticos
+  diag <- data.frame(
+    rr = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),
+    obs = c(1201, 385, 510, 1090, 431, 2424),
+    custo = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00)
+  )
+  diag$baseline <- mapply(converter_para_baseline, diag$obs, diag$rr)
+  diag$economia <- diag$baseline * (1 - diag$rr) * diag$custo
+  
+  # Exames laboratoriais
+  lab <- data.frame(
+    rr = c(0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81, 0.94, 0.41, 0.82,
+           0.23, 0.71, 0.08, 0.13, 0.56, 0.78, 0.48, 0.47, 0.69, 0.64, 0.74,
+           0.09, 0.67, 0.44, 0.56, 0.60, 0.48, 0.47, 0.36),
+    obs = c(51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673, 
+            31127, 22163, 33828, 15603, 11679, 791, 886, 5432, 
+            2304, 9181, 9363, 3505, 4386, 1957, 604, 41333, 
+            1866, 674, 863, 210, 216, 4365),
+    custo = c(4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85, 3.51, 3.51, 3.51,
+              1.85, 8.96, 8.71, 8.71, 11.60, 2.01, 2.01, 2.01, 2.01, 3.51, 2.63, 
+              1.65, 3.70, 1.85, 10.15, 10.15, 18.55, 18.55, 16.42)
+  )
+  lab$baseline <- mapply(converter_para_baseline, lab$obs, lab$rr)
+  lab$economia <- lab$baseline * (1 - lab$rr) * lab$custo
+  
+  # Internações ICSAP
+  icsap <- data.frame(
+    rr = c(0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78, 
+           0.45, 0.57, 0.36, 0.82, 1.06, 0.59),
+    obs = c(128, 160, 244, 271, 230, 86, 54, 136, 
+            45, 114, 116, 331, 28, 41),
+    custo = c(761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 853.21, 646.69,
+              527.15, 1969.07, 1969.07, 679.82, 502.60, 612.67)
+  )
+  icsap$baseline <- mapply(converter_para_baseline, icsap$obs, icsap$rr)
+  icsap$economia <- icsap$baseline * (1 - icsap$rr) * icsap$custo * fator_aih
+  
+  total <- sum(enc_amb$economia) + sum(enc_cir$economia) + 
+           sum(diag$economia) + sum(lab$economia) + sum(icsap$economia)
+  
+  return(total)
+}
+
+economia_100pct <- calcular_economia_100pct(economico$fator_correcao_aih)
+```
+
+---
+
+# Custos de Pessoal: Detalhamento
+
+Antes de simular o programa, vamos detalhar os custos de pessoal:
+
+```{r}
+#| label: custos-pessoal-detalhe
+#| include: true
+#| message: false
+#| warning: false
+
+# Tabela de custos de pessoal
+custos_detalhe <- data.frame(
+  item = c(
+    "Salário base médico ESF",
+    "Encargos trabalhistas (70%)",
+    "Custo total médico CLT",
+    "",
+    "Adicional preceptoria (10%)",
+    "Encargos sobre adicional",
+    "Custo total preceptor",
+    "",
+    "Bolsa MEC",
+    "Complemento MS",
+    "Bolsa total residente (sem encargos)"
+  ),
+  valor_mensal = c(
+    custos_pessoal$salario_base_medico,
+    custos_pessoal$salario_base_medico * custos_pessoal$encargos_trabalhistas_pct,
+    custos_pessoal$custo_medico_total,
+    NA,
+    custos_pessoal$adicional_preceptoria,
+    custos_pessoal$adicional_preceptoria * custos_pessoal$encargos_trabalhistas_pct,
+    custos_pessoal$custo_preceptor_total,
+    NA,
+    custos_pessoal$bolsa_mec,
+    custos_pessoal$complemento_ms,
+    custos_pessoal$bolsa_total_mec_ms
+  )
+)
+
+custos_detalhe$valor_fmt <- ifelse(is.na(custos_detalhe$valor_mensal), 
+                                    "", 
+                                    formatar_moeda(custos_detalhe$valor_mensal))
+
+knitr::kable(
+  custos_detalhe[, c("item", "valor_fmt")],
+  col.names = c("Item", "Valor Mensal"),
+  caption = "Detalhamento dos custos de pessoal"
+)
+```
+
+## Economia por Equipe-Escola
+
+A grande vantagem do modelo é que **cada preceptor cobre 2 equipes**, onde normalmente seriam necessários 2 médicos:
+
+```{r}
+#| label: economia-modelo
+#| include: true
+#| message: false
+#| warning: false
+
+# Custo tradicional: 2 médicos para 2 equipes
+custo_tradicional_2equipes <- 2 * custos_pessoal$custo_medico_total * 12
+
+# Custo com residência: 1 preceptor + 4 residentes
+custo_residencia_2equipes <- (custos_pessoal$custo_preceptor_total * 12) + 
+                              (4 * custos_pessoal$bolsa_total_mec_ms * 12)
+
+# Receita do incentivo federal (2 equipes com residentes)
+receita_incentivo_2equipes <- 2 * programa$incentivo_equipe_residente * 12
+
+# Custo líquido
+custo_liquido_2equipes <- custo_residencia_2equipes - receita_incentivo_2equipes
+
+# Economia anual
+economia_modelo_2equipes <- custo_tradicional_2equipes - custo_liquido_2equipes
+
+comparativo_modelo <- data.frame(
+  item = c(
+    "MODELO TRADICIONAL (2 equipes)",
+    "  2 médicos CLT × 12 meses",
+    "",
+    "MODELO RESIDÊNCIA (2 equipes)",
+    "  1 preceptor × 12 meses",
+    "  4 residentes × 12 meses",
+    "  Custo bruto",
+    "  (-) Incentivo federal (2 equipes)",
+    "  Custo líquido",
+    "",
+    "ECONOMIA ANUAL DO MODELO"
+  ),
+  valor = c(
+    custo_tradicional_2equipes,
+    custo_tradicional_2equipes,
+    NA,
+    NA,
+    custos_pessoal$custo_preceptor_total * 12,
+    4 * custos_pessoal$bolsa_total_mec_ms * 12,
+    custo_residencia_2equipes,
+    -receita_incentivo_2equipes,
+    custo_liquido_2equipes,
+    NA,
+    economia_modelo_2equipes
+  )
+)
+
+comparativo_modelo$valor_fmt <- ifelse(is.na(comparativo_modelo$valor), 
+                                        "", 
+                                        formatar_moeda(comparativo_modelo$valor))
+
+knitr::kable(
+  comparativo_modelo[, c("item", "valor_fmt")],
+  col.names = c("Item", "Valor Anual"),
+  caption = "Comparativo de custos: modelo tradicional vs. modelo de residência (por 2 equipes)"
+)
+```
+
+**Interpretação:** Para cada par de equipes no modelo de residência, o município economiza `r formatar_moeda(economia_modelo_2equipes)` por ano em custos de pessoal.
+
+---
+
+# Simulação da Expansão do Programa
+
+```{r}
+#| label: simulacao-expansao
+#| include: true
+#| message: false
+#| warning: false
+
+simular_programa <- function(
+    taxa_retencao = 0.60,
+    adicional_especialidade_pct = 0,
+    bolsa_mensal = custos_pessoal$bolsa_total_mec_ms,
+    adicional_preceptoria_pct = 0.10,
+    fator_correcao_aih = 1.5
+) {
+  
+  anos <- 0:economico$horizonte_anos
+  n_anos <- length(anos)
+  
+  # Vetores para resultados
+  n_preceptores <- numeric(n_anos)
+  n_equipes_escola <- numeric(n_anos)
+  n_residentes <- numeric(n_anos)
+  n_formados_ano <- numeric(n_anos)
+  n_formados_retidos_acum <- numeric(n_anos)
+  
+  for (i in seq_along(anos)) {
+    ano <- anos[i]
+    
+    if (ano == 0) {
+      n_preceptores[i] <- 0
+      n_equipes_escola[i] <- 0
+      n_residentes[i] <- 0
+      n_formados_ano[i] <- 0
+      n_formados_retidos_acum[i] <- 0
+      
+    } else if (ano == 1) {
+      n_preceptores[i] <- programa$preceptores_ano1
+      n_equipes_escola[i] <- programa$equipes_escola_ano1
+      n_residentes[i] <- programa$residentes_ano1
+      n_formados_ano[i] <- 0
+      n_formados_retidos_acum[i] <- 0
+      
+    } else if (ano == 2) {
+      n_preceptores[i] <- programa$preceptores_ano2
+      n_equipes_escola[i] <- programa$equipes_escola_ano2
+      n_residentes[i] <- programa$residentes_ano2
+      n_formados_ano[i] <- 0
+      n_formados_retidos_acum[i] <- 0
+      
+    } else {
+      n_preceptores[i] <- programa$preceptores_ano2
+      n_equipes_escola[i] <- programa$equipes_escola_ano2
+      n_residentes[i] <- programa$residentes_ano2
+      
+      # A partir do ano 3, formam-se residentes
+      # Ano 3: formam-se os R1 do ano 1 (16 residentes × taxa retenção)
+      # Ano 4+: formam-se 16 por ano (metade dos 32)
+      if (ano == 3) {
+        n_formados_ano[i] <- round(programa$residentes_ano1 * taxa_retencao)
+      } else {
+        n_formados_ano[i] <- round(programa$vagas_por_ano * taxa_retencao)
+      }
+      n_formados_retidos_acum[i] <- n_formados_retidos_acum[i-1] + n_formados_ano[i]
+    }
+  }
+  
+  # Equipes com cobertura MFC total
+  # = equipes-escola + equipes com formados retidos
+  # Limitado a 100 equipes
+  n_equipes_mfc <- pmin(n_equipes_escola + n_formados_retidos_acum, municipio$n_equipes)
+  prop_mfc <- n_equipes_mfc / municipio$n_equipes
+  
+  # ============================================================
+  # CÁLCULO DOS CUSTOS
+  # ============================================================
+  
+  # Recalcular custos com parâmetros passados
+  adicional_preceptoria_valor <- custos_pessoal$salario_base_medico * adicional_preceptoria_pct
+  custo_preceptor <- custos_pessoal$custo_medico_total + 
+                     adicional_preceptoria_valor * (1 + custos_pessoal$encargos_trabalhistas_pct)
+  
+  # Custo dos preceptores
+  custo_preceptores <- n_preceptores * custo_preceptor * 12
+  
+  # Custo das bolsas
+  custo_bolsas <- n_residentes * bolsa_mensal * 12
+  
+  # Custo operacional
+  custo_operacional <- ifelse(anos > 0, programa$custo_operacional_anual, 0)
+  
+  # Adicional por especialidade (para formados retidos)
+  adicional_esp_valor <- custos_pessoal$salario_base_medico * adicional_especialidade_pct
+  # Adicional também tem encargos (é parte do salário)
+  custo_adicional_esp <- n_formados_retidos_acum * adicional_esp_valor * 
+                          (1 + custos_pessoal$encargos_trabalhistas_pct) * 12
+  
+  # Receita do incentivo federal
+  receita_incentivo <- n_equipes_escola * programa$incentivo_equipe_residente * 12
+  
+  # ============================================================
+  # CÁLCULO DA ECONOMIA DO MODELO
+  # ============================================================
+  
+  # Economia de salários: nas equipes-escola, paga-se 1 preceptor para 2 equipes
+  # Em vez de 2 médicos
+  # Economia = (n_equipes_escola / 2) × custo de 1 médico por ano
+  # Ou seja: para cada 2 equipes, economiza-se 1 médico
+  economia_salarios <- (n_equipes_escola / 2) * custos_pessoal$custo_medico_total * 12
+  
+  # ============================================================
+  # COMPARAÇÃO: CENÁRIO COM PROGRAMA vs. SEM PROGRAMA
+  # ============================================================
+  
+  # Cenário SEM programa: todas as equipes com médicos CLT
+  # O município sempre vai gastar com as 100 equipes
+  custo_sem_programa <- municipio$n_equipes * custos_pessoal$custo_medico_total * 12
+  
+  # Cenário COM programa:
+  # - Equipes-escola: preceptores + residentes (com incentivo federal)
+  # - Equipes regulares: médicos CLT (incluindo formados com adicional)
+  
+  # Número de equipes regulares (fora do programa de residência)
+  n_equipes_regulares <- municipio$n_equipes - n_equipes_escola
+  
+  # Custo das equipes-escola
+  custo_equipes_escola <- custo_preceptores + custo_bolsas - receita_incentivo
+  
+  # Custo das equipes regulares (médicos CLT)
+  # Formados retidos recebem adicional por especialidade
+  n_medicos_sem_adicional <- pmax(n_equipes_regulares - n_formados_retidos_acum, 0)
+  n_medicos_com_adicional <- pmin(n_formados_retidos_acum, n_equipes_regulares)
+  
+  custo_medicos_sem_adicional <- n_medicos_sem_adicional * custos_pessoal$custo_medico_total * 12
+  
+  adicional_esp_valor <- custos_pessoal$salario_base_medico * adicional_especialidade_pct
+  custo_medico_com_adicional <- custos_pessoal$custo_medico_total + 
+                                 adicional_esp_valor * (1 + custos_pessoal$encargos_trabalhistas_pct)
+  custo_medicos_com_adicional <- n_medicos_com_adicional * custo_medico_com_adicional * 12
+  
+  custo_equipes_regulares <- custo_medicos_sem_adicional + custo_medicos_com_adicional
+  
+  # Custo operacional do programa
+  custo_operacional <- ifelse(anos > 0, programa$custo_operacional_anual, 0)
+  
+  # Custo total COM programa
+  custo_com_programa <- custo_equipes_escola + custo_equipes_regulares + custo_operacional
+  
+  # Economia de pessoal (comparado ao cenário sem programa)
+  economia_pessoal <- custo_sem_programa - custo_com_programa
+  
+  # ============================================================
+  # CÁLCULO DOS BENEFÍCIOS (ECONOMIA EM SAÚDE)
+  # ============================================================
+  
+  economia_100pct <- calcular_economia_100pct(fator_correcao_aih)
+  beneficio_saude <- economia_100pct * prop_mfc
+  
+  # ============================================================
+  # FLUXO DE CAIXA
+  # ============================================================
+  
+  # Saldo = economia de pessoal + economia em saúde
+  saldo <- economia_pessoal + beneficio_saude
+  
+  # Valor presente
+  fator_vp <- 1 / ((1 + economico$taxa_desconto) ^ anos)
+  economia_pessoal_vp <- economia_pessoal * fator_vp
+  beneficio_saude_vp <- beneficio_saude * fator_vp
+  saldo_vp <- saldo * fator_vp
+  
+  # ============================================================
+  # INDICADORES
+  # ============================================================
+  
+  economia_pessoal_total_vp <- sum(economia_pessoal_vp)
+  beneficio_saude_total_vp <- sum(beneficio_saude_vp)
+  vpl <- sum(saldo_vp)
+  
+  # Para ROI e RCB, consideramos o "investimento" como o custo operacional
+  # (já que a mudança de modelo não tem custo adicional líquido)
+  custo_operacional_total_vp <- sum(custo_operacional * fator_vp)
+  
+  roi <- ifelse(custo_operacional_total_vp > 0, 
+                (vpl / custo_operacional_total_vp) * 100,
+                Inf)
+  rcb <- ifelse(custo_operacional_total_vp > 0, 
+                vpl / custo_operacional_total_vp,
+                Inf)
+  
+  # Payback
+  saldo_vp_acum <- cumsum(saldo_vp)
+  payback_idx <- which(saldo_vp_acum >= 0)[1]
+  payback <- ifelse(is.na(payback_idx), NA, anos[payback_idx])
+  
+  # Retornar resultados detalhados
+  return(list(
+    # Indicadores principais
+    vpl = vpl,
+    roi = roi,
+    rcb = rcb,
+    payback = payback,
+    economia_pessoal_total_vp = economia_pessoal_total_vp,
+    beneficio_saude_total_vp = beneficio_saude_total_vp,
+    
+    # Cobertura
+    cobertura_final = prop_mfc[n_anos],
+    formados_retidos_final = n_formados_retidos_acum[n_anos],
+    
+    # Dados anuais
+    dados = data.frame(
+      ano = anos,
+      preceptores = n_preceptores,
+      equipes_escola = n_equipes_escola,
+      residentes = n_residentes,
+      formados_ano = n_formados_ano,
+      formados_acum = n_formados_retidos_acum,
+      equipes_mfc = n_equipes_mfc,
+      prop_mfc = prop_mfc,
+      custo_sem_programa = custo_sem_programa,
+      custo_com_programa = custo_com_programa,
+      economia_pessoal = economia_pessoal,
+      beneficio_saude = beneficio_saude,
+      saldo = saldo,
+      saldo_vp = saldo_vp
+    )
+  ))
+}
+
+# Simular cenário base
+resultado <- simular_programa()
+```
+
+## Evolução do Programa
+
+```{r}
+#| label: evolucao-programa
+#| include: true
+#| message: false
+#| warning: false
+
+evolucao <- resultado$dados[, c("ano", "preceptores", "equipes_escola", "residentes", 
+                                 "formados_ano", "formados_acum", "equipes_mfc")]
+evolucao$cobertura <- paste0(round(resultado$dados$prop_mfc * 100, 1), "%")
+
+knitr::kable(
+  evolucao,
+  col.names = c("Ano", "Preceptores", "Equipes-Escola", "Residentes", 
+                "Formados/ano", "Formados Acum.", "Equipes MFC", "Cobertura"),
+  caption = "Evolução do programa de residência"
+)
+```
+
+---
+
+# Fluxo de Caixa Detalhado
+
+## Comparativo de Custos: Com vs. Sem Programa
+
+```{r}
+#| label: custos-programa
+#| include: true
+#| message: false
+#| warning: false
+
+custos_df <- data.frame(
+  ano = resultado$dados$ano,
+  sem_programa = round(resultado$dados$custo_sem_programa / 1000000, 2),
+  com_programa = round(resultado$dados$custo_com_programa / 1000000, 2),
+  economia_pessoal = round(resultado$dados$economia_pessoal / 1000, 1),
+  beneficio_saude = round(resultado$dados$beneficio_saude / 1000, 1),
+  saldo_total = round(resultado$dados$saldo / 1000, 1)
+)
+
+knitr::kable(
+  custos_df,
+  col.names = c("Ano", "Sem Programa (R$ mi)", "Com Programa (R$ mi)", 
+                "Economia Pessoal (R$ mil)", "Benefício Saúde (R$ mil)", "Saldo Total (R$ mil)"),
+  caption = "Comparativo de custos anuais"
+)
+```
+
+**Interpretação:**
+
+- **Economia de pessoal:** diferença entre o custo SEM programa e COM programa
+- **Benefício saúde:** economia com exames, encaminhamentos e internações
+- **Saldo total:** soma da economia de pessoal + benefício em saúde
+
+## Fluxo de Caixa Acumulado
+
+```{r}
+#| label: fluxo-caixa
+#| include: true
+#| message: false
+#| warning: false
+
+fluxo_df <- data.frame(
+  ano = resultado$dados$ano,
+  cobertura = paste0(round(resultado$dados$prop_mfc * 100, 1), "%"),
+  saldo = round(resultado$dados$saldo / 1000, 1),
+  saldo_vp = round(resultado$dados$saldo_vp / 1000, 1),
+  saldo_vp_acum = round(cumsum(resultado$dados$saldo_vp) / 1000, 1)
+)
+
+knitr::kable(
+  fluxo_df,
+  col.names = c("Ano", "Cobertura MFC", "Saldo (R$ mil)", 
+                "Saldo VP (R$ mil)", "Saldo VP Acum. (R$ mil)"),
+  caption = "Fluxo de caixa acumulado"
+)
+```
+
+---
+
+# Indicadores Econômicos
+
+```{r}
+#| label: indicadores
+#| include: true
+#| message: false
+#| warning: false
+
+indicadores <- data.frame(
+  indicador = c(
+    "Cobertura MFC final",
+    "Formados retidos (10 anos)",
+    "Economia de pessoal total (VP)",
+    "Benefício em saúde total (VP)",
+    "VPL (economia total)",
+    "Payback"
+  ),
+  valor = c(
+    paste0(round(resultado$cobertura_final * 100, 1), "%"),
+    resultado$formados_retidos_final,
+    formatar_moeda(resultado$economia_pessoal_total_vp),
+    formatar_moeda(resultado$beneficio_saude_total_vp),
+    formatar_moeda(resultado$vpl),
+    ifelse(is.na(resultado$payback), "Imediato (Ano 0)", paste0("Ano ", resultado$payback))
+  )
+)
+
+knitr::kable(
+  indicadores,
+  col.names = c("Indicador", "Valor"),
+  caption = "Indicadores econômicos - Cenário base"
+)
+```
+
+---
+
+# Decomposição do Resultado
+
+O resultado econômico do programa vem de **duas fontes**:
+
+```{r}
+#| label: decomposicao
+#| include: true
+#| message: false
+#| warning: false
+
+# 1. Economia de pessoal (modelo de residência vs tradicional)
+economia_pessoal_total <- sum(resultado$dados$economia_pessoal)
+
+# 2. Benefício em saúde (menor gasto com exames, internações, etc.)
+beneficio_saude_total <- sum(resultado$dados$beneficio_saude)
+
+# Total
+economia_total <- economia_pessoal_total + beneficio_saude_total
+
+decomposicao <- data.frame(
+  componente = c(
+    "FONTES DE ECONOMIA",
+    "  1. Economia de pessoal (modelo residência)",
+    "  2. Economia em saúde (menos exames/internações)",
+    "",
+    "ECONOMIA TOTAL (10 anos)"
+  ),
+  valor = c(
+    NA,
+    economia_pessoal_total,
+    beneficio_saude_total,
+    NA,
+    economia_total
+  )
+)
+
+decomposicao$valor_fmt <- ifelse(is.na(decomposicao$valor), 
+                                  "", 
+                                  formatar_moeda(decomposicao$valor))
+
+knitr::kable(
+  decomposicao[, c("componente", "valor_fmt")],
+  col.names = c("Componente", "Valor (10 anos)"),
+  caption = "Decomposição do resultado econômico"
+)
+```
+
+**Interpretação:**
+
+- **Economia de pessoal:** O modelo de residência custa menos que contratar médicos CLT para todas as equipes
+- **Economia em saúde:** MFC reduzem gastos com exames, encaminhamentos e internações
+- **Economia total:** Soma das duas fontes
+
+---
+
+# Resumo e Conclusões
+
+```{r}
+#| label: resumo
+#| include: true
+#| message: false
+#| warning: false
+
+resumo <- data.frame(
+  item = c(
+    "Estrutura do programa",
+    "  Preceptores (estável)",
+    "  Equipes-escola",
+    "  Residentes (estável)",
+    "  Taxa de retenção",
+    "",
+    "Resultados em 10 anos",
+    "  Cobertura MFC final",
+    "  Formados retidos",
+    "  Economia de pessoal",
+    "  Economia em saúde",
+    "  VPL (economia total)",
+    "",
+    "Viabilidade"
+  ),
+  valor = c(
+    "",
+    programa$preceptores_ano2,
+    programa$equipes_escola_ano2,
+    programa$residentes_ano2,
+    paste0(programa$taxa_retencao * 100, "%"),
+    "",
+    "",
+    paste0(round(resultado$cobertura_final * 100, 1), "%"),
+    resultado$formados_retidos_final,
+    formatar_moeda(resultado$economia_pessoal_total_vp),
+    formatar_moeda(resultado$beneficio_saude_total_vp),
+    formatar_moeda(resultado$vpl),
+    "",
+    ifelse(resultado$vpl > 0, "ECONOMICAMENTE VIÁVEL", "ECONOMICAMENTE INVIÁVEL")
+  )
+)
+
+knitr::kable(
+  resumo,
+  col.names = c("Item", "Valor"),
+  caption = "Resumo do cenário gradual"
+)
+```
+
+## Principais Conclusões
+
+1. **O modelo de residência é mais barato que o tradicional:** A economia de pessoal é positiva desde o primeiro ano.
+
+2. **Os benefícios em saúde amplificam o resultado:** A economia com exames, encaminhamentos e internações torna o programa ainda mais rentável.
+
+3. **A cobertura MFC cresce progressivamente:** Em 10 anos, atinge-se `r round(resultado$cobertura_final * 100, 1)`% de cobertura.
+
+4. **O VPL é altamente positivo:** O programa gera economia total de `r formatar_moeda(resultado$vpl)` em 10 anos.

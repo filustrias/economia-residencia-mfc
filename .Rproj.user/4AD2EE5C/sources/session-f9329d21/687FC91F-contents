@@ -1,0 +1,1013 @@
+---
+title: "Simulação de Cenários"
+---
+
+# Introdução
+
+Neste capítulo, aplicaremos as funções desenvolvidas no capítulo anterior para simular cenários completos de implantação do programa de residência em MFC.
+
+**O que faremos:**
+
+1. Carregar todos os dados e funções necessárias
+2. Simular o **cenário instantâneo** (100% MFC imediatamente) - para entender o potencial máximo de economia
+3. Simular o **cenário gradual** (expansão via residência) - situação realista
+4. Calcular os benefícios econômicos por categoria
+5. Montar o fluxo de caixa consolidado
+6. Calcular os indicadores econômicos (VPL, ROI, RCB, Payback)
+7. Comparar os cenários
+
+---
+
+# Preparação: Carregar Dados e Funções
+
+```{r}
+#| label: setup-completo
+#| include: true
+#| message: false
+#| warning: false
+
+# ============================================================
+# CONFIGURAÇÕES GERAIS
+# ============================================================
+
+options(scipen = 999, digits = 2, OutDec = ",")
+
+formatar_numero <- function(x, decimais = 0) {
+  format(round(x, decimais), big.mark = ".", decimal.mark = ",", nsmall = decimais)
+}
+
+# ============================================================
+# PARÂMETROS DO ESTUDO ORIGINAL
+# ============================================================
+
+estudo <- list(
+  populacao = 600000,
+  prop_mfc = 0.336,
+  prop_gen = 0.664
+)
+
+# ============================================================
+# FUNÇÃO DE CONVERSÃO PARA BASELINE
+# ============================================================
+
+converter_para_baseline <- function(valor_observado, rr, 
+                                     prop_mfc = 0.336, prop_gen = 0.664,
+                                     pop_estudo = 600000, pop_alvo = 500000) {
+  denominador <- (prop_mfc * rr) + prop_gen
+  taxa_baseline_600k <- valor_observado / denominador
+  taxa_baseline_500k <- taxa_baseline_600k * (pop_alvo / pop_estudo)
+  return(taxa_baseline_500k)
+}
+
+# ============================================================
+# DADOS DOS ESTUDOS (com baseline calculado)
+# ============================================================
+
+# Encaminhamentos ambulatoriais
+encaminhamentos_ambulatoriais <- data.frame(
+  especialidade = c(
+    "Cardiologia", "Neurologia", "Psiquiatria", "Dermatologia",
+    "Pneumologia", "Doenças infecciosas", "Urologia", "Alergologia",
+    "Nefrologia", "Endocrinologia", "Gastroenterologia", "Angiologia",
+    "Reumatologia", "Fisioterapia", "Reabilitação", "Oftalmologia",
+    "ORL", "Ortopedia", "Ginecologia", "Pré-natal alto risco"
+  ),
+  rr = c(0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,
+         0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,
+         0.71, 0.52, 0.86, 0.66),
+  eventos_ano_observado = c(2008, 1835, 897, 4144, 903, 290, 1762, 480,
+                            603, 1021, 867, 1030, 830, 2390, 1173, 8713,
+                            2269, 4934, 738, 991)
+)
+encaminhamentos_ambulatoriais$baseline_500k <- mapply(
+  converter_para_baseline,
+  encaminhamentos_ambulatoriais$eventos_ano_observado,
+  encaminhamentos_ambulatoriais$rr
+)
+
+# Encaminhamentos cirúrgicos
+encaminhamentos_cirurgicos <- data.frame(
+  especialidade = c("Cirurgia oftalmológica", "Cirurgia ginecológica", 
+                    "Cirurgia ortopédica", "Cirurgia geral", 
+                    "Cirurgia plástica", "Cirurgia vascular"),
+  rr = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),
+  eventos_ano_observado = c(4458, 989, 147, 1968, 859, 359)
+)
+encaminhamentos_cirurgicos$baseline_500k <- mapply(
+  converter_para_baseline,
+  encaminhamentos_cirurgicos$eventos_ano_observado,
+  encaminhamentos_cirurgicos$rr
+)
+
+# Exames diagnósticos
+exames_diagnosticos <- data.frame(
+  exame = c("Ecocardiograma", "Espirometria", "Colonoscopia", 
+            "Endoscopia digestiva alta", "Teste ergométrico", "Mamografia"),
+  rr = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),
+  eventos_ano_observado = c(1201, 385, 510, 1090, 431, 2424),
+  custo_sigtap = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00)
+)
+exames_diagnosticos$baseline_500k <- mapply(
+  converter_para_baseline,
+  exames_diagnosticos$eventos_ano_observado,
+  exames_diagnosticos$rr
+)
+
+# Exames laboratoriais
+exames_laboratoriais <- data.frame(
+  exame = c("Hemograma", "Creatinina", "Ureia", "Sódio", "Potássio", "Glicose",
+            "Hemoglobina glicada", "Colesterol total", "HDL", "LDL", "Triglicerídeos",
+            "Ácido úrico", "TSH", "T3", "T4", "T4 livre", "Bilirrubina", "AST", "ALT",
+            "Fosfatase alcalina", "Gama-GT", "VHS", "Ova e parasitas", "Urinálise",
+            "Cálcio", "LH", "FSH", "Rubéola IgG", "Rubéola IgM", "PSA"),
+  rr = c(0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81, 0.94, 0.41, 0.82,
+         0.23, 0.71, 0.08, 0.13, 0.56, 0.78, 0.48, 0.47, 0.69, 0.64, 0.74,
+         0.09, 0.67, 0.44, 0.56, 0.60, 0.48, 0.47, 0.36),
+  eventos_ano_observado = c(51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673, 
+                            31127, 22163, 33828, 15603, 11679, 791, 886, 5432, 
+                            2304, 9181, 9363, 3505, 4386, 1957, 604, 41333, 
+                            1866, 674, 863, 210, 216, 4365),
+  custo_sigtap = c(4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85, 3.51, 3.51, 3.51,
+                   1.85, 8.96, 8.71, 8.71, 11.60, 2.01, 2.01, 2.01, 2.01, 3.51, 2.63, 
+                   1.65, 3.70, 1.85, 10.15, 10.15, 18.55, 18.55, 16.42)
+)
+exames_laboratoriais$baseline_500k <- mapply(
+  converter_para_baseline,
+  exames_laboratoriais$eventos_ano_observado,
+  exames_laboratoriais$rr
+)
+
+# Internações ICSAP
+internacoes_icsap <- data.frame(
+  condicao = c("Hipertensão", "Diabetes mellitus", "AVC", "Angina pectoris",
+               "Insuficiência cardíaca", "Epilepsia", "Asma", "Complicações gravidez",
+               "Gastroenterite", "Pneumonia crianças", "Pneumonia adultos",
+               "Infecção de pele", "Infecções ORL", "Doença inflamatória pélvica"),
+  rr = c(0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78, 
+         0.45, 0.57, 0.36, 0.82, 1.06, 0.59),
+  eventos_ano_observado = c(128, 160, 244, 271, 230, 86, 54, 136, 
+                            45, 114, 116, 331, 28, 41),
+  custo_aih = c(761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 853.21, 646.69,
+                527.15, 1969.07, 1969.07, 679.82, 502.60, 612.67)
+)
+internacoes_icsap$baseline_500k <- mapply(
+  converter_para_baseline,
+  internacoes_icsap$eventos_ano_observado,
+  internacoes_icsap$rr
+)
+
+# ============================================================
+# PARÂMETROS DO MUNICÍPIO E PROGRAMA
+# ============================================================
+
+municipio <- list(
+  nome = "Esperança",
+  populacao = 500000,
+  n_medicos = 100,
+  prop_mfc_inicial = 0
+)
+
+programa <- list(
+  vagas_por_ano = 15,
+  duracao_anos = 2,
+  n_preceptores_inicial = 4,
+  bolsa_mec = 4106.90,
+  complemento_ms = 4000.00,
+  bolsa_total = 8106.90,
+  custo_preceptoria = 4000.00,
+  incentivo_equipe_residente = 4500.00,
+  custo_operacional_anual = 50000,
+  taxa_retencao = 0.60
+)
+
+economico <- list(
+  taxa_desconto = 0.05,
+  horizonte_anos = 10
+)
+
+custo_consulta_base <- 50.00
+fator_aih_base <- 1.5
+
+# ============================================================
+# FUNÇÕES DE SIMULAÇÃO (do Capítulo 2)
+# ============================================================
+
+calcular_eventos_por_cobertura <- function(eventos_baseline, rr, prop_mfc) {
+  prop_gen <- 1 - prop_mfc
+  fator_ajuste <- (prop_mfc * rr) + prop_gen
+  return(eventos_baseline * fator_ajuste)
+}
+
+calcular_eventos_evitados <- function(eventos_baseline, rr, prop_mfc_inicial, prop_mfc_final) {
+  eventos_inicial <- calcular_eventos_por_cobertura(eventos_baseline, rr, prop_mfc_inicial)
+  eventos_final <- calcular_eventos_por_cobertura(eventos_baseline, rr, prop_mfc_final)
+  return(list(
+    eventos_inicial = eventos_inicial,
+    eventos_final = eventos_final,
+    eventos_evitados = eventos_inicial - eventos_final
+  ))
+}
+
+calcular_economia <- function(eventos_evitados, custo_unitario, fator_correcao = 1.0) {
+  return(eventos_evitados * custo_unitario * fator_correcao)
+}
+
+simular_expansao_programa <- function(n_medicos_total, prop_mfc_inicial = 0, vagas_ano,
+                                       duracao_residencia = 2, taxa_retencao,
+                                       horizonte_anos, n_preceptores_inicial) {
+  anos <- 0:horizonte_anos
+  n_anos <- length(anos)
+  
+  n_mfc <- numeric(n_anos)
+  n_residentes_r1 <- numeric(n_anos)
+  n_residentes_r2 <- numeric(n_anos)
+  n_formados_ano <- numeric(n_anos)
+  n_preceptores <- numeric(n_anos)
+  
+  n_mfc[1] <- round(n_medicos_total * prop_mfc_inicial)
+  
+  for (i in 2:n_anos) {
+    ano_atual <- anos[i]
+    if (ano_atual == 1) {
+      n_preceptores[i] <- n_preceptores_inicial
+      n_residentes_r1[i] <- vagas_ano
+      n_residentes_r2[i] <- 0
+      n_formados_ano[i] <- 0
+      n_mfc[i] <- n_mfc[i-1] + n_preceptores_inicial
+    } else if (ano_atual == 2) {
+      n_preceptores[i] <- n_preceptores[i-1]
+      n_residentes_r2[i] <- n_residentes_r1[i-1]
+      n_residentes_r1[i] <- vagas_ano
+      n_formados_ano[i] <- 0
+      n_mfc[i] <- n_mfc[i-1]
+    } else {
+      n_formados_ano[i] <- round(n_residentes_r2[i-1] * taxa_retencao)
+      n_residentes_r2[i] <- n_residentes_r1[i-1]
+      n_residentes_r1[i] <- vagas_ano
+      n_preceptores[i] <- n_preceptores[i-1]
+      n_mfc[i] <- n_mfc[i-1] + n_formados_ano[i]
+    }
+  }
+  
+  prop_mfc <- pmin(n_mfc / n_medicos_total, 1)
+  
+  return(data.frame(
+    ano = anos,
+    n_mfc = n_mfc,
+    n_residentes_r1 = n_residentes_r1,
+    n_residentes_r2 = n_residentes_r2,
+    n_residentes_total = n_residentes_r1 + n_residentes_r2,
+    n_formados_ano = n_formados_ano,
+    n_formados_acumulado = cumsum(n_formados_ano),
+    n_preceptores = n_preceptores,
+    prop_mfc = prop_mfc
+  ))
+}
+
+calcular_custos_programa <- function(expansao_df, bolsa_mensal, custo_preceptor_mensal,
+                                      incentivo_equipe_mensal, custo_operacional_anual,
+                                      adicional_especialidade_pct = 0, salario_base_medico = 15000) {
+  custo_bolsas <- expansao_df$n_residentes_total * bolsa_mensal * 12
+  custo_preceptoria <- expansao_df$n_preceptores * custo_preceptor_mensal * 12
+  custo_operacional <- ifelse(expansao_df$ano > 0, custo_operacional_anual, 0)
+  adicional_mensal <- salario_base_medico * adicional_especialidade_pct
+  custo_adicional_esp <- expansao_df$n_mfc * adicional_mensal * 12
+  receita_incentivo <- expansao_df$n_residentes_total * incentivo_equipe_mensal * 12
+  
+  custo_bruto <- custo_bolsas + custo_preceptoria + custo_operacional + custo_adicional_esp
+  custo_liquido <- pmax(custo_bruto - receita_incentivo, 0)
+  
+  return(data.frame(
+    ano = expansao_df$ano,
+    n_mfc = expansao_df$n_mfc,
+    n_residentes = expansao_df$n_residentes_total,
+    custo_bolsas = custo_bolsas,
+    custo_preceptoria = custo_preceptoria,
+    custo_operacional = custo_operacional,
+    custo_adicional_esp = custo_adicional_esp,
+    custo_bruto = custo_bruto,
+    receita_incentivo = receita_incentivo,
+    custo_liquido = custo_liquido
+  ))
+}
+
+calcular_valor_presente <- function(valor_futuro, ano, taxa_desconto) {
+  return(valor_futuro / ((1 + taxa_desconto) ^ ano))
+}
+
+calcular_vpl <- function(fluxos_caixa, taxa_desconto) {
+  anos <- seq_along(fluxos_caixa) - 1
+  vp <- mapply(function(v, a) calcular_valor_presente(v, a, taxa_desconto), 
+               fluxos_caixa, anos)
+  return(sum(vp))
+}
+
+calcular_roi <- function(custo_total, beneficio_total) {
+  return(((beneficio_total - custo_total) / custo_total) * 100)
+}
+
+calcular_rcb <- function(custo_total, beneficio_total) {
+  return(beneficio_total / custo_total)
+}
+
+calcular_payback <- function(custos, beneficios, taxa_desconto = NULL) {
+  anos <- seq_along(custos) - 1
+  if (is.null(taxa_desconto)) {
+    custo_acum <- cumsum(custos)
+    benef_acum <- cumsum(beneficios)
+  } else {
+    custo_vp <- sapply(seq_along(custos), function(i) 
+      calcular_valor_presente(custos[i], anos[i], taxa_desconto))
+    benef_vp <- sapply(seq_along(beneficios), function(i) 
+      calcular_valor_presente(beneficios[i], anos[i], taxa_desconto))
+    custo_acum <- cumsum(custo_vp)
+    benef_acum <- cumsum(benef_vp)
+  }
+  saldo_acum <- benef_acum - custo_acum
+  payback_idx <- which(saldo_acum >= 0)[1]
+  if (is.na(payback_idx)) return(NA) else return(anos[payback_idx])
+}
+```
+
+Todos os dados e funções foram carregados. Agora podemos iniciar as simulações.
+
+---
+
+# Cenário 1: Instantâneo (100% MFC)
+
+## O que é o Cenário Instantâneo?
+
+O **cenário instantâneo** é um exercício teórico que responde à pergunta: **"Quanto o município economizaria se, magicamente, todos os médicos da APS fossem MFC amanhã?"**
+
+Este cenário é **irreal** porque:
+
+- Não existem MFC suficientes no mercado para contratar 100 de uma vez
+- Mesmo que existissem, o custo de contratação seria proibitivo
+- Não considera os custos de transição
+
+**Por que calculamos mesmo assim?**
+
+1. Para entender o **potencial máximo** de economia que a especialidade MFC pode gerar
+2. Para ter um **parâmetro de comparação** com o cenário gradual
+3. Para comunicar aos gestores o "teto" de benefícios possíveis
+
+## Cálculo dos Benefícios no Cenário Instantâneo
+
+```{r}
+#| label: cenario-instantaneo-beneficios
+#| include: true
+#| message: false
+#| warning: false
+
+# Função auxiliar para calcular benefício de uma categoria
+calcular_beneficio_categoria <- function(df, col_baseline, col_rr, col_custo = NULL,
+                                          prop_mfc_inicial = 0, prop_mfc_final = 1,
+                                          custo_padrao = NULL, fator_correcao = 1) {
+  
+  beneficio_total <- 0
+  detalhes <- list()
+  
+  for (i in 1:nrow(df)) {
+    baseline <- df[[col_baseline]][i]
+    rr <- df[[col_rr]][i]
+    
+    # Calcular eventos evitados
+    resultado <- calcular_eventos_evitados(baseline, rr, prop_mfc_inicial, prop_mfc_final)
+    
+    # Determinar custo unitário
+    if (!is.null(col_custo) && col_custo %in% names(df)) {
+      custo <- df[[col_custo]][i]
+    } else {
+      custo <- custo_padrao
+    }
+    
+    # Calcular economia
+    economia <- calcular_economia(resultado$eventos_evitados, custo, fator_correcao)
+    beneficio_total <- beneficio_total + economia
+    
+    detalhes[[i]] <- list(
+      item = if("especialidade" %in% names(df)) df$especialidade[i] 
+             else if("exame" %in% names(df)) df$exame[i]
+             else df$condicao[i],
+      eventos_evitados = resultado$eventos_evitados,
+      economia = economia
+    )
+  }
+  
+  return(list(total = beneficio_total, detalhes = detalhes))
+}
+
+# Calcular benefícios por categoria (0% → 100% MFC)
+
+# 1. Encaminhamentos ambulatoriais
+benef_enc_amb <- calcular_beneficio_categoria(
+  df = encaminhamentos_ambulatoriais,
+  col_baseline = "baseline_500k",
+  col_rr = "rr",
+  custo_padrao = custo_consulta_base  # R$ 50 por consulta
+)
+
+# 2. Encaminhamentos cirúrgicos
+benef_enc_cir <- calcular_beneficio_categoria(
+  df = encaminhamentos_cirurgicos,
+  col_baseline = "baseline_500k",
+  col_rr = "rr",
+  custo_padrao = custo_consulta_base
+)
+
+# 3. Exames diagnósticos
+benef_diag <- calcular_beneficio_categoria(
+  df = exames_diagnosticos,
+  col_baseline = "baseline_500k",
+  col_rr = "rr",
+  col_custo = "custo_sigtap"
+)
+
+# 4. Exames laboratoriais
+benef_lab <- calcular_beneficio_categoria(
+  df = exames_laboratoriais,
+  col_baseline = "baseline_500k",
+  col_rr = "rr",
+  col_custo = "custo_sigtap"
+)
+
+# 5. Internações ICSAP
+benef_icsap <- calcular_beneficio_categoria(
+  df = internacoes_icsap,
+  col_baseline = "baseline_500k",
+  col_rr = "rr",
+  col_custo = "custo_aih",
+  fator_correcao = fator_aih_base  # 1.5x
+)
+
+# Resumo
+beneficio_instantaneo <- data.frame(
+  categoria = c("Encaminhamentos ambulatoriais",
+                "Encaminhamentos cirúrgicos",
+                "Exames diagnósticos",
+                "Exames laboratoriais",
+                "Internações ICSAP"),
+  economia_anual = c(benef_enc_amb$total,
+                     benef_enc_cir$total,
+                     benef_diag$total,
+                     benef_lab$total,
+                     benef_icsap$total)
+)
+
+beneficio_instantaneo$economia_anual_fmt <- paste0(
+  "R$ ", formatar_numero(beneficio_instantaneo$economia_anual)
+)
+
+knitr::kable(
+  beneficio_instantaneo[, c("categoria", "economia_anual_fmt")],
+  col.names = c("Categoria", "Economia Anual"),
+  caption = "Economia potencial com 100% de cobertura MFC (cenário instantâneo)"
+)
+```
+
+```{r}
+#| label: cenario-instantaneo-total
+#| include: true
+#| message: false
+#| warning: false
+
+total_instantaneo <- sum(beneficio_instantaneo$economia_anual)
+```
+
+**Economia total anual no cenário instantâneo:** R$ `r formatar_numero(total_instantaneo)`
+
+## Interpretação do Cenário Instantâneo
+
+O cenário instantâneo mostra que, se **todos** os 100 médicos da APS do município fossem MFC, a economia anual seria de aproximadamente **R$ `r formatar_numero(total_instantaneo)`**.
+
+Observe que:
+
+- As **internações ICSAP** representam a maior parcela da economia, mesmo sendo poucos eventos, devido ao alto custo unitário
+- Os **exames laboratoriais** têm grande volume de eventos evitados, mas baixo custo unitário
+- Alguns **encaminhamentos cirúrgicos** podem ter economia negativa (RR > 1), indicando que MFC encaminha mais
+
+Este é o **teto teórico** de benefícios. O cenário gradual via residência atingirá apenas uma fração deste valor.
+
+---
+
+# Cenário 2: Expansão Gradual via Residência
+
+## Simulação da Expansão
+
+Agora simulamos o cenário realista: implantação de um programa de residência com 15 vagas/ano e 60% de retenção.
+
+```{r}
+#| label: expansao-gradual
+#| include: true
+#| message: false
+#| warning: false
+
+# Simular expansão do programa
+expansao <- simular_expansao_programa(
+  n_medicos_total = municipio$n_medicos,
+  prop_mfc_inicial = 0,
+  vagas_ano = programa$vagas_por_ano,
+  taxa_retencao = programa$taxa_retencao,
+  horizonte_anos = economico$horizonte_anos,
+  n_preceptores_inicial = programa$n_preceptores_inicial
+)
+
+# Adicionar coluna formatada
+expansao$prop_mfc_pct <- paste0(round(expansao$prop_mfc * 100, 1), "%")
+
+knitr::kable(
+  expansao[, c("ano", "n_mfc", "n_residentes_total", "n_formados_ano", 
+               "n_formados_acumulado", "prop_mfc_pct")],
+  col.names = c("Ano", "MFC Total", "Residentes", "Formados/ano", 
+                "Formados Acum.", "Cobertura MFC"),
+  caption = "Evolução do programa de residência (15 vagas/ano, 60% retenção)"
+)
+```
+
+**Observações:**
+
+- A cobertura MFC cresce de 0% para aproximadamente 76% em 10 anos
+- Os primeiros formados aparecem apenas no **ano 3** (após 2 anos de residência)
+- A cada ano, 9 novos MFC são incorporados (15 vagas × 60% retenção)
+
+## Cálculo dos Custos
+
+```{r}
+#| label: custos-gradual
+#| include: true
+#| message: false
+#| warning: false
+
+# Calcular custos do programa (cenário intermediário: MEC + MS, sem adicional)
+custos <- calcular_custos_programa(
+  expansao_df = expansao,
+  bolsa_mensal = programa$bolsa_total,
+  custo_preceptor_mensal = programa$custo_preceptoria,
+  incentivo_equipe_mensal = programa$incentivo_equipe_residente,
+  custo_operacional_anual = programa$custo_operacional_anual,
+  adicional_especialidade_pct = 0
+)
+
+# Tabela de custos (em milhares)
+custos_display <- data.frame(
+  ano = custos$ano,
+  mfc = custos$n_mfc,
+  residentes = custos$n_residentes,
+  bruto = round(custos$custo_bruto / 1000, 1),
+  incentivo = round(custos$receita_incentivo / 1000, 1),
+  liquido = round(custos$custo_liquido / 1000, 1)
+)
+
+knitr::kable(
+  custos_display,
+  col.names = c("Ano", "MFC", "Resid.", "Custo Bruto", "Incentivo Fed.", "Custo Líquido"),
+  caption = "Custos anuais do programa (R$ mil)"
+)
+```
+
+## Cálculo dos Benefícios Anuais
+
+Agora precisamos calcular os benefícios **ano a ano**, considerando que a cobertura MFC aumenta progressivamente.
+
+```{r}
+#| label: beneficios-anuais
+#| include: true
+#| message: false
+#| warning: false
+
+# Função para calcular benefício em um ano específico
+calcular_beneficio_anual <- function(prop_mfc_atual, prop_mfc_anterior) {
+  
+  # Se não houve mudança na cobertura, não há benefício adicional
+  if (prop_mfc_atual == prop_mfc_anterior) {
+    return(list(
+      enc_amb = 0, enc_cir = 0, diag = 0, lab = 0, icsap = 0, total = 0
+    ))
+  }
+  
+  # Calcular eventos evitados pela mudança de cobertura
+  
+  # 1. Encaminhamentos ambulatoriais
+  benef_amb <- 0
+  for (i in 1:nrow(encaminhamentos_ambulatoriais)) {
+    resultado <- calcular_eventos_evitados(
+      encaminhamentos_ambulatoriais$baseline_500k[i],
+      encaminhamentos_ambulatoriais$rr[i],
+      prop_mfc_anterior, prop_mfc_atual
+    )
+    benef_amb <- benef_amb + calcular_economia(resultado$eventos_evitados, custo_consulta_base)
+  }
+  
+  # 2. Encaminhamentos cirúrgicos
+  benef_cir <- 0
+  for (i in 1:nrow(encaminhamentos_cirurgicos)) {
+    resultado <- calcular_eventos_evitados(
+      encaminhamentos_cirurgicos$baseline_500k[i],
+      encaminhamentos_cirurgicos$rr[i],
+      prop_mfc_anterior, prop_mfc_atual
+    )
+    benef_cir <- benef_cir + calcular_economia(resultado$eventos_evitados, custo_consulta_base)
+  }
+  
+  # 3. Exames diagnósticos
+  benef_diag <- 0
+  for (i in 1:nrow(exames_diagnosticos)) {
+    resultado <- calcular_eventos_evitados(
+      exames_diagnosticos$baseline_500k[i],
+      exames_diagnosticos$rr[i],
+      prop_mfc_anterior, prop_mfc_atual
+    )
+    benef_diag <- benef_diag + calcular_economia(
+      resultado$eventos_evitados, 
+      exames_diagnosticos$custo_sigtap[i]
+    )
+  }
+  
+  # 4. Exames laboratoriais
+  benef_lab <- 0
+  for (i in 1:nrow(exames_laboratoriais)) {
+    resultado <- calcular_eventos_evitados(
+      exames_laboratoriais$baseline_500k[i],
+      exames_laboratoriais$rr[i],
+      prop_mfc_anterior, prop_mfc_atual
+    )
+    benef_lab <- benef_lab + calcular_economia(
+      resultado$eventos_evitados, 
+      exames_laboratoriais$custo_sigtap[i]
+    )
+  }
+  
+  # 5. Internações ICSAP
+  benef_icsap <- 0
+  for (i in 1:nrow(internacoes_icsap)) {
+    resultado <- calcular_eventos_evitados(
+      internacoes_icsap$baseline_500k[i],
+      internacoes_icsap$rr[i],
+      prop_mfc_anterior, prop_mfc_atual
+    )
+    benef_icsap <- benef_icsap + calcular_economia(
+      resultado$eventos_evitados, 
+      internacoes_icsap$custo_aih[i],
+      fator_aih_base
+    )
+  }
+  
+  return(list(
+    enc_amb = benef_amb,
+    enc_cir = benef_cir,
+    diag = benef_diag,
+    lab = benef_lab,
+    icsap = benef_icsap,
+    total = benef_amb + benef_cir + benef_diag + benef_lab + benef_icsap
+  ))
+}
+
+# Calcular benefícios para cada ano
+# IMPORTANTE: O benefício em cada ano é CUMULATIVO desde o ano 0
+# Ou seja, comparamos sempre com o cenário inicial (0% MFC)
+
+beneficios_anuais <- data.frame(
+  ano = expansao$ano,
+  prop_mfc = expansao$prop_mfc,
+  enc_amb = 0,
+  enc_cir = 0,
+  diag = 0,
+  lab = 0,
+  icsap = 0,
+  total = 0
+)
+
+for (i in 1:nrow(expansao)) {
+  # Benefício é sempre comparado com cenário inicial (0% MFC)
+  benef <- calcular_beneficio_anual(expansao$prop_mfc[i], 0)
+  beneficios_anuais$enc_amb[i] <- benef$enc_amb
+  beneficios_anuais$enc_cir[i] <- benef$enc_cir
+  beneficios_anuais$diag[i] <- benef$diag
+  beneficios_anuais$lab[i] <- benef$lab
+  beneficios_anuais$icsap[i] <- benef$icsap
+  beneficios_anuais$total[i] <- benef$total
+}
+
+# Exibir tabela
+benef_display <- data.frame(
+  ano = beneficios_anuais$ano,
+  cobertura = paste0(round(beneficios_anuais$prop_mfc * 100, 1), "%"),
+  enc_amb = round(beneficios_anuais$enc_amb / 1000, 1),
+  lab = round(beneficios_anuais$lab / 1000, 1),
+  icsap = round(beneficios_anuais$icsap / 1000, 1),
+  total = round(beneficios_anuais$total / 1000, 1)
+)
+
+knitr::kable(
+  benef_display,
+  col.names = c("Ano", "Cobertura", "Enc. Amb.", "Ex. Lab.", "ICSAP", "TOTAL"),
+  caption = "Benefícios anuais por categoria (R$ mil)"
+)
+```
+
+**Explicação importante:**
+
+O benefício em cada ano representa a **economia total comparada ao cenário sem programa** (0% MFC). Ou seja:
+
+- Ano 1: com 4% MFC, economizamos R$ X comparado a 0% MFC
+- Ano 5: com 31% MFC, economizamos R$ Y comparado a 0% MFC
+- Ano 10: com 76% MFC, economizamos R$ Z comparado a 0% MFC
+
+Os benefícios crescem ao longo do tempo porque a cobertura MFC aumenta.
+
+---
+
+# Fluxo de Caixa Consolidado
+
+## Montagem do Fluxo de Caixa
+
+Agora consolidamos custos e benefícios em um único fluxo de caixa:
+
+```{r}
+#| label: fluxo-caixa
+#| include: true
+#| message: false
+#| warning: false
+
+# Montar fluxo de caixa
+fluxo_caixa <- data.frame(
+  ano = expansao$ano,
+  cobertura_mfc = paste0(round(expansao$prop_mfc * 100, 1), "%"),
+  custo = custos$custo_liquido,
+  beneficio = beneficios_anuais$total,
+  saldo = beneficios_anuais$total - custos$custo_liquido
+)
+
+# Calcular acumulados
+fluxo_caixa$custo_acum <- cumsum(fluxo_caixa$custo)
+fluxo_caixa$beneficio_acum <- cumsum(fluxo_caixa$beneficio)
+fluxo_caixa$saldo_acum <- cumsum(fluxo_caixa$saldo)
+
+# Formatar para exibição
+fluxo_display <- data.frame(
+  ano = fluxo_caixa$ano,
+  cobertura = fluxo_caixa$cobertura_mfc,
+  custo = round(fluxo_caixa$custo / 1000, 1),
+  beneficio = round(fluxo_caixa$beneficio / 1000, 1),
+  saldo = round(fluxo_caixa$saldo / 1000, 1),
+  saldo_acum = round(fluxo_caixa$saldo_acum / 1000, 1)
+)
+
+knitr::kable(
+  fluxo_display,
+  col.names = c("Ano", "Cobertura", "Custo", "Benefício", "Saldo", "Saldo Acum."),
+  caption = "Fluxo de caixa consolidado (R$ mil)"
+)
+```
+
+## Interpretação do Fluxo de Caixa
+
+O fluxo de caixa mostra a evolução financeira do programa ao longo dos 10 anos:
+
+- **Custos** são mais altos nos anos iniciais (bolsas + preceptoria) e se estabilizam
+- **Benefícios** começam baixos e crescem progressivamente com a cobertura
+- **Saldo** pode ser negativo nos primeiros anos e positivo nos anos finais
+- **Saldo acumulado** indica o resultado financeiro total até aquele momento
+
+---
+
+# Indicadores Econômicos
+
+## Cálculo dos Indicadores
+
+Agora calculamos os principais indicadores econômicos para avaliar a viabilidade do projeto:
+
+```{r}
+#| label: indicadores-economicos
+#| include: true
+#| message: false
+#| warning: false
+
+# Totais nominais
+custo_total <- sum(fluxo_caixa$custo)
+beneficio_total <- sum(fluxo_caixa$beneficio)
+saldo_total <- sum(fluxo_caixa$saldo)
+
+# ROI e RCB (valores nominais)
+roi <- calcular_roi(custo_total, beneficio_total)
+rcb <- calcular_rcb(custo_total, beneficio_total)
+
+# VPL (valores descontados)
+vpl <- calcular_vpl(fluxo_caixa$saldo, economico$taxa_desconto)
+
+# VPL dos custos e benefícios separadamente
+vpl_custos <- calcular_vpl(fluxo_caixa$custo, economico$taxa_desconto)
+vpl_beneficios <- calcular_vpl(fluxo_caixa$beneficio, economico$taxa_desconto)
+
+# Payback
+payback_simples <- calcular_payback(fluxo_caixa$custo, fluxo_caixa$beneficio)
+payback_descontado <- calcular_payback(fluxo_caixa$custo, fluxo_caixa$beneficio, 
+                                        economico$taxa_desconto)
+
+# Montar tabela de indicadores
+indicadores <- data.frame(
+  indicador = c(
+    "Custo total (nominal)",
+    "Benefício total (nominal)",
+    "Saldo total (nominal)",
+    "ROI",
+    "RCB",
+    "VPL (custos)",
+    "VPL (benefícios)",
+    "VPL (saldo)",
+    "Payback simples",
+    "Payback descontado"
+  ),
+  valor = c(
+    paste0("R$ ", formatar_numero(custo_total)),
+    paste0("R$ ", formatar_numero(beneficio_total)),
+    paste0("R$ ", formatar_numero(saldo_total)),
+    paste0(round(roi, 1), "%"),
+    round(rcb, 2),
+    paste0("R$ ", formatar_numero(vpl_custos)),
+    paste0("R$ ", formatar_numero(vpl_beneficios)),
+    paste0("R$ ", formatar_numero(vpl)),
+    ifelse(is.na(payback_simples), "Não atingido", paste0("Ano ", payback_simples)),
+    ifelse(is.na(payback_descontado), "Não atingido", paste0("Ano ", payback_descontado))
+  )
+)
+
+knitr::kable(
+  indicadores,
+  col.names = c("Indicador", "Valor"),
+  caption = "Indicadores econômicos do cenário base"
+)
+```
+
+## Interpretação dos Indicadores
+
+### ROI (Retorno sobre Investimento)
+
+O ROI de **`r round(roi, 1)`%** indica que:
+
+- Se ROI > 0%: o projeto gera mais benefícios do que custos
+- Se ROI < 0%: o projeto custa mais do que gera de benefício
+
+Um ROI de `r round(roi, 1)`% significa que para cada R$ 100 investidos, obtém-se R$ `r round(100 + roi, 0)` de retorno.
+
+### RCB (Razão Custo-Benefício)
+
+A RCB de **`r round(rcb, 2)`** indica quantos reais de benefício são gerados para cada real de custo:
+
+- RCB > 1: projeto gera mais benefício do que custa
+- RCB < 1: projeto custa mais do que gera de benefício
+- RCB = 1: empate
+
+### VPL (Valor Presente Líquido)
+
+O VPL de **R$ `r formatar_numero(vpl)`** representa o valor total do projeto em reais de hoje, considerando o custo do dinheiro no tempo:
+
+- VPL > 0: projeto cria valor
+- VPL < 0: projeto destrói valor
+- VPL = 0: projeto empata
+
+### Payback
+
+O payback indica em quanto tempo o investimento "se paga":
+
+- **Payback simples**: `r ifelse(is.na(payback_simples), "não atingido no horizonte de 10 anos", paste0("ano ", payback_simples))`
+- **Payback descontado**: `r ifelse(is.na(payback_descontado), "não atingido no horizonte de 10 anos", paste0("ano ", payback_descontado))`
+
+---
+
+# Comparação: Cenário Instantâneo vs. Gradual
+
+```{r}
+#| label: comparacao-cenarios
+#| include: true
+#| message: false
+#| warning: false
+
+# Benefício anual do cenário instantâneo (fixo em todos os anos)
+beneficio_instantaneo_anual <- total_instantaneo
+
+# Benefício do cenário gradual no ano 10
+beneficio_gradual_ano10 <- beneficios_anuais$total[11]  # índice 11 = ano 10
+
+# Benefício médio do cenário gradual
+beneficio_gradual_medio <- mean(beneficios_anuais$total)
+
+# Comparação
+comparacao <- data.frame(
+  metrica = c(
+    "Cobertura MFC atingida",
+    "Benefício anual (ano 10)",
+    "Benefício médio anual",
+    "Benefício total (10 anos)",
+    "% do potencial máximo (ano 10)"
+  ),
+  instantaneo = c(
+    "100%",
+    paste0("R$ ", formatar_numero(beneficio_instantaneo_anual)),
+    paste0("R$ ", formatar_numero(beneficio_instantaneo_anual)),
+    paste0("R$ ", formatar_numero(beneficio_instantaneo_anual * 10)),
+    "100%"
+  ),
+  gradual = c(
+    paste0(round(expansao$prop_mfc[11] * 100, 1), "%"),
+    paste0("R$ ", formatar_numero(beneficio_gradual_ano10)),
+    paste0("R$ ", formatar_numero(beneficio_gradual_medio)),
+    paste0("R$ ", formatar_numero(beneficio_total)),
+    paste0(round(beneficio_gradual_ano10 / beneficio_instantaneo_anual * 100, 1), "%")
+  )
+)
+
+knitr::kable(
+  comparacao,
+  col.names = c("Métrica", "Cenário Instantâneo", "Cenário Gradual"),
+  caption = "Comparação entre cenários"
+)
+```
+
+**Análise da comparação:**
+
+O cenário gradual atinge, no ano 10, aproximadamente **`r round(beneficio_gradual_ano10 / beneficio_instantaneo_anual * 100, 1)`%** do potencial máximo de benefícios do cenário instantâneo. Isso ocorre porque:
+
+1. A cobertura MFC atinge apenas ~76% (não 100%)
+2. Os benefícios são acumulados gradualmente ao longo dos anos
+3. Nos primeiros anos, a cobertura é muito baixa
+
+---
+
+# Resumo do Capítulo
+
+## Principais Resultados
+
+```{r}
+#| label: resumo-resultados
+#| include: true
+#| message: false
+#| warning: false
+
+# Criar tabela resumo
+resumo <- data.frame(
+  item = c(
+    "Município simulado",
+    "População",
+    "Médicos na APS",
+    "Vagas de residência/ano",
+    "Taxa de retenção",
+    "Horizonte temporal",
+    "Cobertura MFC final",
+    "Custo total do programa",
+    "Benefício total gerado",
+    "VPL",
+    "ROI",
+    "RCB"
+  ),
+  valor = c(
+    municipio$nome,
+    formatar_numero(municipio$populacao),
+    municipio$n_medicos,
+    programa$vagas_por_ano,
+    paste0(programa$taxa_retencao * 100, "%"),
+    paste0(economico$horizonte_anos, " anos"),
+    paste0(round(expansao$prop_mfc[11] * 100, 1), "%"),
+    paste0("R$ ", formatar_numero(custo_total)),
+    paste0("R$ ", formatar_numero(beneficio_total)),
+    paste0("R$ ", formatar_numero(vpl)),
+    paste0(round(roi, 1), "%"),
+    round(rcb, 2)
+  )
+)
+
+knitr::kable(
+  resumo,
+  col.names = c("Item", "Valor"),
+  caption = "Resumo dos resultados da simulação"
+)
+```
+
+## Conclusão Preliminar
+
+Com base nos indicadores calculados:
+ 
+- **Se VPL > 0 e RCB > 1**: O programa é economicamente viável considerando apenas os benefícios monetizáveis
+- **Se VPL < 0 e RCB < 1**: O programa não é economicamente viável considerando apenas os benefícios monetizáveis
+
+Independente do resultado financeiro, existem **benefícios não monetizáveis** importantes:
+
+1. Melhoria na qualidade do cuidado
+2. Maior satisfação dos usuários
+3. Formação de recursos humanos especializados
+4. Fortalecimento do sistema de saúde local
+5. Redução de morbimortalidade evitável
+
+Estes benefícios devem ser considerados na decisão final sobre a implantação do programa.
+
+---
+
+# Próximos Passos
+
+No próximo capítulo (Análise de Sensibilidade), exploraremos:
+
+1. **Impacto de diferentes taxas de retenção** (40%, 60%, 80%)
+2. **Impacto do número de vagas** (10, 15, 20 vagas/ano)
+3. **Impacto do fator de correção AIH** (1.0, 1.5, 2.0)
+4. **Cenários com adicional por especialidade** (0%, 10%, 20%)
+5. **Análise de limiar (break-even)**: qual a taxa de retenção mínima para viabilidade?

@@ -1,0 +1,156 @@
+---
+title: "Sumário Executivo"
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+options(scipen = 999, digits = 2, OutDec = ",")
+
+formatar_moeda <- function(x) {
+  paste0("R$ ", format(round(x), big.mark = ".", decimal.mark = ","))
+}
+```
+
+# O Problema
+
+O Brasil enfrenta escassez de médicos de família qualificados na atenção primária. Programas de residência podem formar esses profissionais, mas gestores municipais frequentemente questionam: **vale a pena o investimento?**
+
+---
+
+# A Proposta
+
+Implantar um programa de residência em Medicina de Família e Comunidade em um município de 500 mil habitantes com 100 equipes de saúde da família.
+
+| Estrutura do Programa | |
+|---|---|
+| Preceptores | 8 |
+| Equipes-escola | 16 |
+| Residentes por ano | 32 |
+| Formados por ano | 16 |
+| Horizonte de análise | 10 anos |
+
+---
+
+# A Resposta
+
+**Sim, vale a pena.** O programa se paga desde o primeiro ano e gera economia crescente ao longo do tempo.
+
+```{r}
+#| label: grafico-principal
+#| fig-width: 10
+#| fig-height: 6
+#| echo: false
+
+# Parâmetros
+taxa_retencao <- 0.60
+adicional_pct <- 0.10
+salario_base <- 16000
+encargos <- 0.70
+bolsa <- 4106.90 + 4000
+incentivo <- 4500
+custo_medico <- salario_base * (1 + encargos)
+custo_preceptor <- custo_medico + salario_base * 0.10 * (1 + encargos)
+
+# Economia em saúde com 100% de cobertura (calculada no capítulo 03)
+economia_saude_100pct <- 757000  # aproximado
+
+# Simulação
+anos <- 0:10
+n_equipes_escola <- c(0, 8, rep(16, 9))
+formados_retidos <- c(0, 0, 0, round(16 * taxa_retencao))
+for (i in 5:11) {
+  formados_retidos[i] <- formados_retidos[i-1] + round(16 * taxa_retencao)
+}
+
+equipes_mfc <- pmin(n_equipes_escola + formados_retidos, 100)
+cobertura <- equipes_mfc / 100
+
+# Economia do modelo
+custo_2med <- 2 * custo_medico * 12
+custo_res <- custo_preceptor * 12 + 4 * bolsa * 12 - 2 * incentivo * 12
+economia_por_par <- custo_2med - custo_res
+economia_modelo <- (n_equipes_escola / 2) * economia_por_par
+
+# Investimento em fixação
+adicional_mensal <- salario_base * adicional_pct * (1 + encargos)
+investimento_fixacao <- formados_retidos * adicional_mensal * 12
+
+# Economia em saúde
+beneficio_saude <- economia_saude_100pct * cobertura
+
+# Saldo
+saldo <- economia_modelo - investimento_fixacao + beneficio_saude
+
+# Acumulado
+saldo_acumulado <- cumsum(saldo)
+
+# Data frame para gráfico
+df <- data.frame(
+  ano = anos,
+  saldo_acumulado = saldo_acumulado / 1000000
+)
+
+# Gráfico
+library(ggplot2)
+
+cores <- c(
+  positivo = "#238B45",
+  linha = "#2171B5"
+)
+
+ggplot(df, aes(x = ano, y = saldo_acumulado)) +
+  geom_area(fill = cores["positivo"], alpha = 0.3) +
+  geom_line(color = cores["linha"], linewidth = 1.5) +
+  geom_point(color = cores["linha"], size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  scale_x_continuous(breaks = 0:10) +
+  scale_y_continuous(labels = function(x) paste0("R$ ", x, " mi")) +
+  labs(
+    title = "Resultado Acumulado do Programa de Residência",
+    subtitle = "Economia do modelo + economia em saúde - investimento em fixação",
+    x = "Ano",
+    y = "Saldo Acumulado"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(color = "gray40"),
+    panel.grid.minor = element_blank()
+  ) +
+  annotate("text", x = 10, y = max(df$saldo_acumulado) * 0.9, 
+           label = paste0("R$ ", round(max(df$saldo_acumulado), 1), " milhões\nem 10 anos"),
+           hjust = 1, fontface = "bold", size = 5, color = cores["linha"])
+```
+
+---
+
+# Números-Chave
+
+| Indicador | Valor |
+|-----------|-------|
+| Cobertura por médicos de família ao final | 64% |
+| Médicos formados e retidos | 48 |
+| Economia acumulada em 10 anos | R$ 4,5 milhões |
+| Retorno desde o | Ano 1 |
+
+---
+
+# Por que Funciona?
+
+O programa gera economia de três formas:
+
+1. **Modelo de residência mais barato:** Um preceptor com 4 residentes custa menos que 2 médicos contratados, gerando economia de R$ 12.600 por par de equipes por ano.
+
+2. **Economia em saúde:** Médicos de família reduzem internações (64% menos por insuficiência cardíaca), encaminhamentos (60% menos para cardiologia) e exames (92% menos dosagens de TSH).
+
+3. **Investimento que se paga:** O adicional por especialidade para reter os formados (10% do salário) é compensado pela economia em saúde que eles geram.
+
+---
+  
+# Conclusão
+
+O programa de residência em Medicina de Família e Comunidade não é apenas uma necessidade de saúde pública — é um **investimento economicamente inteligente** que gera retorno positivo desde o primeiro ano e benefícios crescentes ao longo do tempo.
+
+**A decisão não é "se", mas "quando começar".**

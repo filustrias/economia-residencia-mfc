@@ -1,0 +1,556 @@
+---
+title: "Configuração e Dados de Entrada"
+---
+
+# Introdução
+
+Este capítulo apresenta todos os dados de entrada necessários para o modelo econômico da Residência em Medicina de Família e Comunidade (MFC).
+
+**Objetivo:** Documentar de forma transparente e reproduzível:
+
+1. Os parâmetros do município simulado
+2. Os custos de pessoal e do programa
+3. Os dados epidemiológicos dos estudos originais
+4. Os custos unitários de procedimentos
+
+---
+
+# Preparação
+
+```{r}
+#| label: setup
+#| include: true
+#| message: false
+#| warning: false
+
+options(scipen = 999, digits = 2, OutDec = ",")
+
+formatar_numero <- function(x, decimais = 0) {
+  format(round(x, decimais), big.mark = ".", decimal.mark = ",", nsmall = decimais)
+}
+
+formatar_moeda <- function(x) {
+  paste0("R$ ", formatar_numero(x))
+}
+```
+
+---
+
+# 1. O Município Simulado
+
+O modelo foi desenvolvido para um município fictício chamado **Esperança**, com características típicas de um município brasileiro de médio porte.
+
+```{r}
+#| label: municipio
+
+municipio <- list(
+  nome = "Esperança",
+  populacao = 500000,
+  n_equipes = 100,
+  pop_por_equipe = 5000
+)
+```
+
+| Parâmetro | Valor |
+|-----------|-------|
+| Nome | `r municipio$nome` |
+| População | `r formatar_numero(municipio$populacao)` habitantes |
+| Equipes de APS | `r municipio$n_equipes` |
+| População por equipe | `r formatar_numero(municipio$pop_por_equipe)` habitantes |
+| Cobertura MFC inicial | 0% |
+
+---
+
+# 2. Custos de Pessoal
+
+## Médico da Estratégia Saúde da Família
+
+```{r}
+#| label: custos-medico
+
+custos_pessoal <- list(
+  # Salário base
+  salario_base_medico = 16000,
+  
+
+  # Encargos trabalhistas (INSS patronal, FGTS, férias, 13º, etc.)
+  encargos_trabalhistas_pct = 0.70,
+  
+  # Adicional de preceptoria (sobre o salário base)
+  adicional_preceptoria_pct = 0.10,
+  
+  # Bolsa do residente
+  bolsa_mec = 4106.90,
+  complemento_ms = 4000.00,
+  complemento_municipal = 2000.00  # Opcional
+)
+
+# Cálculos derivados
+custos_pessoal$custo_medico_total <- custos_pessoal$salario_base_medico * 
+                                      (1 + custos_pessoal$encargos_trabalhistas_pct)
+
+custos_pessoal$adicional_preceptoria_valor <- custos_pessoal$salario_base_medico * 
+                                               custos_pessoal$adicional_preceptoria_pct
+
+custos_pessoal$custo_preceptor_total <- custos_pessoal$custo_medico_total + 
+                                         custos_pessoal$adicional_preceptoria_valor * 
+                                         (1 + custos_pessoal$encargos_trabalhistas_pct)
+
+custos_pessoal$bolsa_total_mec_ms <- custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms
+
+custos_pessoal$bolsa_total_completa <- custos_pessoal$bolsa_total_mec_ms + 
+                                        custos_pessoal$complemento_municipal
+```
+
+### Custo do Médico CLT
+
+| Item | Valor Mensal |
+|------|--------------|
+| Salário base | `r formatar_moeda(custos_pessoal$salario_base_medico)` |
+| Encargos trabalhistas (70%) | `r formatar_moeda(custos_pessoal$salario_base_medico * custos_pessoal$encargos_trabalhistas_pct)` |
+| **Custo total médico CLT** | **`r formatar_moeda(custos_pessoal$custo_medico_total)`** |
+
+**Nota sobre encargos trabalhistas:**
+
+Os 70% de encargos incluem:
+
+- INSS patronal (20%)
+- FGTS (8%)
+- Férias + 1/3 constitucional (11,1%)
+- 13º salário (8,3%)
+- Provisão para rescisão (estimado)
+- Outros encargos (SAT, Sistema S, etc.)
+
+### Custo do Preceptor
+
+| Item | Valor Mensal |
+|------|--------------|
+| Custo base (médico CLT) | `r formatar_moeda(custos_pessoal$custo_medico_total)` |
+| Adicional preceptoria (10% do salário base) | `r formatar_moeda(custos_pessoal$adicional_preceptoria_valor)` |
+| Encargos sobre adicional (70%) | `r formatar_moeda(custos_pessoal$adicional_preceptoria_valor * custos_pessoal$encargos_trabalhistas_pct)` |
+| **Custo total preceptor** | **`r formatar_moeda(custos_pessoal$custo_preceptor_total)`** |
+
+### Bolsa do Residente
+
+| Fonte | Valor Mensal |
+|-------|--------------|
+| Bolsa MEC | `r formatar_moeda(custos_pessoal$bolsa_mec)` |
+| Complemento Ministério da Saúde | `r formatar_moeda(custos_pessoal$complemento_ms)` |
+| **Bolsa total (MEC + MS)** | **`r formatar_moeda(custos_pessoal$bolsa_total_mec_ms)`** |
+| Complemento municipal (opcional) | `r formatar_moeda(custos_pessoal$complemento_municipal)` |
+| Bolsa total com complemento municipal | `r formatar_moeda(custos_pessoal$bolsa_total_completa)` |
+
+**Importante:** A bolsa do residente não tem encargos trabalhistas, pois não é relação de emprego CLT.
+
+---
+
+# 3. Estrutura do Programa de Residência
+
+```{r}
+#| label: programa
+
+programa <- list(
+  # Estrutura
+  preceptores_ano1 = 4,
+  preceptores_ano2 = 8,
+  equipes_por_preceptor = 2,
+  residentes_por_equipe = 2,
+  duracao_residencia = 2,  # anos
+  
+  # Retenção
+  taxa_retencao_base = 0.60,
+  
+  # Custos
+  custo_operacional_anual = 50000,
+  
+  # Incentivo federal
+  incentivo_equipe_residente = 4500
+)
+
+# Cálculos derivados
+programa$equipes_escola_ano1 <- programa$preceptores_ano1 * programa$equipes_por_preceptor
+programa$equipes_escola_ano2 <- programa$preceptores_ano2 * programa$equipes_por_preceptor
+programa$residentes_ano1 <- programa$equipes_escola_ano1 * programa$residentes_por_equipe
+programa$residentes_ano2 <- programa$equipes_escola_ano2 * programa$residentes_por_equipe
+programa$formados_por_ano <- programa$residentes_ano2 / programa$duracao_residencia
+```
+
+### Estrutura do Programa
+
+| Parâmetro | Ano 1 | Ano 2 em diante |
+|-----------|-------|-----------------|
+| Preceptores | `r programa$preceptores_ano1` | `r programa$preceptores_ano2` |
+| Equipes-escola | `r programa$equipes_escola_ano1` | `r programa$equipes_escola_ano2` |
+| Residentes (R1 + R2) | `r programa$residentes_ano1` | `r programa$residentes_ano2` |
+| Formados por ano | - | `r programa$formados_por_ano` |
+
+### Modelo de Supervisão
+
+- Cada **preceptor** supervisiona **`r programa$equipes_por_preceptor` equipes-escola**
+- Cada **equipe-escola** tem **`r programa$residentes_por_equipe` residentes** (1 R1 + 1 R2)
+- **1 preceptor** faz o trabalho de **2 médicos** (com apoio dos residentes)
+
+### Incentivo Federal
+
+O Ministério da Saúde paga um incentivo de **`r formatar_moeda(programa$incentivo_equipe_residente)`/mês** por equipe com residente, conforme Portaria GM/MS nº 1.248/2013.
+
+### Custos Operacionais
+
+| Item | Valor Anual |
+|------|-------------|
+| Coordenação, materiais, eventos, etc. | `r formatar_moeda(programa$custo_operacional_anual)` |
+
+---
+
+# 4. Parâmetros Econômicos
+
+```{r}
+#| label: economico
+
+economico <- list(
+  taxa_desconto = 0.05,
+  horizonte_anos = 10,
+  fator_correcao_aih = 1.5
+)
+```
+
+| Parâmetro | Valor | Justificativa |
+|-----------|-------|---------------|
+| Taxa de desconto | `r economico$taxa_desconto * 100`% ao ano | Recomendação do Ministério da Saúde para avaliações econômicas |
+| Horizonte de análise | `r economico$horizonte_anos` anos | Tempo suficiente para avaliar o ciclo completo do programa |
+| Fator de correção AIH | `r economico$fator_correcao_aih` | Corrige defasagem da tabela SUS em relação aos custos reais |
+
+**Sobre o fator de correção AIH:**
+
+Os valores da tabela SUS (SIGTAP) para internações estão significativamente defasados em relação aos custos reais. O fator de 1,5 é uma estimativa conservadora baseada em estudos que mostram que os custos reais de internação podem ser 50% a 100% maiores que os valores pagos pelo SUS.
+
+---
+
+# 5. Dados Epidemiológicos
+
+## Fonte dos Dados
+
+Os dados epidemiológicos provêm de **três estudos de coorte retrospectivos** realizados no Rio de Janeiro:
+
+```{r}
+#| label: estudo-original
+
+estudo <- list(
+  populacao = 600000,
+  prop_mfc = 0.336,
+  prop_gen = 0.664
+)
+```
+
+| Parâmetro | Valor |
+|-----------|-------|
+| População do estudo | `r formatar_numero(estudo$populacao)` pacientes |
+| Pacientes atendidos por MFC | `r estudo$prop_mfc * 100`% |
+| Pacientes atendidos por generalistas | `r estudo$prop_gen * 100`% |
+
+### Os Três Estudos
+
+| Estudo | Desfecho | Publicação |
+|--------|----------|------------|
+| 1 | Internações por Condições Sensíveis à APS (ICSAP) | PLOS Global Public Health, 2023 |
+| 2 | Encaminhamentos e exames diagnósticos | BMJ Open, 2023 |
+| 3 | Exames laboratoriais | BMC Primary Care, 2024 |
+
+### Interpretação do Risco Relativo (RR)
+
+$$RR = \frac{\text{Taxa em pacientes de MFC}}{\text{Taxa em pacientes de generalistas}}$$
+
+- **RR = 1,00**: Sem diferença
+- **RR < 1,00**: MFC tem **menor** taxa (economia)
+- **RR > 1,00**: MFC tem **maior** taxa (custo adicional)
+
+**Exemplo:** RR = 0,50 significa que pacientes de MFC têm metade da taxa de eventos.
+
+---
+
+## Encaminhamentos Ambulatoriais
+
+```{r}
+#| label: enc-ambulatoriais
+
+enc_ambulatoriais <- data.frame(
+  especialidade = c(
+    "Cardiologia", "Neurologia", "Psiquiatria", "Dermatologia",
+    "Pneumologia", "Doenças infecciosas", "Urologia", "Alergologia",
+    "Nefrologia", "Endocrinologia", "Gastroenterologia", "Angiologia",
+    "Reumatologia", "Fisioterapia", "Reabilitação", "Oftalmologia",
+    "ORL", "Ortopedia", "Ginecologia", "Pré-natal alto risco"
+  ),
+  rr = c(
+    0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,
+    0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,
+    0.71, 0.52, 0.86, 0.66
+  ),
+  eventos_ano = c(
+    2008, 1835, 897, 4144, 903, 290, 1762, 480,
+    603, 1021, 867, 1030, 830, 2390, 1173, 8713,
+    2269, 4934, 738, 991
+  ),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(
+  enc_ambulatoriais,
+  col.names = c("Especialidade", "RR", "Eventos/ano"),
+  caption = "Encaminhamentos ambulatoriais (20 especialidades)"
+)
+```
+
+**Nota:** RR > 1 em Fisioterapia, Reabilitação e Oftalmologia sugere que MFC identifica mais necessidades nestas áreas.
+
+---
+
+## Encaminhamentos Cirúrgicos
+
+```{r}
+#| label: enc-cirurgicos
+
+enc_cirurgicos <- data.frame(
+  especialidade = c(
+    "Cirurgia geral", "Cirurgia vascular", "Neurocirurgia",
+    "Proctologia", "Cirurgia cabeça/pescoço", "Mastologia"
+  ),
+  rr = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),
+  eventos_ano = c(4458, 989, 147, 1968, 859, 359),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(
+  enc_cirurgicos,
+  col.names = c("Especialidade", "RR", "Eventos/ano"),
+  caption = "Encaminhamentos cirúrgicos (6 especialidades)"
+)
+```
+
+---
+
+## Exames Diagnósticos
+
+```{r}
+#| label: exames-diagnosticos
+
+exames_diagnosticos <- data.frame(
+  exame = c(
+    "Ecocardiograma", "Eletroencefalograma", "Endoscopia digestiva",
+    "Ultrassonografia", "Radiografia", "Outros diagnósticos"
+  ),
+  rr = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),
+  eventos_ano = c(1201, 385, 510, 1090, 431, 2424),
+  custo_unitario = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00),
+  stringsAsFactors = FALSE
+)
+
+exames_diagnosticos$custo_fmt <- formatar_moeda(exames_diagnosticos$custo_unitario)
+
+knitr::kable(
+  exames_diagnosticos[, c("exame", "rr", "eventos_ano", "custo_fmt")],
+  col.names = c("Exame", "RR", "Eventos/ano", "Custo Unitário"),
+  caption = "Exames diagnósticos (6 tipos)"
+)
+```
+
+---
+
+## Exames Laboratoriais
+
+```{r}
+#| label: exames-laboratoriais
+
+exames_laboratoriais <- data.frame(
+  exame = c(
+    "Hemograma", "Glicemia jejum", "Colesterol total", "HDL",
+    "LDL", "Triglicerídeos", "Creatinina", "Ureia",
+    "TGO", "TGP", "GGT", "Bilirrubinas",
+    "Ácido úrico", "TSH", "T4 livre", "PSA",
+    "Hemoglobina glicada", "Glicemia pós-prandial", "Curva glicêmica", "Frutosamina",
+    "Sódio", "Potássio", "Cálcio", "EAS",
+    "Urocultura", "Vitamina D", "Vitamina B12", "Ferritina",
+    "Ferro sérico", "Fosfatase alcalina"
+  ),
+  rr = c(
+    0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81,
+    0.94, 0.41, 0.82, 0.23, 0.71, 0.08, 0.13, 0.56,
+    0.78, 0.48, 0.47, 0.69, 0.64, 0.74, 0.09, 0.67,
+    0.44, 0.56, 0.60, 0.48, 0.47, 0.36
+  ),
+  eventos_ano = c(
+    51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673,
+    31127, 22163, 33828, 15603, 11679, 791, 886, 5432,
+    2304, 9181, 9363, 3505, 4386, 1957, 604, 41333,
+    1866, 674, 863, 210, 216, 4365
+  ),
+  custo_unitario = c(
+    4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85,
+    3.51, 3.51, 3.51, 1.85, 8.96, 8.71, 8.71, 11.60,
+    2.01, 2.01, 2.01, 2.01, 3.51, 2.63, 1.65, 3.70,
+    1.85, 10.15, 10.15, 18.55, 18.55, 16.42
+  ),
+  stringsAsFactors = FALSE
+)
+
+exames_laboratoriais$custo_fmt <- formatar_moeda(exames_laboratoriais$custo_unitario)
+
+knitr::kable(
+  exames_laboratoriais[, c("exame", "rr", "eventos_ano", "custo_fmt")],
+  col.names = c("Exame", "RR", "Eventos/ano", "Custo Unitário"),
+  caption = "Exames laboratoriais (30 tipos)"
+)
+```
+
+**Destaques:**
+
+- **TSH (RR = 0,08):** MFC solicita 92% menos dosagens de TSH
+- **Cálcio (RR = 0,09):** MFC solicita 91% menos dosagens de cálcio
+- **Colesterol total (RR = 0,29):** MFC solicita 71% menos dosagens de colesterol
+
+---
+
+## Internações por Condições Sensíveis à APS (ICSAP)
+
+```{r}
+#| label: icsap
+
+icsap <- data.frame(
+  condicao = c(
+    "Doenças imunopreveníveis", "Gastroenterites", "Anemia",
+    "Deficiências nutricionais", "Infecções ouvido/vias aéreas",
+    "Pneumonias bacterianas", "Asma", "Doenças pulmonares",
+    "Hipertensão", "Angina", "Insuficiência cardíaca",
+    "Doenças cerebrovasculares", "Diabetes mellitus", "Epilepsias"
+  ),
+  rr = c(
+    0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78,
+    0.45, 0.57, 0.36, 0.82, 1.06, 0.59
+  ),
+  eventos_ano = c(
+    128, 160, 244, 271, 230, 86, 54, 136,
+    45, 114, 116, 331, 28, 41
+  ),
+  custo_medio = c(
+    761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 853.21, 646.69,
+    527.15, 1969.07, 1969.07, 679.82, 502.60, 612.67
+  ),
+  stringsAsFactors = FALSE
+)
+
+icsap$custo_fmt <- formatar_moeda(icsap$custo_medio)
+
+knitr::kable(
+  icsap[, c("condicao", "rr", "eventos_ano", "custo_fmt")],
+  col.names = c("Condição", "RR", "Internações/ano", "Custo Médio"),
+  caption = "Internações por Condições Sensíveis à APS (14 grupos)"
+)
+```
+
+**Destaques:**
+
+- **Asma (RR = 0,35):** MFC reduz internações por asma em 65%
+- **Insuficiência cardíaca (RR = 0,36):** MFC reduz internações em 64%
+- **Hipertensão (RR = 0,45):** MFC reduz internações em 55%
+- **Diabetes (RR = 1,06):** Único grupo com RR > 1 (sem diferença significativa)
+
+---
+
+# 6. Custos Unitários
+
+## Consultas Especializadas
+
+```{r}
+#| label: custos-consultas
+
+custo_consulta <- 50.00
+```
+
+| Procedimento | Custo Unitário | Fonte |
+|--------------|----------------|-------|
+| Consulta especializada (média) | `r formatar_moeda(custo_consulta)` | Estimativa baseada em SIGTAP |
+
+**Nota:** O valor de R$ 50,00 é uma média ponderada considerando consultas médicas especializadas na tabela SIGTAP.
+
+## Resumo dos Custos de Internação
+
+```{r}
+#| label: resumo-custos-internacao
+
+resumo_icsap <- data.frame(
+  estatistica = c("Mínimo", "Mediana", "Média", "Máximo"),
+  valor = c(
+    min(icsap$custo_medio),
+    median(icsap$custo_medio),
+    mean(icsap$custo_medio),
+    max(icsap$custo_medio)
+  )
+)
+
+resumo_icsap$valor_fmt <- formatar_moeda(resumo_icsap$valor)
+
+knitr::kable(
+  resumo_icsap[, c("estatistica", "valor_fmt")],
+  col.names = c("Estatística", "Custo por Internação"),
+  caption = "Resumo dos custos de internação ICSAP"
+)
+```
+
+---
+
+# 7. Resumo: Economia do Modelo de Residência
+
+O modelo de residência gera economia porque **1 preceptor + 4 residentes** fazem o trabalho de **2 médicos**.
+
+```{r}
+#| label: economia-modelo
+
+# Modelo tradicional: 2 médicos para 2 equipes
+custo_tradicional <- 2 * custos_pessoal$custo_medico_total * 12
+
+# Modelo residência: 1 preceptor + 4 residentes - incentivo
+custo_residencia <- custos_pessoal$custo_preceptor_total * 12 +
+                     4 * custos_pessoal$bolsa_total_mec_ms * 12 -
+                     2 * programa$incentivo_equipe_residente * 12
+
+economia_por_par <- custo_tradicional - custo_residencia
+```
+
+| Modelo | Custo Anual (2 equipes) |
+|--------|-------------------------|
+| Tradicional (2 médicos CLT) | `r formatar_moeda(custo_tradicional)` |
+| Residência (1 preceptor + 4 residentes) | `r formatar_moeda(custo_residencia)` |
+| **Economia por par de equipes** | **`r formatar_moeda(economia_por_par)`** |
+
+---
+
+# 8. Objetos Criados
+
+Este capítulo criou os seguintes objetos R para uso nos capítulos seguintes:
+
+| Objeto | Descrição |
+|--------|-----------|
+| `municipio` | Parâmetros do município simulado |
+| `custos_pessoal` | Custos de médicos, preceptores e residentes |
+| `programa` | Estrutura do programa de residência |
+| `economico` | Parâmetros econômicos (taxa de desconto, horizonte) |
+| `estudo` | Parâmetros do estudo original |
+| `enc_ambulatoriais` | Dados de encaminhamentos ambulatoriais |
+| `enc_cirurgicos` | Dados de encaminhamentos cirúrgicos |
+| `exames_diagnosticos` | Dados de exames diagnósticos |
+| `exames_laboratoriais` | Dados de exames laboratoriais |
+| `icsap` | Dados de internações por ICSAP |
+| `custo_consulta` | Custo unitário de consulta especializada |
+
+---
+
+# Próximos Passos
+
+Com os dados configurados, os próximos capítulos irão:
+
+1. **Capítulo 02:** Explicar a metodologia de conversão para baseline
+2. **Capítulo 03:** Calcular a economia potencial em saúde
+3. **Capítulo 04:** Calcular os indicadores econômicos do programa
+4. **Capítulo 05:** Realizar análise de sensibilidade
+5. **Capítulo 06:** Apresentar visualizações dos resultados
+6. **Capítulo 07:** Discutir conclusões e implicações

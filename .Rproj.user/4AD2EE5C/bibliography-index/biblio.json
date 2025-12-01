@@ -1,0 +1,240 @@
+{
+    "sources": [
+        {
+            "author": [
+                {
+                    "family": "Jantsch",
+                    "given": "Adelson Guaraci"
+                },
+                {
+                    "literal": "others"
+                }
+            ],
+            "container-title": "PLOS Global Public Health",
+            "id": "jantsch2023icsap",
+            "issue": "5",
+            "issued": {
+                "date-parts": [
+                    [
+                        2023
+                    ]
+                ]
+            },
+            "page": "e0001883",
+            "title": "Hospitalizations for ambulatory care sensitive conditions in patients treated by family physicians vs non-family physicians in Brazil: A retrospective cohort",
+            "title-short": "Hospitalizations for ambulatory care sensitive conditions in patients treated by family physicians vs non-family physicians in Brazil",
+            "type": "article-journal",
+            "volume": "3"
+        },
+        {
+            "author": [
+                {
+                    "family": "Jantsch",
+                    "given": "Adelson Guaraci"
+                },
+                {
+                    "literal": "others"
+                }
+            ],
+            "container-title": "BMJ Open",
+            "id": "jantsch2023referrals",
+            "issued": {
+                "date-parts": [
+                    [
+                        2023
+                    ]
+                ]
+            },
+            "page": "e073243",
+            "title": "Referral rates to secondary care by family physicians vs non-family physicians in primary care in Brazil: A retrospective cohort study",
+            "title-short": "Referral rates to secondary care by family physicians vs non-family physicians in primary care in Brazil",
+            "type": "article-journal",
+            "volume": "13"
+        },
+        {
+            "author": [
+                {
+                    "family": "Jantsch",
+                    "given": "Adelson Guaraci"
+                },
+                {
+                    "literal": "others"
+                }
+            ],
+            "container-title": "BMC Family Practice",
+            "id": "jantsch2024lab",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "title": "Laboratory test ordering by family physicians versus non-family physicians in primary care: A retrospective cohort study",
+            "title-short": "Laboratory test ordering by family physicians versus non-family physicians in primary care",
+            "type": "article-journal"
+        },
+        {
+            "URL": "http://sigtap.datasus.gov.br/",
+            "author": [
+                {
+                    "literal": "Ministério da Saúde"
+                }
+            ],
+            "id": "brasil2024sigtap",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "publisher": "DATASUS",
+            "title": "Sistema de gerenciamento da tabela de procedimentos, medicamentos e OPM do SUS",
+            "type": "report"
+        },
+        {
+            "author": [
+                {
+                    "literal": "Ministério da Saúde"
+                }
+            ],
+            "id": "brasil2024sihsus",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "publisher": "DATASUS",
+            "title": "Sistema de informações hospitalares do SUS",
+            "type": "report"
+        },
+        {
+            "author": [
+                {
+                    "family": "Starfield",
+                    "given": "Barbara"
+                },
+                {
+                    "family": "Shi",
+                    "given": "Leiyu"
+                },
+                {
+                    "family": "Macinko",
+                    "given": "James"
+                }
+            ],
+            "container-title": "The Milbank Quarterly",
+            "id": "starfield2005contribution",
+            "issue": "3",
+            "issued": {
+                "date-parts": [
+                    [
+                        2005
+                    ]
+                ]
+            },
+            "page": "457-502",
+            "title": "Contribution of primary care to health systems and health",
+            "type": "article-journal",
+            "volume": "83"
+        },
+        {
+            "author": [
+                {
+                    "family": "Macinko",
+                    "given": "James"
+                },
+                {
+                    "family": "Guanais",
+                    "given": "Frederico C"
+                },
+                {
+                    "dropping-particle": "de",
+                    "family": "Fatima",
+                    "given": "Maria"
+                },
+                {
+                    "dropping-particle": "de",
+                    "family": "Souza",
+                    "given": "Marinho"
+                }
+            ],
+            "container-title": "Journal of Epidemiology & Community Health",
+            "id": "macinko2006evaluation",
+            "issue": "1",
+            "issued": {
+                "date-parts": [
+                    [
+                        2006
+                    ]
+                ]
+            },
+            "page": "13-19",
+            "title": "Evaluation of the impact of the Family Health Program on infant mortality in Brazil, 1990–2002",
+            "type": "article-journal",
+            "volume": "60"
+        },
+        {
+            "author": [
+                {
+                    "family": "Drummond",
+                    "given": "Michael F"
+                },
+                {
+                    "family": "Sculpher",
+                    "given": "Mark J"
+                },
+                {
+                    "family": "Claxton",
+                    "given": "Karl"
+                },
+                {
+                    "family": "Stoddart",
+                    "given": "Greg L"
+                },
+                {
+                    "family": "Torrance",
+                    "given": "George W"
+                }
+            ],
+            "edition": "4",
+            "id": "drummond2015methods",
+            "issued": {
+                "date-parts": [
+                    [
+                        2015
+                    ]
+                ]
+            },
+            "publisher": "Oxford University Press",
+            "title": "Methods for the economic evaluation of health care programmes",
+            "type": "book"
+        },
+        {
+            "author": [
+                {
+                    "literal": "Ministério da Saúde"
+                }
+            ],
+            "id": "brasil2014diretrizes",
+            "issued": {
+                "date-parts": [
+                    [
+                        2014
+                    ]
+                ]
+            },
+            "publisher": "Secretaria de Ciência, Tecnologia e Insumos Estratégicos",
+            "publisher-place": "Brasília",
+            "title": "Diretrizes metodológicas: Diretriz de avaliação econômica",
+            "title-short": "Diretrizes metodológicas",
+            "type": "report"
+        }
+    ],
+    "project_biblios": [
+        "references.bib"
+    ]
+}

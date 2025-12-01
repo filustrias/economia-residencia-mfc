@@ -1,0 +1,270 @@
+---
+title: "Tabelas Completas"
+---
+
+# Dados Originais do Estudo
+
+## Encaminhamentos Ambulatoriais
+
+```{r}
+#| label: tabela-encam-amb
+#| echo: false
+
+encaminhamentos_ambulatoriais <- data.frame(
+  especialidade = c("Cardiologia", "Neurologia", "Psiquiatria", "Dermatologia",
+                    "Pneumologia", "Doenças infecciosas", "Urologia", "Alergologia",
+                    "Nefrologia", "Endocrinologia", "Gastroenterologia", "Angiologia",
+                    "Reumatologia", "Fisioterapia", "Reabilitação", "Oftalmologia",
+                    "ORL", "Ortopedia", "Ginecologia", "Pré-natal alto risco"),
+  rr = c(0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54, 0.63, 0.42, 
+         0.38, 0.35, 0.47, 1.17, 1.68, 1.09, 0.71, 0.52, 0.86, 0.66),
+  eventos_ano = c(2008, 1835, 897, 4144, 903, 290, 1762, 480, 603, 1021, 
+                  867, 1030, 830, 2390, 1173, 8713, 2269, 4934, 738, 991),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(encaminhamentos_ambulatoriais,
+             col.names = c("Especialidade", "RR (IC 95%)", "Eventos/ano"),
+             caption = "Encaminhamentos para especialidades ambulatoriais")
+```
+
+## Encaminhamentos Cirúrgicos
+
+```{r}
+#| label: tabela-encam-cir
+#| echo: false
+
+encaminhamentos_cirurgicos <- data.frame(
+  especialidade = c("Cirurgia oftalmológica", "Cirurgia ginecológica", "Cirurgia ortopédica",
+                    "Cirurgia geral", "Cirurgia plástica", "Cirurgia vascular"),
+  rr = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),
+  eventos_ano = c(4458, 989, 147, 1968, 859, 359),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(encaminhamentos_cirurgicos,
+             col.names = c("Especialidade", "RR", "Eventos/ano"),
+             caption = "Encaminhamentos para avaliação cirúrgica")
+```
+
+## Exames Diagnósticos
+
+```{r}
+#| label: tabela-exames-diag
+#| echo: false
+
+exames_diagnosticos <- data.frame(
+  exame = c("Ecocardiograma", "Espirometria", "Colonoscopia", "EDA", 
+            "Teste ergométrico", "Mamografia"),
+  rr = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),
+  eventos_ano = c(1201, 385, 510, 1090, 431, 2424),
+  custo = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(exames_diagnosticos,
+             col.names = c("Exame", "RR", "Eventos/ano", "Custo SIGTAP (R$)"),
+             caption = "Encaminhamentos para exames diagnósticos")
+```
+
+## Exames Laboratoriais
+
+```{r}
+#| label: tabela-exames-lab
+#| echo: false
+
+exames_laboratoriais <- data.frame(
+  exame = c("Hemograma", "Creatinina", "Ureia", "Sódio", "Potássio", "Glicose",
+            "Hemoglobina glicada", "Colesterol total", "HDL", "LDL", "Triglicerídeos",
+            "Ácido úrico", "TSH", "T3", "T4", "T4 livre", "Bilirrubina", "AST", "ALT",
+            "Fosfatase alcalina", "Gama-GT", "VHS", "Ova e parasitas", "Urinálise",
+            "Cálcio", "LH", "FSH", "Rubéola IgG", "Rubéola IgM", "PSA"),
+  rr = c(0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81, 0.94, 0.41, 0.82,
+         0.23, 0.71, 0.08, 0.13, 0.56, 0.78, 0.48, 0.47, 0.69, 0.64, 0.74,
+         0.09, 0.67, 0.44, 0.56, 0.60, 0.48, 0.47, 0.36),
+  eventos_ano = c(51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673, 31127,
+                  22163, 33828, 15603, 11679, 791, 886, 5432, 2304, 9181, 9363,
+                  3505, 4386, 1957, 604, 41333, 1866, 674, 863, 210, 216, 4365),
+  custo = c(4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85, 3.51, 3.51, 3.51,
+            1.85, 8.96, 8.71, 8.71, 11.60, 2.01, 2.01, 2.01, 2.01, 3.51, 2.63, 
+            1.65, 3.70, 1.85, 10.15, 10.15, 18.55, 18.55, 16.42),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(exames_laboratoriais,
+             col.names = c("Exame", "RR", "Eventos/ano", "Custo SIGTAP (R$)"),
+             caption = "Solicitação de exames laboratoriais")
+```
+
+## Internações ICSAP
+
+```{r}
+#| label: tabela-icsap
+#| echo: false
+
+internacoes_icsap <- data.frame(
+  condicao = c("Hipertensão", "Diabetes mellitus", "AVC", "Angina pectoris",
+               "Insuficiência cardíaca", "Epilepsia", "Asma", "Gravidez",
+               "Gastroenterite", "Pneumonia crianças", "Pneumonia adultos",
+               "Infecção pele", "ORL", "DIP"),
+  rr = c(0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78, 0.45, 0.57, 0.36, 
+         0.82, 1.06, 0.59),
+  eventos_ano = c(128, 160, 244, 271, 230, 86, 54, 136, 45, 114, 116, 331, 28, 41),
+  custo = c(761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 853.21, 646.69,
+            527.15, 1969.07, 1969.07, 679.82, 502.60, 612.67),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(internacoes_icsap,
+             col.names = c("Condição", "RR", "Eventos/ano", "Custo AIH (R$)"),
+             caption = "Internações por condições sensíveis à APS")
+```
+
+---
+
+# Valores Convertidos para Cenário Baseline
+
+## Baseline: 500.000 habitantes, 0% MFC
+
+```{r}
+#| label: tabela-baseline
+#| echo: false
+
+baseline <- data.frame(
+  categoria = c("Encaminhamentos ambulatoriais", "Encaminhamentos cirúrgicos",
+                "Exames diagnósticos", "Exames laboratoriais", "Internações ICSAP"),
+  original_600k = c(37878, 8780, 6041, 418663, 1984),
+  baseline_600k = c(42177, 8547, 6532, 479460, 2234),
+  baseline_500k = c(35148, 7123, 5444, 399550, 1862),
+  taxa_1000 = c(70.3, 14.2, 10.9, 799.1, 3.72),
+  variacao = c("+11.4%", "-2.6%", "+8.1%", "+14.5%", "+12.6%"),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(baseline,
+             col.names = c("Categoria", "Original (600k)", "0% MFC (600k)", 
+                          "0% MFC (500k)", "Taxa/1000 hab", "Variação"),
+             caption = "Valores baseline para simulação")
+```
+
+---
+
+# Resultados da Simulação
+
+## Fluxo de Caixa - Cenário Base
+
+```{r}
+#| label: tabela-fluxo-caixa
+#| echo: false
+
+fluxo <- data.frame(
+  ano = 0:10,
+  mfc = c(0, 3, 3, 9, 15, 21, 27, 33, 39, 45, 51),
+  prop_mfc = c("0%", "3%", "3%", "9%", "15%", "21%", "27%", "33%", "39%", "45%", "51%"),
+  custo = c(0, 1194828, 2143855, 2143855, 2143855, 2143855, 
+            2143855, 2143855, 2143855, 2143855, 2143855),
+  beneficio = c(0, 37498, 37498, 225439, 413380, 601321, 
+                789262, 977203, 1165143, 1353084, 1541025),
+  stringsAsFactors = FALSE
+)
+
+fluxo$saldo <- fluxo$beneficio - fluxo$custo
+fluxo$saldo_acum <- cumsum(fluxo$saldo)
+
+knitr::kable(fluxo,
+             col.names = c("Ano", "MFC", "% MFC", "Custo", "Benefício", 
+                          "Saldo Anual", "Saldo Acumulado"),
+             format.args = list(big.mark = ".", decimal.mark = ","),
+             caption = "Fluxo de caixa detalhado (R$)")
+```
+
+## Indicadores Econômicos por Cenário
+
+```{r}
+#| label: tabela-indicadores-cenarios
+#| echo: false
+
+cenarios <- data.frame(
+  cenario = c("Pessimista", "Conservador", "Base", "Otimista", "Muito Otimista"),
+  retencao = c("40%", "50%", "60%", "70%", "80%"),
+  fator_aih = c("1,0x", "1,25x", "1,5x", "1,75x", "2,0x"),
+  vpl = c("-12,5", "-9,8", "-7,1", "-3,8", "-0,5"),
+  roi = c("-85%", "-75%", "-64%", "-42%", "-15%"),
+  rcb = c("0,21", "0,28", "0,36", "0,58", "0,85"),
+  payback = c(">10", ">10", ">10", ">10", ">10"),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(cenarios,
+             col.names = c("Cenário", "Retenção", "Fator AIH", "VPL (R$ mi)", 
+                          "ROI", "RCB", "Payback"),
+             caption = "Comparação de indicadores por cenário")
+```
+
+## Análise de Sensibilidade - Monte Carlo
+
+```{r}
+#| label: tabela-monte-carlo
+#| echo: false
+
+mc <- data.frame(
+  estatistica = c("Média", "Mediana", "Desvio Padrão", "Mínimo", "Máximo",
+                  "Percentil 5%", "Percentil 25%", "Percentil 75%", "Percentil 95%"),
+  vpl = c("-5,2", "-5,1", "2,3", "-12,8", "1,5", "-9,8", "-6,8", "-3,4", "-1,2"),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(mc,
+             col.names = c("Estatística", "VPL (R$ milhões)"),
+             caption = "Distribuição do VPL - Análise de Monte Carlo (n=1000)")
+```
+
+---
+
+# Custos Detalhados
+
+## Custos do Programa de Residência
+
+```{r}
+#| label: tabela-custos-programa
+#| echo: false
+
+custos_prog <- data.frame(
+  item = c("Bolsa residente (MEC)", "Complemento MS", "Bolsa total/residente",
+           "Custo preceptoria/preceptor", "Incentivo federal/equipe",
+           "Custos operacionais/ano"),
+  valor_mensal = c("R$ 4.106,90", "R$ 4.000,00", "R$ 8.106,90",
+                   "R$ 4.000,00", "R$ 4.500,00", "-"),
+  valor_anual = c("R$ 49.282,80", "R$ 48.000,00", "R$ 97.282,80",
+                  "R$ 48.000,00", "R$ 54.000,00", "R$ 50.000,00"),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(custos_prog,
+             col.names = c("Item", "Valor Mensal", "Valor Anual"),
+             caption = "Componentes de custo do programa")
+```
+
+## Custos SIGTAP - Consultas e Procedimentos
+
+```{r}
+#| label: tabela-custos-sigtap
+#| echo: false
+
+sigtap <- data.frame(
+  procedimento = c("Consulta médica em APS", "Consulta especializada",
+                   "Hemograma completo", "Glicemia de jejum", "TSH",
+                   "Ecocardiograma", "Endoscopia digestiva alta",
+                   "Colonoscopia"),
+  codigo = c("03.01.01.007-2", "03.01.01.004-8", "02.02.02.038-0",
+             "02.02.01.047-3", "02.02.06.037-0", "02.05.01.003-7",
+             "02.09.01.003-3", "02.09.01.001-7"),
+  valor = c("R$ 10,00", "R$ 10,00", "R$ 4,11", "R$ 1,85", "R$ 8,96",
+            "R$ 39,94", "R$ 48,16", "R$ 86,00"),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(sigtap,
+             col.names = c("Procedimento", "Código SIGTAP", "Valor"),
+             caption = "Valores de referência SIGTAP 2024")
+```

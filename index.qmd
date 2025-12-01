@@ -1,0 +1,53 @@
+---
+title: "Análise de Custo-Benefício da Residência em MFC"
+---
+
+# Prefácio {.unnumbered}
+
+Este documento apresenta um modelo de simulação econômica para avaliação do retorno sobre investimento em programas de Residência em Medicina de Família e Comunidade (MFC) no contexto da Atenção Primária à Saúde brasileira.
+
+## Objetivo
+
+Demonstrar o valor econômico da formação especializada em Medicina de Família e Comunidade, fornecendo evidências para gestores e formuladores de políticas públicas sobre o retorno do investimento em programas de residência.
+
+## Fonte dos Dados
+
+O modelo utiliza dados de três estudos de coorte retrospectivos realizados no município do Rio de Janeiro:
+
+1. **Estudo 1** (PLOS Global Public Health): Internações por Condições Sensíveis à APS
+2. **Estudo 2** (BMJ Open): Encaminhamentos para especialistas
+3. **Estudo 3** (BMC Family Practice): Solicitação de exames laboratoriais
+
+### Características dos estudos
+
+- **População**: ~600.000 pacientes cadastrados na APS
+- **Proporção MFC**: 33,6% atendidos por médicos de família
+- **Proporção Generalistas**: 66,4% atendidos por médicos sem residência em MFC
+- **Período**: 2013-2018
+
+## Estrutura do Documento
+
+O documento está organizado nos seguintes capítulos:
+
+1. **Configuração e Dados**: Parâmetros do estudo e conversão para cenário baseline
+2. **Funções de Simulação**: Funções R para cálculo de eventos e custos
+3. **Simulação de Cenários**: Projeção temporal da expansão do programa
+4. **Indicadores Econômicos**: Cálculo de ROI, VPL, RCB e Payback
+5. **Visualizações**: Gráficos e tabelas de resultados
+6. **Análise de Sensibilidade**: Variação de parâmetros críticos
+7. **Discussão e Conclusões**: Interpretação dos resultados
+
+## Reprodutibilidade
+
+Todo o código R utilizado nas análises está disponível neste documento. Para reproduzir as análises:
+
+
+## Citação
+
+Para citar este trabalho:
+
+> Jantsch, A.G. (2025). Análise de Custo-Benefício da Residência em Medicina de Família e Comunidade: Modelo de Simulação Econômica. 
+
+---
+
+*Última atualização: `r Sys.Date()`*

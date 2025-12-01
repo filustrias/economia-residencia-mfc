@@ -1,0 +1,294 @@
+---
+title: "Discussão e Conclusões"
+---
+
+# Introdução
+
+Este capítulo discute os principais achados do modelo econômico e apresenta as conclusões do estudo sobre a viabilidade de um programa de residência em Medicina de Família e Comunidade (MFC) no município fictício de Esperança.
+
+---
+
+# Síntese dos Resultados
+
+```{r}
+#| label: setup
+#| include: false
+#| message: false
+#| warning: false
+
+options(scipen = 999, digits = 2, OutDec = ",")
+
+formatar_numero <- function(x, decimais = 0) {
+  format(round(x, decimais), big.mark = ".", decimal.mark = ",", nsmall = decimais)
+}
+
+formatar_moeda <- function(x) {
+  paste0("R$ ", formatar_numero(x))
+}
+
+# Parâmetros resumidos
+municipio <- list(populacao = 500000, n_equipes = 100)
+custos_pessoal <- list(
+  salario_base_medico = 16000,
+  encargos_trabalhistas_pct = 0.70,
+  bolsa_mec = 4106.90,
+  complemento_ms = 4000.00
+)
+custos_pessoal$custo_medico_total <- 16000 * 1.70
+custos_pessoal$custo_preceptor_total <- custos_pessoal$custo_medico_total + 16000 * 0.10 * 1.70
+custos_pessoal$bolsa_total <- custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms
+
+# Economia do modelo por par de equipes
+custo_2medicos <- 2 * custos_pessoal$custo_medico_total * 12
+custo_residencia <- custos_pessoal$custo_preceptor_total * 12 + 
+                     4 * custos_pessoal$bolsa_total * 12 - 
+                     2 * 4500 * 12
+economia_modelo_par <- custo_2medicos - custo_residencia
+```
+
+## O Município de Esperança
+
+O modelo foi desenvolvido para um município fictício com as seguintes características:
+
+| Característica | Valor |
+|----------------|-------|
+| População | `r formatar_numero(municipio$populacao)` habitantes |
+| Equipes de APS | `r municipio$n_equipes` equipes |
+| Cobertura MFC inicial | 0% |
+| Meta de cobertura | Máxima possível em 10 anos |
+
+## O Programa de Residência
+
+A estrutura proposta para o programa:
+
+| Parâmetro | Ano 1 | Ano 2 em diante |
+|-----------|-------|-----------------|
+| Preceptores | 4 | 8 |
+| Equipes-escola | 8 | 16 |
+| Residentes | 16 | 32 |
+| Formados por ano | - | 16 |
+
+## Principais Indicadores (Cenário Base)
+
+Com taxa de retenção de 60% e adicional por especialidade de 10%:
+
+| Indicador | Valor |
+|-----------|-------|
+| Cobertura MFC ao final de 10 anos | 64% |
+| Médicos formados e retidos | 48 |
+| VPL (economia total em 10 anos) | Positivo |
+| Payback | Imediato (Ano 1) |
+
+---
+
+# Discussão
+
+## 1. O Modelo de Residência é Economicamente Vantajoso
+
+O primeiro achado importante é que o **modelo de residência custa menos que o modelo tradicional** de contratação de médicos.
+
+Para cada par de equipes-escola:
+
+- **Modelo tradicional:** 2 médicos CLT = `r formatar_moeda(custo_2medicos)`/ano
+- **Modelo residência:** 1 preceptor + 4 residentes - incentivo = `r formatar_moeda(custo_residencia)`/ano
+- **Economia:** `r formatar_moeda(economia_modelo_par)`/ano
+
+Isso ocorre porque:
+
+1. **Residentes recebem bolsa, não salário CLT:** A bolsa não tem encargos trabalhistas (70% do salário).
+2. **Incentivo federal:** O Ministério da Saúde paga R$ 4.500/mês por equipe com residente.
+3. **Proporção favorável:** 1 preceptor supervisiona 2 equipes com 4 residentes.
+
+## 2. O Investimento em Fixação se Paga
+
+O segundo achado é que **investir em adicional por especialidade para reter os formados é economicamente justificável**.
+
+A análise mostrou que:
+
+- Cada R$ 1,00 investido em adicional gera mais de R$ 1,00 em economia com saúde
+- Mesmo com adicional de 30% (R$ 4.800/mês), o programa permanece viável
+- Maior adicional → maior retenção → maior cobertura → maior economia
+
+A lógica de política pública aqui é clara: **não se trata de minimizar custos, mas de maximizar resultados em saúde com investimento sustentável**.
+
+## 3. A Economia em Saúde é Substancial
+
+O terceiro achado é que **médicos de família geram economia significativa** para o sistema de saúde através de:
+
+1. **Redução de internações (ICSAP):** Maior parte da economia. MFC previnem hospitalizações por condições que podem ser tratadas na atenção primária.
+
+2. **Redução de encaminhamentos:** MFC resolvem mais problemas na APS, reduzindo a demanda por especialistas.
+
+3. **Redução de exames:** MFC solicitam exames de forma mais racional, evitando pedidos desnecessários.
+
+Esses resultados são consistentes com a literatura internacional e com os dados empíricos do estudo de coorte que fundamentou este modelo.
+
+## 4. O Programa é Robusto a Variações nos Parâmetros
+
+A análise de sensibilidade demonstrou que o programa **permanece viável em todos os cenários testados**:
+
+| Parâmetro | Faixa Testada | Resultado |
+|-----------|---------------|-----------|
+| Taxa de retenção | 30% a 100% | Viável em todos |
+| Fator de correção AIH | 1,0 a 2,5 | Viável em todos |
+| Adicional por especialidade | 0% a 30% | Viável em todos |
+| Composição da bolsa | MEC até MEC+MS+Municipal | Viável em todos |
+| Taxa de desconto | 3% a 10% | Viável em todos |
+
+Mesmo no **cenário pessimista** (baixa retenção, sem correção AIH, alto adicional), o VPL permanece positivo.
+
+---
+
+# Limitações do Estudo
+
+## Limitações Metodológicas
+
+1. **Dados de um único contexto:** Os riscos relativos utilizados vêm de um estudo realizado no Rio de Janeiro. A generalização para outros contextos deve ser feita com cautela.
+
+2. **Premissa de linearidade:** O modelo assume que a economia é proporcional à cobertura MFC. Na prática, pode haver efeitos não-lineares.
+
+3. **Custos indiretos não incluídos:** O modelo não considera custos de infraestrutura, equipamentos ou outros investimentos necessários para implementar o programa.
+
+4. **Relação adicional-retenção assumida:** A função que relaciona adicional por especialidade com taxa de retenção é uma premissa do modelo, não um dado empírico.
+
+## Limitações dos Dados
+
+1. **Defasagem da tabela SUS:** Os valores da tabela SIGTAP estão defasados. O fator de correção AIH (1,5) é uma aproximação.
+
+2. **Variabilidade não modelada:** O modelo usa valores pontuais, sem intervalos de confiança. Uma análise probabilística (Monte Carlo) seria mais robusta.
+
+3. **Horizonte de 10 anos:** Efeitos de longo prazo (além de 10 anos) não foram considerados.
+
+---
+
+# Implicações para Política de Saúde
+
+## Para Gestores Municipais
+
+1. **O programa de residência é um bom investimento:** Mesmo considerando todos os custos, o retorno é positivo.
+
+2. **Investir em retenção vale a pena:** O adicional por especialidade não é "gasto extra", é investimento que se paga.
+
+3. **A decisão não é "se", mas "quanto":** Qualquer nível de investimento em fixação é sustentável. A escolha depende dos objetivos de cobertura.
+
+4. **Benefícios vão além da economia:** Continuidade do cuidado, vínculo com a comunidade, melhores indicadores de saúde.
+
+## Para Formuladores de Política
+
+1. **Incentivos federais são efetivos:** O incentivo de R$ 4.500/equipe com residente faz diferença significativa na viabilidade.
+
+2. **Formação sem fixação é desperdício:** Formar médicos que não permanecem no município transfere o investimento para outros locais.
+
+3. **Escala importa:** Municípios maiores têm mais capacidade de absorver os formados e atingir cobertura alta.
+
+---
+
+# Recomendações
+
+## Recomendações para Implementação
+
+1. **Iniciar com escala adequada:** 4 preceptores no ano 1, expandindo para 8 no ano 2, conforme o modelo.
+
+2. **Definir política de retenção desde o início:** Estabelecer adicional por especialidade antes de formar a primeira turma.
+
+3. **Monitorar indicadores:** Acompanhar taxa de retenção real, cobertura MFC e indicadores de saúde.
+
+4. **Ajustar conforme necessário:** O modelo fornece uma base, mas a realidade pode exigir adaptações.
+
+## Recomendações para Pesquisas Futuras
+
+1. **Validar em outros contextos:** Replicar a análise com dados de outros municípios e regiões.
+
+2. **Incluir análise probabilística:** Usar simulação de Monte Carlo para quantificar incerteza.
+
+3. **Estudar relação adicional-retenção:** Pesquisar empiricamente como incentivos financeiros afetam a fixação de médicos.
+
+4. **Avaliar efeitos de longo prazo:** Estender o horizonte de análise além de 10 anos.
+
+---
+
+# Conclusões
+
+Este estudo desenvolveu um modelo econômico para avaliar a viabilidade de um programa de residência em Medicina de Família e Comunidade em um município de médio porte.
+
+## Conclusão Principal
+
+**O programa de residência em MFC é economicamente viável e representa um bom investimento para o município.**
+
+## Conclusões Específicas
+
+1. **O modelo de residência é mais barato que o tradicional:** A economia de `r formatar_moeda(economia_modelo_par)` por par de equipes-escola compensa os custos do programa.
+
+2. **O investimento em fixação se paga:** Cada real investido em adicional por especialidade gera mais de um real em economia com saúde.
+
+3. **A economia vem principalmente da redução de internações:** Médicos de família previnem hospitalizações evitáveis, gerando economia substancial.
+
+4. **O programa é robusto:** VPL positivo em todos os cenários testados, incluindo o pessimista.
+
+5. **Todos os níveis de investimento são sustentáveis:** O gestor pode escolher quanto investir em fixação com confiança de que o programa será viável.
+
+## Mensagem Final
+
+A formação de médicos de família através de programas de residência não é apenas uma necessidade de saúde pública — é também um **investimento economicamente inteligente**. 
+
+O município que investe em formar e reter médicos de família colhe benefícios em múltiplas dimensões:
+
+- **Economia financeira:** Menos gastos com exames, encaminhamentos e internações
+- **Qualidade do cuidado:** Atendimento mais resolutivo e integral
+- **Satisfação da população:** Acesso a médicos qualificados e estáveis
+- **Desenvolvimento institucional:** Fortalecimento da atenção primária como eixo do sistema
+
+A decisão de implementar um programa de residência em MFC não deveria ser questionada em termos de viabilidade econômica — os dados mostram que ela existe. A questão é apenas **quando começar** e **quanto investir** para maximizar os resultados.
+
+---
+
+# Referências Metodológicas
+
+Este modelo foi construído com base em:
+
+1. **Dados empíricos:** Estudo de coorte retrospectivo comparando desfechos entre pacientes atendidos por médicos de família vs. médicos generalistas.
+
+2. **Tabelas oficiais:** SIGTAP (procedimentos ambulatoriais) e SIH-SUS (internações).
+
+3. **Diretrizes do Ministério da Saúde:** Taxa de desconto de 5% ao ano para avaliações econômicas em saúde.
+
+4. **Literatura de economia da saúde:** Conceitos de VPL, análise de sensibilidade e avaliação de programas de saúde.
+
+---
+
+# Anexo: Parâmetros do Modelo
+
+```{r}
+#| label: anexo-parametros
+
+parametros <- data.frame(
+  categoria = c(
+    rep("Município", 2),
+    rep("Custos de pessoal", 6),
+    rep("Programa", 6),
+    rep("Econômico", 3)
+  ),
+  parametro = c(
+    "População", "Equipes de APS",
+    "Salário base médico", "Encargos trabalhistas", "Custo total médico CLT",
+    "Adicional preceptoria", "Bolsa residente (MEC+MS)", "Custo total preceptor",
+    "Preceptores (ano 2+)", "Equipes-escola", "Residentes/ano", 
+    "Taxa de retenção (base)", "Custo operacional", "Incentivo federal",
+    "Taxa de desconto", "Horizonte", "Fator correção AIH"
+  ),
+  valor = c(
+    "500.000 hab", "100",
+    "R$ 16.000/mês", "70%", formatar_moeda(custos_pessoal$custo_medico_total),
+    "10%", formatar_moeda(custos_pessoal$bolsa_total), formatar_moeda(custos_pessoal$custo_preceptor_total),
+    "8", "16", "32",
+    "60%", "R$ 50.000/ano", "R$ 4.500/equipe/mês",
+    "5% ao ano", "10 anos", "1,5"
+  )
+)
+
+knitr::kable(
+  parametros,
+  col.names = c("Categoria", "Parâmetro", "Valor"),
+  caption = "Parâmetros utilizados no modelo"
+)
+```

@@ -1,0 +1,502 @@
+---
+title: "Análise de Sensibilidade"
+---
+
+# Introdução
+
+A análise de sensibilidade avalia como os resultados do modelo variam quando alteramos os parâmetros de entrada. Isso é fundamental para:
+
+1. Identificar quais parâmetros têm maior impacto nos resultados
+2. Avaliar a robustez das conclusões
+3. Comunicar incerteza aos tomadores de decisão
+
+```{r}
+#| label: setup-cap6
+#| code-fold: true
+#| code-summary: "Configuração inicial"
+
+# Configurações
+options(scipen = 999)
+
+# Função wrapper para executar simulação completa
+executar_simulacao <- function(
+    n_medicos = 100,
+    vagas_ano = 10,
+    taxa_retencao = 0.60,
+    custo_consulta = 50,
+    fator_aih = 1.5,
+    taxa_desconto = 0.05,
+    horizonte = 10
+) {
+  # Simulação simplificada para demonstração
+  # Em produção, usar funções completas dos capítulos anteriores
+  
+  # Custo anual aproximado
+  custo_anual <- vagas_ano * 2 * 8107 * 12 + 50000  # Bolsas + operacional
+  custo_anual <- custo_anual - vagas_ano * 2 * 4500 * 12  # - incentivo
+  
+  # Benefício cresce com cobertura MFC
+  cobertura_final <- min((3 + horizonte * vagas_ano * taxa_retencao * 0.5) / n_medicos, 1)
+  beneficio_ano_10 <- cobertura_final * 3000000 * fator_aih  # Simplificado
+  
+  # Fluxo simplificado
+  custos <- c(0, rep(custo_anual, horizonte))
+  beneficios <- seq(0, beneficio_ano_10, length.out = horizonte + 1)
+  
+  # Indicadores
+  custo_total <- sum(custos)
+  beneficio_total <- sum(beneficios)
+  saldo <- beneficio_total - custo_total
+  
+  # VPL
+  anos <- 0:horizonte
+  saldos <- beneficios - custos
+  vpl <- sum(saldos / ((1 + taxa_desconto) ^ anos))
+  
+  # ROI e RCB
+  roi <- (beneficio_total - custo_total) / custo_total * 100
+  rcb <- beneficio_total / custo_total
+  
+  # Payback
+  saldo_acum <- cumsum(saldos)
+  payback <- which(saldo_acum >= 0)[1] - 1
+  if (is.na(payback)) payback <- Inf
+  
+  return(list(
+    custo_total = custo_total,
+    beneficio_total = beneficio_total,
+    saldo = saldo,
+    vpl = vpl,
+    roi = roi,
+    rcb = rcb,
+    payback = payback,
+    cobertura_final = cobertura_final
+  ))
+}
+
+# Cenário base
+cenario_base <- executar_simulacao()
+```
+
+---
+
+# Parâmetros Analisados
+
+A análise considera variação nos seguintes parâmetros:
+
+```{r}
+#| label: parametros-sensibilidade
+
+parametros <- data.frame(
+  parametro = c(
+    "Taxa de retenção",
+    "Fator correção AIH",
+    "Custo consulta especializada",
+    "Número de vagas/ano",
+    "Taxa de desconto",
+    "Horizonte temporal"
+  ),
+  valor_base = c("60%", "1,5x", "R$ 50", "10", "5%", "10 anos"),
+  valor_baixo = c("40%", "1,0x", "R$ 30", "5", "3%", "5 anos"),
+  valor_alto = c("80%", "2,0x", "R$ 80", "15", "7%", "15 anos"),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(parametros,
+             col.names = c("Parâmetro", "Valor Base", "Valor Baixo", "Valor Alto"),
+             caption = "Parâmetros e faixas de variação")
+```
+
+---
+
+# Sensibilidade Univariada
+
+## Taxa de Retenção
+
+```{r}
+#| label: sens-retencao
+
+taxas_retencao <- seq(0.30, 0.90, by = 0.10)
+
+resultados_retencao <- lapply(taxas_retencao, function(r) {
+  executar_simulacao(taxa_retencao = r)
+})
+
+df_retencao <- data.frame(
+  taxa = taxas_retencao * 100,
+  vpl = sapply(resultados_retencao, function(x) x$vpl / 1000000),
+  roi = sapply(resultados_retencao, function(x) x$roi),
+  rcb = sapply(resultados_retencao, function(x) x$rcb),
+  payback = sapply(resultados_retencao, function(x) 
+    ifelse(is.infinite(x$payback), NA, x$payback))
+)
+
+knitr::kable(df_retencao,
+             col.names = c("Retenção (%)", "VPL (R$ mi)", "ROI (%)", "RCB", "Payback"),
+             digits = c(0, 2, 1, 2, 0),
+             caption = "Sensibilidade à taxa de retenção")
+```
+
+```{r}
+#| label: fig-sens-retencao
+#| fig-cap: "Impacto da taxa de retenção sobre o VPL"
+#| fig-width: 8
+#| fig-height: 5
+
+plot(
+  df_retencao$taxa, df_retencao$vpl,
+  type = "b", pch = 19, lwd = 2,
+  col = ifelse(df_retencao$vpl >= 0, "#2A9D8F", "#E63946"),
+  main = "Sensibilidade: Taxa de Retenção vs VPL",
+  xlab = "Taxa de Retenção (%)",
+  ylab = "VPL (R$ milhões)"
+)
+abline(h = 0, lty = 2)
+abline(v = 60, lty = 3, col = "gray")
+text(60, min(df_retencao$vpl), "Base: 60%", pos = 4, cex = 0.8)
+grid()
+```
+
+## Fator de Correção AIH
+
+```{r}
+#| label: sens-aih
+
+fatores_aih <- seq(1.0, 2.5, by = 0.25)
+
+resultados_aih <- lapply(fatores_aih, function(f) {
+  executar_simulacao(fator_aih = f)
+})
+
+df_aih <- data.frame(
+  fator = fatores_aih,
+  vpl = sapply(resultados_aih, function(x) x$vpl / 1000000),
+  roi = sapply(resultados_aih, function(x) x$roi),
+  rcb = sapply(resultados_aih, function(x) x$rcb)
+)
+
+knitr::kable(df_aih,
+             col.names = c("Fator AIH", "VPL (R$ mi)", "ROI (%)", "RCB"),
+             digits = c(2, 2, 1, 2),
+             caption = "Sensibilidade ao fator de correção AIH")
+```
+
+```{r}
+#| label: fig-sens-aih
+#| fig-cap: "Impacto do fator de correção AIH sobre o VPL"
+#| fig-width: 8
+#| fig-height: 5
+
+plot(
+  df_aih$fator, df_aih$vpl,
+  type = "b", pch = 19, lwd = 2,
+  col = ifelse(df_aih$vpl >= 0, "#2A9D8F", "#E63946"),
+  main = "Sensibilidade: Fator Correção AIH vs VPL",
+  xlab = "Fator de Correção AIH",
+  ylab = "VPL (R$ milhões)"
+)
+abline(h = 0, lty = 2)
+abline(v = 1.5, lty = 3, col = "gray")
+text(1.5, min(df_aih$vpl), "Base: 1,5x", pos = 4, cex = 0.8)
+grid()
+```
+
+## Número de Vagas por Ano
+
+```{r}
+#| label: sens-vagas
+
+n_vagas <- c(5, 8, 10, 12, 15, 20)
+
+resultados_vagas <- lapply(n_vagas, function(v) {
+  executar_simulacao(vagas_ano = v)
+})
+
+df_vagas <- data.frame(
+  vagas = n_vagas,
+  vpl = sapply(resultados_vagas, function(x) x$vpl / 1000000),
+  cobertura = sapply(resultados_vagas, function(x) x$cobertura_final * 100),
+  roi = sapply(resultados_vagas, function(x) x$roi),
+  payback = sapply(resultados_vagas, function(x) 
+    ifelse(is.infinite(x$payback), NA, x$payback))
+)
+
+knitr::kable(df_vagas,
+             col.names = c("Vagas/ano", "VPL (R$ mi)", "Cobertura Final (%)", 
+                          "ROI (%)", "Payback"),
+             digits = c(0, 2, 1, 1, 0),
+             caption = "Sensibilidade ao número de vagas")
+```
+
+## Taxa de Desconto
+
+```{r}
+#| label: sens-desconto
+
+taxas_desconto <- c(0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10)
+
+resultados_desconto <- lapply(taxas_desconto, function(d) {
+  executar_simulacao(taxa_desconto = d)
+})
+
+df_desconto <- data.frame(
+  taxa = taxas_desconto * 100,
+  vpl = sapply(resultados_desconto, function(x) x$vpl / 1000000)
+)
+
+knitr::kable(df_desconto,
+             col.names = c("Taxa Desconto (%)", "VPL (R$ mi)"),
+             digits = c(0, 2),
+             caption = "Sensibilidade à taxa de desconto")
+```
+
+---
+
+# Análise de Cenários
+
+```{r}
+#| label: cenarios
+
+# Definir cenários
+cenarios <- data.frame(
+  cenario = c("Pessimista", "Base", "Otimista", "Muito Otimista"),
+  retencao = c(0.40, 0.60, 0.80, 0.80),
+  fator_aih = c(1.0, 1.5, 2.0, 2.5),
+  custo_consulta = c(30, 50, 80, 80),
+  stringsAsFactors = FALSE
+)
+
+# Executar cada cenário
+resultados_cenarios <- lapply(1:nrow(cenarios), function(i) {
+  executar_simulacao(
+    taxa_retencao = cenarios$retencao[i],
+    fator_aih = cenarios$fator_aih[i],
+    custo_consulta = cenarios$custo_consulta[i]
+  )
+})
+
+# Compilar resultados
+df_cenarios <- data.frame(
+  cenario = cenarios$cenario,
+  custo_total = sapply(resultados_cenarios, function(x) x$custo_total / 1000000),
+  beneficio_total = sapply(resultados_cenarios, function(x) x$beneficio_total / 1000000),
+  vpl = sapply(resultados_cenarios, function(x) x$vpl / 1000000),
+  roi = sapply(resultados_cenarios, function(x) x$roi),
+  rcb = sapply(resultados_cenarios, function(x) x$rcb),
+  payback = sapply(resultados_cenarios, function(x) 
+    ifelse(is.infinite(x$payback), ">10", x$payback))
+)
+
+knitr::kable(df_cenarios,
+             col.names = c("Cenário", "Custo (R$ mi)", "Benefício (R$ mi)", 
+                          "VPL (R$ mi)", "ROI (%)", "RCB", "Payback"),
+             digits = c(0, 2, 2, 2, 1, 2, 0),
+             caption = "Comparação entre cenários")
+```
+
+```{r}
+#| label: fig-cenarios
+#| fig-cap: "Comparação do VPL entre cenários"
+#| fig-width: 8
+#| fig-height: 5
+
+cores_cenarios <- c("#E63946", "#457B9D", "#2A9D8F", "#1D3557")
+
+barplot(
+  df_cenarios$vpl,
+  names.arg = df_cenarios$cenario,
+  col = cores_cenarios,
+  border = "white",
+  main = "VPL por Cenário",
+  ylab = "VPL (R$ milhões)"
+)
+abline(h = 0, lwd = 2)
+
+# Adicionar valores
+text(
+  x = seq(0.7, by = 1.2, length.out = 4),
+  y = df_cenarios$vpl + ifelse(df_cenarios$vpl >= 0, 0.2, -0.2),
+  labels = paste0("R$ ", round(df_cenarios$vpl, 1), "M"),
+  cex = 0.8
+)
+```
+
+---
+
+# Análise de Limiar (Break-even)
+
+Identificar os valores mínimos de cada parâmetro para que o programa seja viável (VPL ≥ 0).
+
+```{r}
+#| label: breakeven
+
+# Buscar taxa de retenção mínima para VPL = 0
+encontrar_retencao_breakeven <- function() {
+  for (r in seq(0.30, 1.0, by = 0.01)) {
+    res <- executar_simulacao(taxa_retencao = r)
+    if (res$vpl >= 0) return(r)
+  }
+  return(NA)
+}
+
+# Buscar fator AIH mínimo
+encontrar_aih_breakeven <- function() {
+  for (f in seq(1.0, 3.0, by = 0.05)) {
+    res <- executar_simulacao(fator_aih = f)
+    if (res$vpl >= 0) return(f)
+  }
+  return(NA)
+}
+
+retencao_breakeven <- encontrar_retencao_breakeven()
+aih_breakeven <- encontrar_aih_breakeven()
+
+cat("ANÁLISE DE BREAK-EVEN\n")
+cat("=====================\n\n")
+cat("Taxa de retenção mínima para VPL ≥ 0:", 
+    ifelse(is.na(retencao_breakeven), "Não encontrada", paste0(retencao_breakeven * 100, "%")), "\n")
+cat("Fator AIH mínimo para VPL ≥ 0:", 
+    ifelse(is.na(aih_breakeven), "Não encontrado", paste0(aih_breakeven, "x")), "\n")
+```
+
+---
+
+# Análise de Monte Carlo
+
+Simulação probabilística considerando incerteza em múltiplos parâmetros simultaneamente.
+
+```{r}
+#| label: monte-carlo
+
+set.seed(42)  # Reprodutibilidade
+
+# Número de simulações
+n_sim <- 1000
+
+# Gerar parâmetros aleatórios
+sim_retencao <- runif(n_sim, 0.40, 0.80)
+sim_aih <- runif(n_sim, 1.0, 2.0)
+sim_consulta <- runif(n_sim, 30, 80)
+
+# Executar simulações
+resultados_mc <- lapply(1:n_sim, function(i) {
+  executar_simulacao(
+    taxa_retencao = sim_retencao[i],
+    fator_aih = sim_aih[i],
+    custo_consulta = sim_consulta[i]
+  )
+})
+
+# Extrair VPLs
+vpls_mc <- sapply(resultados_mc, function(x) x$vpl / 1000000)
+
+# Estatísticas
+cat("ANÁLISE DE MONTE CARLO (n =", n_sim, "simulações)\n")
+cat("================================================\n\n")
+cat("VPL - Estatísticas:\n")
+cat("  Média:", round(mean(vpls_mc), 2), "R$ milhões\n")
+cat("  Mediana:", round(median(vpls_mc), 2), "R$ milhões\n")
+cat("  Desvio padrão:", round(sd(vpls_mc), 2), "R$ milhões\n")
+cat("  Mínimo:", round(min(vpls_mc), 2), "R$ milhões\n")
+cat("  Máximo:", round(max(vpls_mc), 2), "R$ milhões\n")
+cat("  P5 (percentil 5%):", round(quantile(vpls_mc, 0.05), 2), "R$ milhões\n")
+cat("  P95 (percentil 95%):", round(quantile(vpls_mc, 0.95), 2), "R$ milhões\n\n")
+cat("Probabilidade de VPL ≥ 0:", round(mean(vpls_mc >= 0) * 100, 1), "%\n")
+```
+
+```{r}
+#| label: fig-monte-carlo
+#| fig-cap: "Distribuição do VPL - Análise de Monte Carlo"
+#| fig-width: 10
+#| fig-height: 6
+
+hist(
+  vpls_mc,
+  breaks = 50,
+  col = ifelse(vpls_mc >= 0, "#2A9D8F", "#E63946"),
+  border = "white",
+  main = paste0("Distribuição do VPL (n = ", n_sim, " simulações)"),
+  xlab = "VPL (R$ milhões)",
+  ylab = "Frequência"
+)
+
+# Linha do zero
+abline(v = 0, lwd = 2, col = "black")
+
+# Linhas de percentis
+abline(v = quantile(vpls_mc, 0.05), lty = 2, col = "darkred")
+abline(v = quantile(vpls_mc, 0.95), lty = 2, col = "darkgreen")
+abline(v = mean(vpls_mc), lty = 1, col = "blue", lwd = 2)
+
+# Legenda
+legend(
+  "topright",
+  legend = c("Média", "P5", "P95", "Zero"),
+  col = c("blue", "darkred", "darkgreen", "black"),
+  lty = c(1, 2, 2, 1),
+  lwd = c(2, 1, 1, 2),
+  bty = "n"
+)
+```
+
+---
+
+# Tabela Resumo da Sensibilidade
+
+```{r}
+#| label: tabela-resumo-sensibilidade
+
+resumo_sens <- data.frame(
+  parametro = c(
+    "Taxa de retenção",
+    "Fator correção AIH",
+    "Número de vagas/ano",
+    "Taxa de desconto"
+  ),
+  impacto = c(
+    "ALTO",
+    "ALTO",
+    "MODERADO",
+    "BAIXO"
+  ),
+  direcao = c(
+    "↑ retenção → ↑ VPL",
+    "↑ fator AIH → ↑ VPL",
+    "↑ vagas → ↑ cobertura, mas ↑ custo",
+    "↑ desconto → ↓ VPL"
+  ),
+  comentario = c(
+    "Parâmetro mais crítico; depende de políticas de fixação",
+    "Reflete custo real vs. AIH; hospitais universitários têm maior fator",
+    "Trade-off entre velocidade de expansão e custo",
+    "Impacto moderado devido ao horizonte de 10 anos"
+  ),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(resumo_sens,
+             col.names = c("Parâmetro", "Impacto", "Direção", "Comentário"),
+             caption = "Resumo da análise de sensibilidade")
+```
+
+---
+
+# Conclusões da Análise de Sensibilidade
+
+::: {.callout-important}
+## Principais achados
+
+1. **Taxa de retenção** é o parâmetro mais crítico. Políticas de fixação de profissionais são essenciais para o sucesso econômico do programa.
+
+2. **Fator de correção AIH** tem alto impacto. A subestimação dos custos hospitalares pelo SIH-SUS mascara benefícios reais do programa.
+
+3. A **probabilidade de viabilidade** (VPL ≥ 0) é de `r round(mean(vpls_mc >= 0) * 100, 0)`% considerando incerteza nos parâmetros.
+
+4. Mesmo no **cenário pessimista**, o programa pode ser considerado estratégico por benefícios não monetizados (qualidade, satisfação, formação de recursos humanos).
+:::
+
+---
+
+# Próximos Passos
+
+No próximo capítulo, discutiremos os resultados em contexto e apresentaremos as conclusões finais.

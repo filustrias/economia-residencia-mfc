@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Apêndice B — Tabelas Completas – Análise de Custo-Benefício da Residência em MFC</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./A_metodologia_detalhada.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-065a5179aebd64318d7ea99d77b64a9e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-edaf08ed7d27d62012077beed0893dcb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./A_metodologia_detalhada.html">Apêndices</a></li><li class="breadcrumb-item"><a href="./B_tabelas_completas.html"><span class="chapter-title">Tabelas Completas</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Procurar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Análise de Custo-Benefício da Residência em MFC</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Procurar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Análise de Custo-Benefício da Residência em MFC</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_sumario_executivo.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Sumário Executivo</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_configuracao_dados.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Configuração e Dados de Entrada</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_metodologia_funcoes.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Metodologia e Funções de Cálculo</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_simulacao_cenarios.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cálculo da Economia em Saúde</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_indicadores_economicos.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Indicadores Econômicos</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04b_cenario_instantaneo.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cenário Instantâneo</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_analise_sensibilidade.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Análise de Sensibilidade</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05b_cenario_combinado.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cenário Combinado: Investimento em Formação e Fixação</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_visualizacoes.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Visualizações</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_discussao_conclusoes.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Discussão e Conclusões</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Referências</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Apêndices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./A_metodologia_detalhada.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Metodologia Detalhada</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./B_tabelas_completas.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Tabelas Completas</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice</h2>
+   
+  <ul>
+  <li><a href="#dados-originais-do-estudo" id="toc-dados-originais-do-estudo" class="nav-link active" data-scroll-target="#dados-originais-do-estudo">Dados Originais do Estudo</a>
+  <ul class="collapse">
+  <li><a href="#encaminhamentos-ambulatoriais" id="toc-encaminhamentos-ambulatoriais" class="nav-link" data-scroll-target="#encaminhamentos-ambulatoriais">Encaminhamentos Ambulatoriais</a></li>
+  <li><a href="#encaminhamentos-cirúrgicos" id="toc-encaminhamentos-cirúrgicos" class="nav-link" data-scroll-target="#encaminhamentos-cirúrgicos">Encaminhamentos Cirúrgicos</a></li>
+  <li><a href="#exames-diagnósticos" id="toc-exames-diagnósticos" class="nav-link" data-scroll-target="#exames-diagnósticos">Exames Diagnósticos</a></li>
+  <li><a href="#exames-laboratoriais" id="toc-exames-laboratoriais" class="nav-link" data-scroll-target="#exames-laboratoriais">Exames Laboratoriais</a></li>
+  <li><a href="#internações-icsap" id="toc-internações-icsap" class="nav-link" data-scroll-target="#internações-icsap">Internações ICSAP</a></li>
+  </ul></li>
+  <li><a href="#valores-convertidos-para-cenário-baseline" id="toc-valores-convertidos-para-cenário-baseline" class="nav-link" data-scroll-target="#valores-convertidos-para-cenário-baseline">Valores Convertidos para Cenário Baseline</a>
+  <ul class="collapse">
+  <li><a href="#baseline-500.000-habitantes-0-mfc" id="toc-baseline-500.000-habitantes-0-mfc" class="nav-link" data-scroll-target="#baseline-500.000-habitantes-0-mfc">Baseline: 500.000 habitantes, 0% MFC</a></li>
+  </ul></li>
+  <li><a href="#resultados-da-simulação" id="toc-resultados-da-simulação" class="nav-link" data-scroll-target="#resultados-da-simulação">Resultados da Simulação</a>
+  <ul class="collapse">
+  <li><a href="#fluxo-de-caixa---cenário-base" id="toc-fluxo-de-caixa---cenário-base" class="nav-link" data-scroll-target="#fluxo-de-caixa---cenário-base">Fluxo de Caixa - Cenário Base</a></li>
+  <li><a href="#indicadores-econômicos-por-cenário" id="toc-indicadores-econômicos-por-cenário" class="nav-link" data-scroll-target="#indicadores-econômicos-por-cenário">Indicadores Econômicos por Cenário</a></li>
+  <li><a href="#análise-de-sensibilidade---monte-carlo" id="toc-análise-de-sensibilidade---monte-carlo" class="nav-link" data-scroll-target="#análise-de-sensibilidade---monte-carlo">Análise de Sensibilidade - Monte Carlo</a></li>
+  </ul></li>
+  <li><a href="#custos-detalhados" id="toc-custos-detalhados" class="nav-link" data-scroll-target="#custos-detalhados">Custos Detalhados</a>
+  <ul class="collapse">
+  <li><a href="#custos-do-programa-de-residência" id="toc-custos-do-programa-de-residência" class="nav-link" data-scroll-target="#custos-do-programa-de-residência">Custos do Programa de Residência</a></li>
+  <li><a href="#custos-sigtap---consultas-e-procedimentos" id="toc-custos-sigtap---consultas-e-procedimentos" class="nav-link" data-scroll-target="#custos-sigtap---consultas-e-procedimentos">Custos SIGTAP - Consultas e Procedimentos</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./A_metodologia_detalhada.html">Apêndices</a></li><li class="breadcrumb-item"><a href="./B_tabelas_completas.html"><span class="chapter-title">Tabelas Completas</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Apêndice B — Tabelas Completas</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Código</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="dados-originais-do-estudo" class="level1">
+<h1>Dados Originais do Estudo</h1>
+<section id="encaminhamentos-ambulatoriais" class="level2">
+<h2 class="anchored" data-anchor-id="encaminhamentos-ambulatoriais">Encaminhamentos Ambulatoriais</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Encaminhamentos para especialidades ambulatoriais</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Especialidade</th>
+<th style="text-align: right;">RR (IC 95%)</th>
+<th style="text-align: right;">Eventos/ano</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Cardiologia</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">2008</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Neurologia</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">1835</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Psiquiatria</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">897</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dermatologia</td>
+<td style="text-align: right;">0.49</td>
+<td style="text-align: right;">4144</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pneumologia</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">903</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Doenças infecciosas</td>
+<td style="text-align: right;">0.74</td>
+<td style="text-align: right;">290</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Urologia</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">1762</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alergologia</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">480</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nefrologia</td>
+<td style="text-align: right;">0.63</td>
+<td style="text-align: right;">603</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endocrinologia</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">1021</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gastroenterologia</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">867</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Angiologia</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">1030</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reumatologia</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">830</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fisioterapia</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">2390</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reabilitação</td>
+<td style="text-align: right;">1.68</td>
+<td style="text-align: right;">1173</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Oftalmologia</td>
+<td style="text-align: right;">1.09</td>
+<td style="text-align: right;">8713</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ORL</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">2269</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ortopedia</td>
+<td style="text-align: right;">0.52</td>
+<td style="text-align: right;">4934</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ginecologia</td>
+<td style="text-align: right;">0.86</td>
+<td style="text-align: right;">738</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pré-natal alto risco</td>
+<td style="text-align: right;">0.66</td>
+<td style="text-align: right;">991</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="encaminhamentos-cirúrgicos" class="level2">
+<h2 class="anchored" data-anchor-id="encaminhamentos-cirúrgicos">Encaminhamentos Cirúrgicos</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Encaminhamentos para avaliação cirúrgica</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Especialidade</th>
+<th style="text-align: right;">RR</th>
+<th style="text-align: right;">Eventos/ano</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Cirurgia oftalmológica</td>
+<td style="text-align: right;">1.21</td>
+<td style="text-align: right;">4458</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cirurgia ginecológica</td>
+<td style="text-align: right;">0.87</td>
+<td style="text-align: right;">989</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cirurgia ortopédica</td>
+<td style="text-align: right;">1.22</td>
+<td style="text-align: right;">147</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cirurgia geral</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">1968</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cirurgia plástica</td>
+<td style="text-align: right;">1.19</td>
+<td style="text-align: right;">859</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cirurgia vascular</td>
+<td style="text-align: right;">0.87</td>
+<td style="text-align: right;">359</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exames-diagnósticos" class="level2">
+<h2 class="anchored" data-anchor-id="exames-diagnósticos">Exames Diagnósticos</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Encaminhamentos para exames diagnósticos</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Exame</th>
+<th style="text-align: right;">RR</th>
+<th style="text-align: right;">Eventos/ano</th>
+<th style="text-align: right;">Custo SIGTAP (R$)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Ecocardiograma</td>
+<td style="text-align: right;">0.66</td>
+<td style="text-align: right;">1201</td>
+<td style="text-align: right;">39.94</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Espirometria</td>
+<td style="text-align: right;">0.96</td>
+<td style="text-align: right;">385</td>
+<td style="text-align: right;">13.20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Colonoscopia</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">510</td>
+<td style="text-align: right;">86.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EDA</td>
+<td style="text-align: right;">0.49</td>
+<td style="text-align: right;">1090</td>
+<td style="text-align: right;">48.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Teste ergométrico</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">431</td>
+<td style="text-align: right;">30.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mamografia</td>
+<td style="text-align: right;">0.98</td>
+<td style="text-align: right;">2424</td>
+<td style="text-align: right;">45.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exames-laboratoriais" class="level2">
+<h2 class="anchored" data-anchor-id="exames-laboratoriais">Exames Laboratoriais</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Solicitação de exames laboratoriais</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Exame</th>
+<th style="text-align: right;">RR</th>
+<th style="text-align: right;">Eventos/ano</th>
+<th style="text-align: right;">Custo SIGTAP (R$)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Hemograma</td>
+<td style="text-align: right;">0.53</td>
+<td style="text-align: right;">51757</td>
+<td style="text-align: right;">4.11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Creatinina</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">43746</td>
+<td style="text-align: right;">1.85</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ureia</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">22577</td>
+<td style="text-align: right;">1.85</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sódio</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">10517</td>
+<td style="text-align: right;">1.85</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Potássio</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">18265</td>
+<td style="text-align: right;">1.85</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Glicose</td>
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">9072</td>
+<td style="text-align: right;">1.85</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hemoglobina glicada</td>
+<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">25720</td>
+<td style="text-align: right;">7.86</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Colesterol total</td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">34673</td>
+<td style="text-align: right;">1.85</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HDL</td>
+<td style="text-align: right;">0.94</td>
+<td style="text-align: right;">31127</td>
+<td style="text-align: right;">3.51</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LDL</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">22163</td>
+<td style="text-align: right;">3.51</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Triglicerídeos</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">33828</td>
+<td style="text-align: right;">3.51</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ácido úrico</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">15603</td>
+<td style="text-align: right;">1.85</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSH</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">11679</td>
+<td style="text-align: right;">8.96</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T3</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">791</td>
+<td style="text-align: right;">8.71</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T4</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">886</td>
+<td style="text-align: right;">8.71</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T4 livre</td>
+<td style="text-align: right;">0.56</td>
+<td style="text-align: right;">5432</td>
+<td style="text-align: right;">11.60</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bilirrubina</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">2304</td>
+<td style="text-align: right;">2.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AST</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">9181</td>
+<td style="text-align: right;">2.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ALT</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">9363</td>
+<td style="text-align: right;">2.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fosfatase alcalina</td>
+<td style="text-align: right;">0.69</td>
+<td style="text-align: right;">3505</td>
+<td style="text-align: right;">2.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gama-GT</td>
+<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">4386</td>
+<td style="text-align: right;">3.51</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VHS</td>
+<td style="text-align: right;">0.74</td>
+<td style="text-align: right;">1957</td>
+<td style="text-align: right;">2.63</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ova e parasitas</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">604</td>
+<td style="text-align: right;">1.65</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Urinálise</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">41333</td>
+<td style="text-align: right;">3.70</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cálcio</td>
+<td style="text-align: right;">0.44</td>
+<td style="text-align: right;">1866</td>
+<td style="text-align: right;">1.85</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LH</td>
+<td style="text-align: right;">0.56</td>
+<td style="text-align: right;">674</td>
+<td style="text-align: right;">10.15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FSH</td>
+<td style="text-align: right;">0.60</td>
+<td style="text-align: right;">863</td>
+<td style="text-align: right;">10.15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rubéola IgG</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">18.55</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rubéola IgM</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">18.55</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PSA</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">4365</td>
+<td style="text-align: right;">16.42</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="internações-icsap" class="level2">
+<h2 class="anchored" data-anchor-id="internações-icsap">Internações ICSAP</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Internações por condições sensíveis à APS</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Condição</th>
+<th style="text-align: right;">RR</th>
+<th style="text-align: right;">Eventos/ano</th>
+<th style="text-align: right;">Custo AIH (R$)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Hipertensão</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">761.35</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Diabetes mellitus</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">1178.17</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AVC</td>
+<td style="text-align: right;">0.74</td>
+<td style="text-align: right;">244</td>
+<td style="text-align: right;">1756.62</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Angina pectoris</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">271</td>
+<td style="text-align: right;">4774.49</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Insuficiência cardíaca</td>
+<td style="text-align: right;">0.52</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">2553.91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Epilepsia</td>
+<td style="text-align: right;">0.79</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">957.47</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Asma</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">853.21</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gravidez</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">136</td>
+<td style="text-align: right;">646.69</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gastroenterite</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">527.15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pneumonia crianças</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: right;">1969.07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pneumonia adultos</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">1969.07</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Infecção pele</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">331</td>
+<td style="text-align: right;">679.82</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ORL</td>
+<td style="text-align: right;">1.06</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">502.60</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DIP</td>
+<td style="text-align: right;">0.59</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">612.67</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="valores-convertidos-para-cenário-baseline" class="level1">
+<h1>Valores Convertidos para Cenário Baseline</h1>
+<section id="baseline-500.000-habitantes-0-mfc" class="level2">
+<h2 class="anchored" data-anchor-id="baseline-500.000-habitantes-0-mfc">Baseline: 500.000 habitantes, 0% MFC</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Valores baseline para simulação</caption>
+<colgroup>
+<col style="width: 30%">
+<col style="width: 16%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Categoria</th>
+<th style="text-align: right;">Original (600k)</th>
+<th style="text-align: right;">0% MFC (600k)</th>
+<th style="text-align: right;">0% MFC (500k)</th>
+<th style="text-align: right;">Taxa/1000 hab</th>
+<th style="text-align: left;">Variação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Encaminhamentos ambulatoriais</td>
+<td style="text-align: right;">37878</td>
+<td style="text-align: right;">42177</td>
+<td style="text-align: right;">35148</td>
+<td style="text-align: right;">70.30</td>
+<td style="text-align: left;">+11.4%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Encaminhamentos cirúrgicos</td>
+<td style="text-align: right;">8780</td>
+<td style="text-align: right;">8547</td>
+<td style="text-align: right;">7123</td>
+<td style="text-align: right;">14.20</td>
+<td style="text-align: left;">-2.6%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Exames diagnósticos</td>
+<td style="text-align: right;">6041</td>
+<td style="text-align: right;">6532</td>
+<td style="text-align: right;">5444</td>
+<td style="text-align: right;">10.90</td>
+<td style="text-align: left;">+8.1%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Exames laboratoriais</td>
+<td style="text-align: right;">418663</td>
+<td style="text-align: right;">479460</td>
+<td style="text-align: right;">399550</td>
+<td style="text-align: right;">799.10</td>
+<td style="text-align: left;">+14.5%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Internações ICSAP</td>
+<td style="text-align: right;">1984</td>
+<td style="text-align: right;">2234</td>
+<td style="text-align: right;">1862</td>
+<td style="text-align: right;">3.72</td>
+<td style="text-align: left;">+12.6%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="resultados-da-simulação" class="level1">
+<h1>Resultados da Simulação</h1>
+<section id="fluxo-de-caixa---cenário-base" class="level2">
+<h2 class="anchored" data-anchor-id="fluxo-de-caixa---cenário-base">Fluxo de Caixa - Cenário Base</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Fluxo de caixa detalhado (R$)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Ano</th>
+<th style="text-align: right;">MFC</th>
+<th style="text-align: left;">% MFC</th>
+<th style="text-align: right;">Custo</th>
+<th style="text-align: right;">Benefício</th>
+<th style="text-align: right;">Saldo Anual</th>
+<th style="text-align: right;">Saldo Acumulado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">0%</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">3%</td>
+<td style="text-align: right;">1.194.828</td>
+<td style="text-align: right;">37.498</td>
+<td style="text-align: right;">-1.157.330</td>
+<td style="text-align: right;">-1.157.330</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">3%</td>
+<td style="text-align: right;">2.143.855</td>
+<td style="text-align: right;">37.498</td>
+<td style="text-align: right;">-2.106.357</td>
+<td style="text-align: right;">-3.263.687</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">9%</td>
+<td style="text-align: right;">2.143.855</td>
+<td style="text-align: right;">225.439</td>
+<td style="text-align: right;">-1.918.416</td>
+<td style="text-align: right;">-5.182.103</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: left;">15%</td>
+<td style="text-align: right;">2.143.855</td>
+<td style="text-align: right;">413.380</td>
+<td style="text-align: right;">-1.730.475</td>
+<td style="text-align: right;">-6.912.578</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: left;">21%</td>
+<td style="text-align: right;">2.143.855</td>
+<td style="text-align: right;">601.321</td>
+<td style="text-align: right;">-1.542.534</td>
+<td style="text-align: right;">-8.455.112</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: left;">27%</td>
+<td style="text-align: right;">2.143.855</td>
+<td style="text-align: right;">789.262</td>
+<td style="text-align: right;">-1.354.593</td>
+<td style="text-align: right;">-9.809.705</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: left;">33%</td>
+<td style="text-align: right;">2.143.855</td>
+<td style="text-align: right;">977.203</td>
+<td style="text-align: right;">-1.166.652</td>
+<td style="text-align: right;">-10.976.357</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: left;">39%</td>
+<td style="text-align: right;">2.143.855</td>
+<td style="text-align: right;">1.165.143</td>
+<td style="text-align: right;">-978.712</td>
+<td style="text-align: right;">-11.955.069</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: left;">45%</td>
+<td style="text-align: right;">2.143.855</td>
+<td style="text-align: right;">1.353.084</td>
+<td style="text-align: right;">-790.771</td>
+<td style="text-align: right;">-12.745.840</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: left;">51%</td>
+<td style="text-align: right;">2.143.855</td>
+<td style="text-align: right;">1.541.025</td>
+<td style="text-align: right;">-602.830</td>
+<td style="text-align: right;">-13.348.670</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="indicadores-econômicos-por-cenário" class="level2">
+<h2 class="anchored" data-anchor-id="indicadores-econômicos-por-cenário">Indicadores Econômicos por Cenário</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Comparação de indicadores por cenário</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Cenário</th>
+<th style="text-align: left;">Retenção</th>
+<th style="text-align: left;">Fator AIH</th>
+<th style="text-align: left;">VPL (R$ mi)</th>
+<th style="text-align: left;">ROI</th>
+<th style="text-align: left;">RCB</th>
+<th style="text-align: left;">Payback</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Pessimista</td>
+<td style="text-align: left;">40%</td>
+<td style="text-align: left;">1,0x</td>
+<td style="text-align: left;">-12,5</td>
+<td style="text-align: left;">-85%</td>
+<td style="text-align: left;">0,21</td>
+<td style="text-align: left;">&gt;10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Conservador</td>
+<td style="text-align: left;">50%</td>
+<td style="text-align: left;">1,25x</td>
+<td style="text-align: left;">-9,8</td>
+<td style="text-align: left;">-75%</td>
+<td style="text-align: left;">0,28</td>
+<td style="text-align: left;">&gt;10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Base</td>
+<td style="text-align: left;">60%</td>
+<td style="text-align: left;">1,5x</td>
+<td style="text-align: left;">-7,1</td>
+<td style="text-align: left;">-64%</td>
+<td style="text-align: left;">0,36</td>
+<td style="text-align: left;">&gt;10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Otimista</td>
+<td style="text-align: left;">70%</td>
+<td style="text-align: left;">1,75x</td>
+<td style="text-align: left;">-3,8</td>
+<td style="text-align: left;">-42%</td>
+<td style="text-align: left;">0,58</td>
+<td style="text-align: left;">&gt;10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Muito Otimista</td>
+<td style="text-align: left;">80%</td>
+<td style="text-align: left;">2,0x</td>
+<td style="text-align: left;">-0,5</td>
+<td style="text-align: left;">-15%</td>
+<td style="text-align: left;">0,85</td>
+<td style="text-align: left;">&gt;10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="análise-de-sensibilidade---monte-carlo" class="level2">
+<h2 class="anchored" data-anchor-id="análise-de-sensibilidade---monte-carlo">Análise de Sensibilidade - Monte Carlo</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Distribuição do VPL - Análise de Monte Carlo (n=1000)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Estatística</th>
+<th style="text-align: left;">VPL (R$ milhões)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Média</td>
+<td style="text-align: left;">-5,2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mediana</td>
+<td style="text-align: left;">-5,1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Desvio Padrão</td>
+<td style="text-align: left;">2,3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mínimo</td>
+<td style="text-align: left;">-12,8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Máximo</td>
+<td style="text-align: left;">1,5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Percentil 5%</td>
+<td style="text-align: left;">-9,8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Percentil 25%</td>
+<td style="text-align: left;">-6,8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Percentil 75%</td>
+<td style="text-align: left;">-3,4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Percentil 95%</td>
+<td style="text-align: left;">-1,2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="custos-detalhados" class="level1">
+<h1>Custos Detalhados</h1>
+<section id="custos-do-programa-de-residência" class="level2">
+<h2 class="anchored" data-anchor-id="custos-do-programa-de-residência">Custos do Programa de Residência</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Componentes de custo do programa</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Item</th>
+<th style="text-align: left;">Valor Mensal</th>
+<th style="text-align: left;">Valor Anual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Bolsa residente (MEC)</td>
+<td style="text-align: left;">R$ 4.106,90</td>
+<td style="text-align: left;">R$ 49.282,80</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Complemento MS</td>
+<td style="text-align: left;">R$ 4.000,00</td>
+<td style="text-align: left;">R$ 48.000,00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bolsa total/residente</td>
+<td style="text-align: left;">R$ 8.106,90</td>
+<td style="text-align: left;">R$ 97.282,80</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Custo preceptoria/preceptor</td>
+<td style="text-align: left;">R$ 4.000,00</td>
+<td style="text-align: left;">R$ 48.000,00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Incentivo federal/equipe</td>
+<td style="text-align: left;">R$ 4.500,00</td>
+<td style="text-align: left;">R$ 54.000,00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Custos operacionais/ano</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">R$ 50.000,00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="custos-sigtap---consultas-e-procedimentos" class="level2">
+<h2 class="anchored" data-anchor-id="custos-sigtap---consultas-e-procedimentos">Custos SIGTAP - Consultas e Procedimentos</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Valores de referência SIGTAP 2024</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Procedimento</th>
+<th style="text-align: left;">Código SIGTAP</th>
+<th style="text-align: left;">Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Consulta médica em APS</td>
+<td style="text-align: left;">03.01.01.007-2</td>
+<td style="text-align: left;">R$ 10,00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Consulta especializada</td>
+<td style="text-align: left;">03.01.01.004-8</td>
+<td style="text-align: left;">R$ 10,00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hemograma completo</td>
+<td style="text-align: left;">02.02.02.038-0</td>
+<td style="text-align: left;">R$ 4,11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Glicemia de jejum</td>
+<td style="text-align: left;">02.02.01.047-3</td>
+<td style="text-align: left;">R$ 1,85</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSH</td>
+<td style="text-align: left;">02.02.06.037-0</td>
+<td style="text-align: left;">R$ 8,96</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ecocardiograma</td>
+<td style="text-align: left;">02.05.01.003-7</td>
+<td style="text-align: left;">R$ 39,94</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Endoscopia digestiva alta</td>
+<td style="text-align: left;">02.09.01.003-3</td>
+<td style="text-align: left;">R$ 48,16</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Colonoscopia</td>
+<td style="text-align: left;">02.09.01.001-7</td>
+<td style="text-align: left;">R$ 86,00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./A_metodologia_detalhada.html" class="pagination-link" aria-label="Metodologia Detalhada">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Metodologia Detalhada</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Código fonte</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="an">title:</span><span class="co"> "Tabelas Completas"</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co">---</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu"># Dados Originais do Estudo</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">## Encaminhamentos Ambulatoriais</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="in">```{r}</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="co">#| label: tabela-encam-amb</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a>encaminhamentos_ambulatoriais <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-16"><a href="#cb1-16"></a>  <span class="at">especialidade =</span> <span class="fu">c</span>(<span class="st">"Cardiologia"</span>, <span class="st">"Neurologia"</span>, <span class="st">"Psiquiatria"</span>, <span class="st">"Dermatologia"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17"></a>                    <span class="st">"Pneumologia"</span>, <span class="st">"Doenças infecciosas"</span>, <span class="st">"Urologia"</span>, <span class="st">"Alergologia"</span>,</span>
+<span id="cb1-18"><a href="#cb1-18"></a>                    <span class="st">"Nefrologia"</span>, <span class="st">"Endocrinologia"</span>, <span class="st">"Gastroenterologia"</span>, <span class="st">"Angiologia"</span>,</span>
+<span id="cb1-19"><a href="#cb1-19"></a>                    <span class="st">"Reumatologia"</span>, <span class="st">"Fisioterapia"</span>, <span class="st">"Reabilitação"</span>, <span class="st">"Oftalmologia"</span>,</span>
+<span id="cb1-20"><a href="#cb1-20"></a>                    <span class="st">"ORL"</span>, <span class="st">"Ortopedia"</span>, <span class="st">"Ginecologia"</span>, <span class="st">"Pré-natal alto risco"</span>),</span>
+<span id="cb1-21"><a href="#cb1-21"></a>  <span class="at">rr =</span> <span class="fu">c</span>(<span class="fl">0.40</span>, <span class="fl">0.50</span>, <span class="fl">0.45</span>, <span class="fl">0.49</span>, <span class="fl">0.54</span>, <span class="fl">0.74</span>, <span class="fl">0.57</span>, <span class="fl">0.54</span>, <span class="fl">0.63</span>, <span class="fl">0.42</span>, </span>
+<span id="cb1-22"><a href="#cb1-22"></a>         <span class="fl">0.38</span>, <span class="fl">0.35</span>, <span class="fl">0.47</span>, <span class="fl">1.17</span>, <span class="fl">1.68</span>, <span class="fl">1.09</span>, <span class="fl">0.71</span>, <span class="fl">0.52</span>, <span class="fl">0.86</span>, <span class="fl">0.66</span>),</span>
+<span id="cb1-23"><a href="#cb1-23"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(<span class="dv">2008</span>, <span class="dv">1835</span>, <span class="dv">897</span>, <span class="dv">4144</span>, <span class="dv">903</span>, <span class="dv">290</span>, <span class="dv">1762</span>, <span class="dv">480</span>, <span class="dv">603</span>, <span class="dv">1021</span>, </span>
+<span id="cb1-24"><a href="#cb1-24"></a>                  <span class="dv">867</span>, <span class="dv">1030</span>, <span class="dv">830</span>, <span class="dv">2390</span>, <span class="dv">1173</span>, <span class="dv">8713</span>, <span class="dv">2269</span>, <span class="dv">4934</span>, <span class="dv">738</span>, <span class="dv">991</span>),</span>
+<span id="cb1-25"><a href="#cb1-25"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-26"><a href="#cb1-26"></a>)</span>
+<span id="cb1-27"><a href="#cb1-27"></a></span>
+<span id="cb1-28"><a href="#cb1-28"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(encaminhamentos_ambulatoriais,</span>
+<span id="cb1-29"><a href="#cb1-29"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Especialidade"</span>, <span class="st">"RR (IC 95%)"</span>, <span class="st">"Eventos/ano"</span>),</span>
+<span id="cb1-30"><a href="#cb1-30"></a>             <span class="at">caption =</span> <span class="st">"Encaminhamentos para especialidades ambulatoriais"</span>)</span>
+<span id="cb1-31"><a href="#cb1-31"></a><span class="in">```</span></span>
+<span id="cb1-32"><a href="#cb1-32"></a></span>
+<span id="cb1-33"><a href="#cb1-33"></a><span class="fu">## Encaminhamentos Cirúrgicos</span></span>
+<span id="cb1-34"><a href="#cb1-34"></a></span>
+<span id="cb1-37"><a href="#cb1-37"></a><span class="in">```{r}</span></span>
+<span id="cb1-38"><a href="#cb1-38"></a><span class="co">#| label: tabela-encam-cir</span></span>
+<span id="cb1-39"><a href="#cb1-39"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-40"><a href="#cb1-40"></a></span>
+<span id="cb1-41"><a href="#cb1-41"></a>encaminhamentos_cirurgicos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-42"><a href="#cb1-42"></a>  <span class="at">especialidade =</span> <span class="fu">c</span>(<span class="st">"Cirurgia oftalmológica"</span>, <span class="st">"Cirurgia ginecológica"</span>, <span class="st">"Cirurgia ortopédica"</span>,</span>
+<span id="cb1-43"><a href="#cb1-43"></a>                    <span class="st">"Cirurgia geral"</span>, <span class="st">"Cirurgia plástica"</span>, <span class="st">"Cirurgia vascular"</span>),</span>
+<span id="cb1-44"><a href="#cb1-44"></a>  <span class="at">rr =</span> <span class="fu">c</span>(<span class="fl">1.21</span>, <span class="fl">0.87</span>, <span class="fl">1.22</span>, <span class="fl">0.91</span>, <span class="fl">1.19</span>, <span class="fl">0.87</span>),</span>
+<span id="cb1-45"><a href="#cb1-45"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(<span class="dv">4458</span>, <span class="dv">989</span>, <span class="dv">147</span>, <span class="dv">1968</span>, <span class="dv">859</span>, <span class="dv">359</span>),</span>
+<span id="cb1-46"><a href="#cb1-46"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-47"><a href="#cb1-47"></a>)</span>
+<span id="cb1-48"><a href="#cb1-48"></a></span>
+<span id="cb1-49"><a href="#cb1-49"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(encaminhamentos_cirurgicos,</span>
+<span id="cb1-50"><a href="#cb1-50"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Especialidade"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>),</span>
+<span id="cb1-51"><a href="#cb1-51"></a>             <span class="at">caption =</span> <span class="st">"Encaminhamentos para avaliação cirúrgica"</span>)</span>
+<span id="cb1-52"><a href="#cb1-52"></a><span class="in">```</span></span>
+<span id="cb1-53"><a href="#cb1-53"></a></span>
+<span id="cb1-54"><a href="#cb1-54"></a><span class="fu">## Exames Diagnósticos</span></span>
+<span id="cb1-55"><a href="#cb1-55"></a></span>
+<span id="cb1-58"><a href="#cb1-58"></a><span class="in">```{r}</span></span>
+<span id="cb1-59"><a href="#cb1-59"></a><span class="co">#| label: tabela-exames-diag</span></span>
+<span id="cb1-60"><a href="#cb1-60"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-61"><a href="#cb1-61"></a></span>
+<span id="cb1-62"><a href="#cb1-62"></a>exames_diagnosticos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-63"><a href="#cb1-63"></a>  <span class="at">exame =</span> <span class="fu">c</span>(<span class="st">"Ecocardiograma"</span>, <span class="st">"Espirometria"</span>, <span class="st">"Colonoscopia"</span>, <span class="st">"EDA"</span>, </span>
+<span id="cb1-64"><a href="#cb1-64"></a>            <span class="st">"Teste ergométrico"</span>, <span class="st">"Mamografia"</span>),</span>
+<span id="cb1-65"><a href="#cb1-65"></a>  <span class="at">rr =</span> <span class="fu">c</span>(<span class="fl">0.66</span>, <span class="fl">0.96</span>, <span class="fl">0.76</span>, <span class="fl">0.49</span>, <span class="fl">0.72</span>, <span class="fl">0.98</span>),</span>
+<span id="cb1-66"><a href="#cb1-66"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(<span class="dv">1201</span>, <span class="dv">385</span>, <span class="dv">510</span>, <span class="dv">1090</span>, <span class="dv">431</span>, <span class="dv">2424</span>),</span>
+<span id="cb1-67"><a href="#cb1-67"></a>  <span class="at">custo =</span> <span class="fu">c</span>(<span class="fl">39.94</span>, <span class="fl">13.20</span>, <span class="fl">86.00</span>, <span class="fl">48.16</span>, <span class="fl">30.00</span>, <span class="fl">45.00</span>),</span>
+<span id="cb1-68"><a href="#cb1-68"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-69"><a href="#cb1-69"></a>)</span>
+<span id="cb1-70"><a href="#cb1-70"></a></span>
+<span id="cb1-71"><a href="#cb1-71"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(exames_diagnosticos,</span>
+<span id="cb1-72"><a href="#cb1-72"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Exame"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>, <span class="st">"Custo SIGTAP (R$)"</span>),</span>
+<span id="cb1-73"><a href="#cb1-73"></a>             <span class="at">caption =</span> <span class="st">"Encaminhamentos para exames diagnósticos"</span>)</span>
+<span id="cb1-74"><a href="#cb1-74"></a><span class="in">```</span></span>
+<span id="cb1-75"><a href="#cb1-75"></a></span>
+<span id="cb1-76"><a href="#cb1-76"></a><span class="fu">## Exames Laboratoriais</span></span>
+<span id="cb1-77"><a href="#cb1-77"></a></span>
+<span id="cb1-80"><a href="#cb1-80"></a><span class="in">```{r}</span></span>
+<span id="cb1-81"><a href="#cb1-81"></a><span class="co">#| label: tabela-exames-lab</span></span>
+<span id="cb1-82"><a href="#cb1-82"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-83"><a href="#cb1-83"></a></span>
+<span id="cb1-84"><a href="#cb1-84"></a>exames_laboratoriais <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-85"><a href="#cb1-85"></a>  <span class="at">exame =</span> <span class="fu">c</span>(<span class="st">"Hemograma"</span>, <span class="st">"Creatinina"</span>, <span class="st">"Ureia"</span>, <span class="st">"Sódio"</span>, <span class="st">"Potássio"</span>, <span class="st">"Glicose"</span>,</span>
+<span id="cb1-86"><a href="#cb1-86"></a>            <span class="st">"Hemoglobina glicada"</span>, <span class="st">"Colesterol total"</span>, <span class="st">"HDL"</span>, <span class="st">"LDL"</span>, <span class="st">"Triglicerídeos"</span>,</span>
+<span id="cb1-87"><a href="#cb1-87"></a>            <span class="st">"Ácido úrico"</span>, <span class="st">"TSH"</span>, <span class="st">"T3"</span>, <span class="st">"T4"</span>, <span class="st">"T4 livre"</span>, <span class="st">"Bilirrubina"</span>, <span class="st">"AST"</span>, <span class="st">"ALT"</span>,</span>
+<span id="cb1-88"><a href="#cb1-88"></a>            <span class="st">"Fosfatase alcalina"</span>, <span class="st">"Gama-GT"</span>, <span class="st">"VHS"</span>, <span class="st">"Ova e parasitas"</span>, <span class="st">"Urinálise"</span>,</span>
+<span id="cb1-89"><a href="#cb1-89"></a>            <span class="st">"Cálcio"</span>, <span class="st">"LH"</span>, <span class="st">"FSH"</span>, <span class="st">"Rubéola IgG"</span>, <span class="st">"Rubéola IgM"</span>, <span class="st">"PSA"</span>),</span>
+<span id="cb1-90"><a href="#cb1-90"></a>  <span class="at">rr =</span> <span class="fu">c</span>(<span class="fl">0.53</span>, <span class="fl">0.85</span>, <span class="fl">0.29</span>, <span class="fl">0.42</span>, <span class="fl">0.73</span>, <span class="fl">0.46</span>, <span class="fl">0.64</span>, <span class="fl">0.81</span>, <span class="fl">0.94</span>, <span class="fl">0.41</span>, <span class="fl">0.82</span>,</span>
+<span id="cb1-91"><a href="#cb1-91"></a>         <span class="fl">0.23</span>, <span class="fl">0.71</span>, <span class="fl">0.08</span>, <span class="fl">0.13</span>, <span class="fl">0.56</span>, <span class="fl">0.78</span>, <span class="fl">0.48</span>, <span class="fl">0.47</span>, <span class="fl">0.69</span>, <span class="fl">0.64</span>, <span class="fl">0.74</span>,</span>
+<span id="cb1-92"><a href="#cb1-92"></a>         <span class="fl">0.09</span>, <span class="fl">0.67</span>, <span class="fl">0.44</span>, <span class="fl">0.56</span>, <span class="fl">0.60</span>, <span class="fl">0.48</span>, <span class="fl">0.47</span>, <span class="fl">0.36</span>),</span>
+<span id="cb1-93"><a href="#cb1-93"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(<span class="dv">51757</span>, <span class="dv">43746</span>, <span class="dv">22577</span>, <span class="dv">10517</span>, <span class="dv">18265</span>, <span class="dv">9072</span>, <span class="dv">25720</span>, <span class="dv">34673</span>, <span class="dv">31127</span>,</span>
+<span id="cb1-94"><a href="#cb1-94"></a>                  <span class="dv">22163</span>, <span class="dv">33828</span>, <span class="dv">15603</span>, <span class="dv">11679</span>, <span class="dv">791</span>, <span class="dv">886</span>, <span class="dv">5432</span>, <span class="dv">2304</span>, <span class="dv">9181</span>, <span class="dv">9363</span>,</span>
+<span id="cb1-95"><a href="#cb1-95"></a>                  <span class="dv">3505</span>, <span class="dv">4386</span>, <span class="dv">1957</span>, <span class="dv">604</span>, <span class="dv">41333</span>, <span class="dv">1866</span>, <span class="dv">674</span>, <span class="dv">863</span>, <span class="dv">210</span>, <span class="dv">216</span>, <span class="dv">4365</span>),</span>
+<span id="cb1-96"><a href="#cb1-96"></a>  <span class="at">custo =</span> <span class="fu">c</span>(<span class="fl">4.11</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">1.85</span>, <span class="fl">7.86</span>, <span class="fl">1.85</span>, <span class="fl">3.51</span>, <span class="fl">3.51</span>, <span class="fl">3.51</span>,</span>
+<span id="cb1-97"><a href="#cb1-97"></a>            <span class="fl">1.85</span>, <span class="fl">8.96</span>, <span class="fl">8.71</span>, <span class="fl">8.71</span>, <span class="fl">11.60</span>, <span class="fl">2.01</span>, <span class="fl">2.01</span>, <span class="fl">2.01</span>, <span class="fl">2.01</span>, <span class="fl">3.51</span>, <span class="fl">2.63</span>, </span>
+<span id="cb1-98"><a href="#cb1-98"></a>            <span class="fl">1.65</span>, <span class="fl">3.70</span>, <span class="fl">1.85</span>, <span class="fl">10.15</span>, <span class="fl">10.15</span>, <span class="fl">18.55</span>, <span class="fl">18.55</span>, <span class="fl">16.42</span>),</span>
+<span id="cb1-99"><a href="#cb1-99"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-100"><a href="#cb1-100"></a>)</span>
+<span id="cb1-101"><a href="#cb1-101"></a></span>
+<span id="cb1-102"><a href="#cb1-102"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(exames_laboratoriais,</span>
+<span id="cb1-103"><a href="#cb1-103"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Exame"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>, <span class="st">"Custo SIGTAP (R$)"</span>),</span>
+<span id="cb1-104"><a href="#cb1-104"></a>             <span class="at">caption =</span> <span class="st">"Solicitação de exames laboratoriais"</span>)</span>
+<span id="cb1-105"><a href="#cb1-105"></a><span class="in">```</span></span>
+<span id="cb1-106"><a href="#cb1-106"></a></span>
+<span id="cb1-107"><a href="#cb1-107"></a><span class="fu">## Internações ICSAP</span></span>
+<span id="cb1-108"><a href="#cb1-108"></a></span>
+<span id="cb1-111"><a href="#cb1-111"></a><span class="in">```{r}</span></span>
+<span id="cb1-112"><a href="#cb1-112"></a><span class="co">#| label: tabela-icsap</span></span>
+<span id="cb1-113"><a href="#cb1-113"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-114"><a href="#cb1-114"></a></span>
+<span id="cb1-115"><a href="#cb1-115"></a>internacoes_icsap <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-116"><a href="#cb1-116"></a>  <span class="at">condicao =</span> <span class="fu">c</span>(<span class="st">"Hipertensão"</span>, <span class="st">"Diabetes mellitus"</span>, <span class="st">"AVC"</span>, <span class="st">"Angina pectoris"</span>,</span>
+<span id="cb1-117"><a href="#cb1-117"></a>               <span class="st">"Insuficiência cardíaca"</span>, <span class="st">"Epilepsia"</span>, <span class="st">"Asma"</span>, <span class="st">"Gravidez"</span>,</span>
+<span id="cb1-118"><a href="#cb1-118"></a>               <span class="st">"Gastroenterite"</span>, <span class="st">"Pneumonia crianças"</span>, <span class="st">"Pneumonia adultos"</span>,</span>
+<span id="cb1-119"><a href="#cb1-119"></a>               <span class="st">"Infecção pele"</span>, <span class="st">"ORL"</span>, <span class="st">"DIP"</span>),</span>
+<span id="cb1-120"><a href="#cb1-120"></a>  <span class="at">rr =</span> <span class="fu">c</span>(<span class="fl">0.83</span>, <span class="fl">0.76</span>, <span class="fl">0.74</span>, <span class="fl">0.62</span>, <span class="fl">0.52</span>, <span class="fl">0.79</span>, <span class="fl">0.35</span>, <span class="fl">0.78</span>, <span class="fl">0.45</span>, <span class="fl">0.57</span>, <span class="fl">0.36</span>, </span>
+<span id="cb1-121"><a href="#cb1-121"></a>         <span class="fl">0.82</span>, <span class="fl">1.06</span>, <span class="fl">0.59</span>),</span>
+<span id="cb1-122"><a href="#cb1-122"></a>  <span class="at">eventos_ano =</span> <span class="fu">c</span>(<span class="dv">128</span>, <span class="dv">160</span>, <span class="dv">244</span>, <span class="dv">271</span>, <span class="dv">230</span>, <span class="dv">86</span>, <span class="dv">54</span>, <span class="dv">136</span>, <span class="dv">45</span>, <span class="dv">114</span>, <span class="dv">116</span>, <span class="dv">331</span>, <span class="dv">28</span>, <span class="dv">41</span>),</span>
+<span id="cb1-123"><a href="#cb1-123"></a>  <span class="at">custo =</span> <span class="fu">c</span>(<span class="fl">761.35</span>, <span class="fl">1178.17</span>, <span class="fl">1756.62</span>, <span class="fl">4774.49</span>, <span class="fl">2553.91</span>, <span class="fl">957.47</span>, <span class="fl">853.21</span>, <span class="fl">646.69</span>,</span>
+<span id="cb1-124"><a href="#cb1-124"></a>            <span class="fl">527.15</span>, <span class="fl">1969.07</span>, <span class="fl">1969.07</span>, <span class="fl">679.82</span>, <span class="fl">502.60</span>, <span class="fl">612.67</span>),</span>
+<span id="cb1-125"><a href="#cb1-125"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-126"><a href="#cb1-126"></a>)</span>
+<span id="cb1-127"><a href="#cb1-127"></a></span>
+<span id="cb1-128"><a href="#cb1-128"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(internacoes_icsap,</span>
+<span id="cb1-129"><a href="#cb1-129"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Condição"</span>, <span class="st">"RR"</span>, <span class="st">"Eventos/ano"</span>, <span class="st">"Custo AIH (R$)"</span>),</span>
+<span id="cb1-130"><a href="#cb1-130"></a>             <span class="at">caption =</span> <span class="st">"Internações por condições sensíveis à APS"</span>)</span>
+<span id="cb1-131"><a href="#cb1-131"></a><span class="in">```</span></span>
+<span id="cb1-132"><a href="#cb1-132"></a></span>
+<span id="cb1-133"><a href="#cb1-133"></a>---</span>
+<span id="cb1-134"><a href="#cb1-134"></a></span>
+<span id="cb1-135"><a href="#cb1-135"></a><span class="fu"># Valores Convertidos para Cenário Baseline</span></span>
+<span id="cb1-136"><a href="#cb1-136"></a></span>
+<span id="cb1-137"><a href="#cb1-137"></a><span class="fu">## Baseline: 500.000 habitantes, 0% MFC</span></span>
+<span id="cb1-138"><a href="#cb1-138"></a></span>
+<span id="cb1-141"><a href="#cb1-141"></a><span class="in">```{r}</span></span>
+<span id="cb1-142"><a href="#cb1-142"></a><span class="co">#| label: tabela-baseline</span></span>
+<span id="cb1-143"><a href="#cb1-143"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-144"><a href="#cb1-144"></a></span>
+<span id="cb1-145"><a href="#cb1-145"></a>baseline <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-146"><a href="#cb1-146"></a>  <span class="at">categoria =</span> <span class="fu">c</span>(<span class="st">"Encaminhamentos ambulatoriais"</span>, <span class="st">"Encaminhamentos cirúrgicos"</span>,</span>
+<span id="cb1-147"><a href="#cb1-147"></a>                <span class="st">"Exames diagnósticos"</span>, <span class="st">"Exames laboratoriais"</span>, <span class="st">"Internações ICSAP"</span>),</span>
+<span id="cb1-148"><a href="#cb1-148"></a>  <span class="at">original_600k =</span> <span class="fu">c</span>(<span class="dv">37878</span>, <span class="dv">8780</span>, <span class="dv">6041</span>, <span class="dv">418663</span>, <span class="dv">1984</span>),</span>
+<span id="cb1-149"><a href="#cb1-149"></a>  <span class="at">baseline_600k =</span> <span class="fu">c</span>(<span class="dv">42177</span>, <span class="dv">8547</span>, <span class="dv">6532</span>, <span class="dv">479460</span>, <span class="dv">2234</span>),</span>
+<span id="cb1-150"><a href="#cb1-150"></a>  <span class="at">baseline_500k =</span> <span class="fu">c</span>(<span class="dv">35148</span>, <span class="dv">7123</span>, <span class="dv">5444</span>, <span class="dv">399550</span>, <span class="dv">1862</span>),</span>
+<span id="cb1-151"><a href="#cb1-151"></a>  <span class="at">taxa_1000 =</span> <span class="fu">c</span>(<span class="fl">70.3</span>, <span class="fl">14.2</span>, <span class="fl">10.9</span>, <span class="fl">799.1</span>, <span class="fl">3.72</span>),</span>
+<span id="cb1-152"><a href="#cb1-152"></a>  <span class="at">variacao =</span> <span class="fu">c</span>(<span class="st">"+11.4%"</span>, <span class="st">"-2.6%"</span>, <span class="st">"+8.1%"</span>, <span class="st">"+14.5%"</span>, <span class="st">"+12.6%"</span>),</span>
+<span id="cb1-153"><a href="#cb1-153"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-154"><a href="#cb1-154"></a>)</span>
+<span id="cb1-155"><a href="#cb1-155"></a></span>
+<span id="cb1-156"><a href="#cb1-156"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(baseline,</span>
+<span id="cb1-157"><a href="#cb1-157"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Categoria"</span>, <span class="st">"Original (600k)"</span>, <span class="st">"0% MFC (600k)"</span>, </span>
+<span id="cb1-158"><a href="#cb1-158"></a>                          <span class="st">"0% MFC (500k)"</span>, <span class="st">"Taxa/1000 hab"</span>, <span class="st">"Variação"</span>),</span>
+<span id="cb1-159"><a href="#cb1-159"></a>             <span class="at">caption =</span> <span class="st">"Valores baseline para simulação"</span>)</span>
+<span id="cb1-160"><a href="#cb1-160"></a><span class="in">```</span></span>
+<span id="cb1-161"><a href="#cb1-161"></a></span>
+<span id="cb1-162"><a href="#cb1-162"></a>---</span>
+<span id="cb1-163"><a href="#cb1-163"></a></span>
+<span id="cb1-164"><a href="#cb1-164"></a><span class="fu"># Resultados da Simulação</span></span>
+<span id="cb1-165"><a href="#cb1-165"></a></span>
+<span id="cb1-166"><a href="#cb1-166"></a><span class="fu">## Fluxo de Caixa - Cenário Base</span></span>
+<span id="cb1-167"><a href="#cb1-167"></a></span>
+<span id="cb1-170"><a href="#cb1-170"></a><span class="in">```{r}</span></span>
+<span id="cb1-171"><a href="#cb1-171"></a><span class="co">#| label: tabela-fluxo-caixa</span></span>
+<span id="cb1-172"><a href="#cb1-172"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-173"><a href="#cb1-173"></a></span>
+<span id="cb1-174"><a href="#cb1-174"></a>fluxo <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-175"><a href="#cb1-175"></a>  <span class="at">ano =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>,</span>
+<span id="cb1-176"><a href="#cb1-176"></a>  <span class="at">mfc =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">9</span>, <span class="dv">15</span>, <span class="dv">21</span>, <span class="dv">27</span>, <span class="dv">33</span>, <span class="dv">39</span>, <span class="dv">45</span>, <span class="dv">51</span>),</span>
+<span id="cb1-177"><a href="#cb1-177"></a>  <span class="at">prop_mfc =</span> <span class="fu">c</span>(<span class="st">"0%"</span>, <span class="st">"3%"</span>, <span class="st">"3%"</span>, <span class="st">"9%"</span>, <span class="st">"15%"</span>, <span class="st">"21%"</span>, <span class="st">"27%"</span>, <span class="st">"33%"</span>, <span class="st">"39%"</span>, <span class="st">"45%"</span>, <span class="st">"51%"</span>),</span>
+<span id="cb1-178"><a href="#cb1-178"></a>  <span class="at">custo =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1194828</span>, <span class="dv">2143855</span>, <span class="dv">2143855</span>, <span class="dv">2143855</span>, <span class="dv">2143855</span>, </span>
+<span id="cb1-179"><a href="#cb1-179"></a>            <span class="dv">2143855</span>, <span class="dv">2143855</span>, <span class="dv">2143855</span>, <span class="dv">2143855</span>, <span class="dv">2143855</span>),</span>
+<span id="cb1-180"><a href="#cb1-180"></a>  <span class="at">beneficio =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">37498</span>, <span class="dv">37498</span>, <span class="dv">225439</span>, <span class="dv">413380</span>, <span class="dv">601321</span>, </span>
+<span id="cb1-181"><a href="#cb1-181"></a>                <span class="dv">789262</span>, <span class="dv">977203</span>, <span class="dv">1165143</span>, <span class="dv">1353084</span>, <span class="dv">1541025</span>),</span>
+<span id="cb1-182"><a href="#cb1-182"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-183"><a href="#cb1-183"></a>)</span>
+<span id="cb1-184"><a href="#cb1-184"></a></span>
+<span id="cb1-185"><a href="#cb1-185"></a>fluxo<span class="sc">$</span>saldo <span class="ot">&lt;-</span> fluxo<span class="sc">$</span>beneficio <span class="sc">-</span> fluxo<span class="sc">$</span>custo</span>
+<span id="cb1-186"><a href="#cb1-186"></a>fluxo<span class="sc">$</span>saldo_acum <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(fluxo<span class="sc">$</span>saldo)</span>
+<span id="cb1-187"><a href="#cb1-187"></a></span>
+<span id="cb1-188"><a href="#cb1-188"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(fluxo,</span>
+<span id="cb1-189"><a href="#cb1-189"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Ano"</span>, <span class="st">"MFC"</span>, <span class="st">"% MFC"</span>, <span class="st">"Custo"</span>, <span class="st">"Benefício"</span>, </span>
+<span id="cb1-190"><a href="#cb1-190"></a>                          <span class="st">"Saldo Anual"</span>, <span class="st">"Saldo Acumulado"</span>),</span>
+<span id="cb1-191"><a href="#cb1-191"></a>             <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>),</span>
+<span id="cb1-192"><a href="#cb1-192"></a>             <span class="at">caption =</span> <span class="st">"Fluxo de caixa detalhado (R$)"</span>)</span>
+<span id="cb1-193"><a href="#cb1-193"></a><span class="in">```</span></span>
+<span id="cb1-194"><a href="#cb1-194"></a></span>
+<span id="cb1-195"><a href="#cb1-195"></a><span class="fu">## Indicadores Econômicos por Cenário</span></span>
+<span id="cb1-196"><a href="#cb1-196"></a></span>
+<span id="cb1-199"><a href="#cb1-199"></a><span class="in">```{r}</span></span>
+<span id="cb1-200"><a href="#cb1-200"></a><span class="co">#| label: tabela-indicadores-cenarios</span></span>
+<span id="cb1-201"><a href="#cb1-201"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-202"><a href="#cb1-202"></a></span>
+<span id="cb1-203"><a href="#cb1-203"></a>cenarios <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-204"><a href="#cb1-204"></a>  <span class="at">cenario =</span> <span class="fu">c</span>(<span class="st">"Pessimista"</span>, <span class="st">"Conservador"</span>, <span class="st">"Base"</span>, <span class="st">"Otimista"</span>, <span class="st">"Muito Otimista"</span>),</span>
+<span id="cb1-205"><a href="#cb1-205"></a>  <span class="at">retencao =</span> <span class="fu">c</span>(<span class="st">"40%"</span>, <span class="st">"50%"</span>, <span class="st">"60%"</span>, <span class="st">"70%"</span>, <span class="st">"80%"</span>),</span>
+<span id="cb1-206"><a href="#cb1-206"></a>  <span class="at">fator_aih =</span> <span class="fu">c</span>(<span class="st">"1,0x"</span>, <span class="st">"1,25x"</span>, <span class="st">"1,5x"</span>, <span class="st">"1,75x"</span>, <span class="st">"2,0x"</span>),</span>
+<span id="cb1-207"><a href="#cb1-207"></a>  <span class="at">vpl =</span> <span class="fu">c</span>(<span class="st">"-12,5"</span>, <span class="st">"-9,8"</span>, <span class="st">"-7,1"</span>, <span class="st">"-3,8"</span>, <span class="st">"-0,5"</span>),</span>
+<span id="cb1-208"><a href="#cb1-208"></a>  <span class="at">roi =</span> <span class="fu">c</span>(<span class="st">"-85%"</span>, <span class="st">"-75%"</span>, <span class="st">"-64%"</span>, <span class="st">"-42%"</span>, <span class="st">"-15%"</span>),</span>
+<span id="cb1-209"><a href="#cb1-209"></a>  <span class="at">rcb =</span> <span class="fu">c</span>(<span class="st">"0,21"</span>, <span class="st">"0,28"</span>, <span class="st">"0,36"</span>, <span class="st">"0,58"</span>, <span class="st">"0,85"</span>),</span>
+<span id="cb1-210"><a href="#cb1-210"></a>  <span class="at">payback =</span> <span class="fu">c</span>(<span class="st">"&gt;10"</span>, <span class="st">"&gt;10"</span>, <span class="st">"&gt;10"</span>, <span class="st">"&gt;10"</span>, <span class="st">"&gt;10"</span>),</span>
+<span id="cb1-211"><a href="#cb1-211"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-212"><a href="#cb1-212"></a>)</span>
+<span id="cb1-213"><a href="#cb1-213"></a></span>
+<span id="cb1-214"><a href="#cb1-214"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(cenarios,</span>
+<span id="cb1-215"><a href="#cb1-215"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Cenário"</span>, <span class="st">"Retenção"</span>, <span class="st">"Fator AIH"</span>, <span class="st">"VPL (R$ mi)"</span>, </span>
+<span id="cb1-216"><a href="#cb1-216"></a>                          <span class="st">"ROI"</span>, <span class="st">"RCB"</span>, <span class="st">"Payback"</span>),</span>
+<span id="cb1-217"><a href="#cb1-217"></a>             <span class="at">caption =</span> <span class="st">"Comparação de indicadores por cenário"</span>)</span>
+<span id="cb1-218"><a href="#cb1-218"></a><span class="in">```</span></span>
+<span id="cb1-219"><a href="#cb1-219"></a></span>
+<span id="cb1-220"><a href="#cb1-220"></a><span class="fu">## Análise de Sensibilidade - Monte Carlo</span></span>
+<span id="cb1-221"><a href="#cb1-221"></a></span>
+<span id="cb1-224"><a href="#cb1-224"></a><span class="in">```{r}</span></span>
+<span id="cb1-225"><a href="#cb1-225"></a><span class="co">#| label: tabela-monte-carlo</span></span>
+<span id="cb1-226"><a href="#cb1-226"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-227"><a href="#cb1-227"></a></span>
+<span id="cb1-228"><a href="#cb1-228"></a>mc <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-229"><a href="#cb1-229"></a>  <span class="at">estatistica =</span> <span class="fu">c</span>(<span class="st">"Média"</span>, <span class="st">"Mediana"</span>, <span class="st">"Desvio Padrão"</span>, <span class="st">"Mínimo"</span>, <span class="st">"Máximo"</span>,</span>
+<span id="cb1-230"><a href="#cb1-230"></a>                  <span class="st">"Percentil 5%"</span>, <span class="st">"Percentil 25%"</span>, <span class="st">"Percentil 75%"</span>, <span class="st">"Percentil 95%"</span>),</span>
+<span id="cb1-231"><a href="#cb1-231"></a>  <span class="at">vpl =</span> <span class="fu">c</span>(<span class="st">"-5,2"</span>, <span class="st">"-5,1"</span>, <span class="st">"2,3"</span>, <span class="st">"-12,8"</span>, <span class="st">"1,5"</span>, <span class="st">"-9,8"</span>, <span class="st">"-6,8"</span>, <span class="st">"-3,4"</span>, <span class="st">"-1,2"</span>),</span>
+<span id="cb1-232"><a href="#cb1-232"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-233"><a href="#cb1-233"></a>)</span>
+<span id="cb1-234"><a href="#cb1-234"></a></span>
+<span id="cb1-235"><a href="#cb1-235"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(mc,</span>
+<span id="cb1-236"><a href="#cb1-236"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Estatística"</span>, <span class="st">"VPL (R$ milhões)"</span>),</span>
+<span id="cb1-237"><a href="#cb1-237"></a>             <span class="at">caption =</span> <span class="st">"Distribuição do VPL - Análise de Monte Carlo (n=1000)"</span>)</span>
+<span id="cb1-238"><a href="#cb1-238"></a><span class="in">```</span></span>
+<span id="cb1-239"><a href="#cb1-239"></a></span>
+<span id="cb1-240"><a href="#cb1-240"></a>---</span>
+<span id="cb1-241"><a href="#cb1-241"></a></span>
+<span id="cb1-242"><a href="#cb1-242"></a><span class="fu"># Custos Detalhados</span></span>
+<span id="cb1-243"><a href="#cb1-243"></a></span>
+<span id="cb1-244"><a href="#cb1-244"></a><span class="fu">## Custos do Programa de Residência</span></span>
+<span id="cb1-245"><a href="#cb1-245"></a></span>
+<span id="cb1-248"><a href="#cb1-248"></a><span class="in">```{r}</span></span>
+<span id="cb1-249"><a href="#cb1-249"></a><span class="co">#| label: tabela-custos-programa</span></span>
+<span id="cb1-250"><a href="#cb1-250"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-251"><a href="#cb1-251"></a></span>
+<span id="cb1-252"><a href="#cb1-252"></a>custos_prog <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-253"><a href="#cb1-253"></a>  <span class="at">item =</span> <span class="fu">c</span>(<span class="st">"Bolsa residente (MEC)"</span>, <span class="st">"Complemento MS"</span>, <span class="st">"Bolsa total/residente"</span>,</span>
+<span id="cb1-254"><a href="#cb1-254"></a>           <span class="st">"Custo preceptoria/preceptor"</span>, <span class="st">"Incentivo federal/equipe"</span>,</span>
+<span id="cb1-255"><a href="#cb1-255"></a>           <span class="st">"Custos operacionais/ano"</span>),</span>
+<span id="cb1-256"><a href="#cb1-256"></a>  <span class="at">valor_mensal =</span> <span class="fu">c</span>(<span class="st">"R$ 4.106,90"</span>, <span class="st">"R$ 4.000,00"</span>, <span class="st">"R$ 8.106,90"</span>,</span>
+<span id="cb1-257"><a href="#cb1-257"></a>                   <span class="st">"R$ 4.000,00"</span>, <span class="st">"R$ 4.500,00"</span>, <span class="st">"-"</span>),</span>
+<span id="cb1-258"><a href="#cb1-258"></a>  <span class="at">valor_anual =</span> <span class="fu">c</span>(<span class="st">"R$ 49.282,80"</span>, <span class="st">"R$ 48.000,00"</span>, <span class="st">"R$ 97.282,80"</span>,</span>
+<span id="cb1-259"><a href="#cb1-259"></a>                  <span class="st">"R$ 48.000,00"</span>, <span class="st">"R$ 54.000,00"</span>, <span class="st">"R$ 50.000,00"</span>),</span>
+<span id="cb1-260"><a href="#cb1-260"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-261"><a href="#cb1-261"></a>)</span>
+<span id="cb1-262"><a href="#cb1-262"></a></span>
+<span id="cb1-263"><a href="#cb1-263"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(custos_prog,</span>
+<span id="cb1-264"><a href="#cb1-264"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Item"</span>, <span class="st">"Valor Mensal"</span>, <span class="st">"Valor Anual"</span>),</span>
+<span id="cb1-265"><a href="#cb1-265"></a>             <span class="at">caption =</span> <span class="st">"Componentes de custo do programa"</span>)</span>
+<span id="cb1-266"><a href="#cb1-266"></a><span class="in">```</span></span>
+<span id="cb1-267"><a href="#cb1-267"></a></span>
+<span id="cb1-268"><a href="#cb1-268"></a><span class="fu">## Custos SIGTAP - Consultas e Procedimentos</span></span>
+<span id="cb1-269"><a href="#cb1-269"></a></span>
+<span id="cb1-272"><a href="#cb1-272"></a><span class="in">```{r}</span></span>
+<span id="cb1-273"><a href="#cb1-273"></a><span class="co">#| label: tabela-custos-sigtap</span></span>
+<span id="cb1-274"><a href="#cb1-274"></a><span class="co">#| echo: false</span></span>
+<span id="cb1-275"><a href="#cb1-275"></a></span>
+<span id="cb1-276"><a href="#cb1-276"></a>sigtap <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-277"><a href="#cb1-277"></a>  <span class="at">procedimento =</span> <span class="fu">c</span>(<span class="st">"Consulta médica em APS"</span>, <span class="st">"Consulta especializada"</span>,</span>
+<span id="cb1-278"><a href="#cb1-278"></a>                   <span class="st">"Hemograma completo"</span>, <span class="st">"Glicemia de jejum"</span>, <span class="st">"TSH"</span>,</span>
+<span id="cb1-279"><a href="#cb1-279"></a>                   <span class="st">"Ecocardiograma"</span>, <span class="st">"Endoscopia digestiva alta"</span>,</span>
+<span id="cb1-280"><a href="#cb1-280"></a>                   <span class="st">"Colonoscopia"</span>),</span>
+<span id="cb1-281"><a href="#cb1-281"></a>  <span class="at">codigo =</span> <span class="fu">c</span>(<span class="st">"03.01.01.007-2"</span>, <span class="st">"03.01.01.004-8"</span>, <span class="st">"02.02.02.038-0"</span>,</span>
+<span id="cb1-282"><a href="#cb1-282"></a>             <span class="st">"02.02.01.047-3"</span>, <span class="st">"02.02.06.037-0"</span>, <span class="st">"02.05.01.003-7"</span>,</span>
+<span id="cb1-283"><a href="#cb1-283"></a>             <span class="st">"02.09.01.003-3"</span>, <span class="st">"02.09.01.001-7"</span>),</span>
+<span id="cb1-284"><a href="#cb1-284"></a>  <span class="at">valor =</span> <span class="fu">c</span>(<span class="st">"R$ 10,00"</span>, <span class="st">"R$ 10,00"</span>, <span class="st">"R$ 4,11"</span>, <span class="st">"R$ 1,85"</span>, <span class="st">"R$ 8,96"</span>,</span>
+<span id="cb1-285"><a href="#cb1-285"></a>            <span class="st">"R$ 39,94"</span>, <span class="st">"R$ 48,16"</span>, <span class="st">"R$ 86,00"</span>),</span>
+<span id="cb1-286"><a href="#cb1-286"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-287"><a href="#cb1-287"></a>)</span>
+<span id="cb1-288"><a href="#cb1-288"></a></span>
+<span id="cb1-289"><a href="#cb1-289"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sigtap,</span>
+<span id="cb1-290"><a href="#cb1-290"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Procedimento"</span>, <span class="st">"Código SIGTAP"</span>, <span class="st">"Valor"</span>),</span>
+<span id="cb1-291"><a href="#cb1-291"></a>             <span class="at">caption =</span> <span class="st">"Valores de referência SIGTAP 2024"</span>)</span>
+<span id="cb1-292"><a href="#cb1-292"></a><span class="in">```</span></span>
+</code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

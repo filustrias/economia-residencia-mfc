@@ -1,0 +1,53 @@
+{
+  "index.qmd": {
+    "index.html": "6380247e"
+  },
+  "01_configuracao_dados.qmd": {
+    "01_configuracao_dados.html": "281d3908"
+  },
+  "02_funcoes_simulacao.qmd": {
+    "02_funcoes_simulacao.html": "27b20de4"
+  },
+  "03_simulacao_cenarios.qmd": {
+    "03_simulacao_cenarios.html": "ca6cb6ca"
+  },
+  "04_indicadores_economicos.qmd": {
+    "04_indicadores_economicos.html": "f8734dd3"
+  },
+  "05_visualizacoes.qmd": {
+    "05_visualizacoes.html": "244582d4"
+  },
+  "06_analise_sensibilidade.qmd": {
+    "06_analise_sensibilidade.html": "e751a858"
+  },
+  "07_discussao_conclusoes.qmd": {
+    "07_discussao_conclusoes.html": "9ddb271f"
+  },
+  "references.qmd": {
+    "references.html": "86fdd71b"
+  },
+  "A_metodologia_detalhada.qmd": {
+    "A_metodologia_detalhada.html": "c42349b2"
+  },
+  "B_tabelas_completas.qmd": {
+    "B_tabelas_completas.html": "d5906137"
+  },
+  "04b_cenario_instantaneo.qmd": {
+    "04b_cenario_instantaneo.html": "eb47639a"
+  },
+  "05_analise_sensibilidade.qmd": {
+    "05_analise_sensibilidade.html": "ec045191"
+  },
+  "05b_cenario_combinado.qmd": {
+    "05b_cenario_combinado.html": "32647974"
+  },
+  "06_visualizacoes.qmd": {
+    "06_visualizacoes.html": "6032565c"
+  },
+  "02_metodologia_funcoes.qmd": {
+    "02_metodologia_funcoes.html": "9bbd9412"
+  },
+  "00_sumario_executivo.qmd": {
+    "00_sumario_executivo.html": "665d4c24"
+  }
+}

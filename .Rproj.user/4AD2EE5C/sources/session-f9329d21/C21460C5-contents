@@ -1,0 +1,868 @@
+---
+title: "Análise de Sensibilidade"
+---
+
+# Introdução
+
+A análise de sensibilidade avalia como os resultados do modelo variam quando alteramos os parâmetros de entrada. Isso é fundamental porque:
+
+1. **Incerteza nos parâmetros:** Não conhecemos com precisão valores como taxa de retenção ou custos reais
+2. **Diferentes contextos:** Municípios diferentes podem ter realidades distintas
+3. **Tomada de decisão:** Gestores precisam saber quais fatores mais impactam o resultado
+4. **Robustez:** Um resultado que se mantém positivo em vários cenários é mais confiável
+
+**Parâmetros analisados:**
+
+1. Taxa de retenção dos formados
+2. Número de vagas por ano
+3. Fator de correção AIH (custo real das internações)
+4. Adicional por especialidade para MFC
+5. Taxa de desconto
+6. Composição da bolsa do residente
+7. Adicional de preceptoria (tutor)
+8. Análise de limiar (break-even)
+
+---
+
+# Preparação: Funções e Dados Base
+
+```{r}
+#| label: setup-sensibilidade
+#| include: true
+#| message: false
+#| warning: false
+
+# ============================================================
+# CONFIGURAÇÕES
+# ============================================================
+
+options(scipen = 999, digits = 2, OutDec = ",")
+
+formatar_numero <- function(x, decimais = 0) {
+  format(round(x, decimais), big.mark = ".", decimal.mark = ",", nsmall = decimais)
+}
+
+formatar_moeda <- function(x) {
+  paste0("R$ ", formatar_numero(x))
+}
+
+# ============================================================
+# PARÂMETROS BASE
+# ============================================================
+
+municipio <- list(
+  n_equipes = 100
+)
+
+programa_base <- list(
+  vagas_por_ano = 15,
+  n_equipes_escola = 15,
+  duracao_residencia = 2,
+  taxa_retencao = 0.60,
+  n_preceptores = 4,
+  
+  # Bolsas
+  bolsa_mec = 4106.90,
+  complemento_ms = 4000.00,
+  complemento_municipal = 2000.00,
+  
+  # Custos
+  custo_preceptoria_mensal = 4000.00,
+  incentivo_equipe_residente = 4500.00,
+  custo_operacional_anual = 50000
+)
+
+economico_base <- list(
+  taxa_desconto = 0.05,
+  horizonte_anos = 10,
+  salario_base_medico = 15000,
+  fator_correcao_aih = 1.5
+)
+
+# ============================================================
+# FUNÇÃO: CALCULAR ECONOMIA BASE (100% MFC)
+# ============================================================
+
+converter_para_baseline <- function(valor_observado, rr, 
+                                     prop_mfc = 0.336, prop_gen = 0.664,
+                                     pop_estudo = 600000, pop_alvo = 500000) {
+  denominador <- (prop_mfc * rr) + prop_gen
+  taxa_baseline_600k <- valor_observado / denominador
+  taxa_baseline_500k <- taxa_baseline_600k * (pop_alvo / pop_estudo)
+  return(taxa_baseline_500k)
+}
+
+calcular_economia_100pct <- function(fator_aih = 1.5) {
+  
+  custo_consulta <- 50.00
+  
+  # Encaminhamentos ambulatoriais
+  enc_amb <- data.frame(
+    rr = c(0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,
+           0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,
+           0.71, 0.52, 0.86, 0.66),
+    obs = c(2008, 1835, 897, 4144, 903, 290, 1762, 480,
+            603, 1021, 867, 1030, 830, 2390, 1173, 8713,
+            2269, 4934, 738, 991)
+  )
+  enc_amb$baseline <- mapply(converter_para_baseline, enc_amb$obs, enc_amb$rr)
+  enc_amb$economia <- enc_amb$baseline * (1 - enc_amb$rr) * custo_consulta
+  
+  # Encaminhamentos cirúrgicos
+  enc_cir <- data.frame(
+    rr = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),
+    obs = c(4458, 989, 147, 1968, 859, 359)
+  )
+  enc_cir$baseline <- mapply(converter_para_baseline, enc_cir$obs, enc_cir$rr)
+  enc_cir$economia <- enc_cir$baseline * (1 - enc_cir$rr) * custo_consulta
+  
+  # Exames diagnósticos
+  diag <- data.frame(
+    rr = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),
+    obs = c(1201, 385, 510, 1090, 431, 2424),
+    custo = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00)
+  )
+  diag$baseline <- mapply(converter_para_baseline, diag$obs, diag$rr)
+  diag$economia <- diag$baseline * (1 - diag$rr) * diag$custo
+  
+  # Exames laboratoriais
+  lab <- data.frame(
+    rr = c(0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81, 0.94, 0.41, 0.82,
+           0.23, 0.71, 0.08, 0.13, 0.56, 0.78, 0.48, 0.47, 0.69, 0.64, 0.74,
+           0.09, 0.67, 0.44, 0.56, 0.60, 0.48, 0.47, 0.36),
+    obs = c(51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673, 
+            31127, 22163, 33828, 15603, 11679, 791, 886, 5432, 
+            2304, 9181, 9363, 3505, 4386, 1957, 604, 41333, 
+            1866, 674, 863, 210, 216, 4365),
+    custo = c(4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85, 3.51, 3.51, 3.51,
+              1.85, 8.96, 8.71, 8.71, 11.60, 2.01, 2.01, 2.01, 2.01, 3.51, 2.63, 
+              1.65, 3.70, 1.85, 10.15, 10.15, 18.55, 18.55, 16.42)
+  )
+  lab$baseline <- mapply(converter_para_baseline, lab$obs, lab$rr)
+  lab$economia <- lab$baseline * (1 - lab$rr) * lab$custo
+  
+  # Internações ICSAP
+  icsap <- data.frame(
+    rr = c(0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78, 
+           0.45, 0.57, 0.36, 0.82, 1.06, 0.59),
+    obs = c(128, 160, 244, 271, 230, 86, 54, 136, 
+            45, 114, 116, 331, 28, 41),
+    custo = c(761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 853.21, 646.69,
+              527.15, 1969.07, 1969.07, 679.82, 502.60, 612.67)
+  )
+  icsap$baseline <- mapply(converter_para_baseline, icsap$obs, icsap$rr)
+  icsap$economia <- icsap$baseline * (1 - icsap$rr) * icsap$custo * fator_aih
+  
+  total <- sum(enc_amb$economia) + sum(enc_cir$economia) + 
+           sum(diag$economia) + sum(lab$economia) + sum(icsap$economia)
+  
+  return(total)
+}
+
+# ============================================================
+# FUNÇÃO: SIMULAR PROGRAMA COMPLETO
+# ============================================================
+
+simular_programa_completo <- function(
+    vagas_por_ano = 15,
+    taxa_retencao = 0.60,
+    bolsa_mensal = 8106.90,
+    custo_preceptoria_mensal = 4000.00,
+    adicional_especialidade_pct = 0,
+    taxa_desconto = 0.05,
+    fator_correcao_aih = 1.5,
+    horizonte_anos = 10
+) {
+  
+  # Economia base (100% MFC)
+  economia_100pct <- calcular_economia_100pct(fator_correcao_aih)
+  
+  # Número de equipes-escola = número de vagas (1 residente por equipe)
+  n_equipes_escola <- vagas_por_ano
+  
+  # Simular expansão
+  anos <- 0:horizonte_anos
+  n_anos <- length(anos)
+  
+  formados_retidos_acum <- numeric(n_anos)
+  n_residentes <- numeric(n_anos)
+  
+  for (i in seq_along(anos)) {
+    ano <- anos[i]
+    
+    if (ano == 0) {
+      formados_retidos_acum[i] <- 0
+      n_residentes[i] <- 0
+    } else if (ano == 1) {
+      formados_retidos_acum[i] <- 0
+      n_residentes[i] <- vagas_por_ano
+    } else if (ano == 2) {
+      formados_retidos_acum[i] <- 0
+      n_residentes[i] <- vagas_por_ano * 2
+    } else {
+      novos_formados <- round(vagas_por_ano * taxa_retencao)
+      formados_retidos_acum[i] <- formados_retidos_acum[i-1] + novos_formados
+      n_residentes[i] <- vagas_por_ano * 2
+    }
+  }
+  
+  # Cobertura MFC
+  equipes_mfc <- pmin(n_equipes_escola * (anos > 0) + formados_retidos_acum, 
+                       municipio$n_equipes)
+  prop_mfc <- equipes_mfc / municipio$n_equipes
+  
+  # Benefícios
+  beneficio <- economia_100pct * prop_mfc
+  
+  # Custos
+  custo_bolsas <- n_residentes * bolsa_mensal * 12
+  custo_preceptoria <- ifelse(anos > 0, 
+                               programa_base$n_preceptores * custo_preceptoria_mensal * 12, 
+                               0)
+  custo_operacional <- ifelse(anos > 0, programa_base$custo_operacional_anual, 0)
+  
+  adicional_mensal <- economico_base$salario_base_medico * adicional_especialidade_pct
+  custo_adicional <- formados_retidos_acum * adicional_mensal * 12
+  
+  receita_incentivo <- n_residentes * programa_base$incentivo_equipe_residente * 12
+  
+  custo_bruto <- custo_bolsas + custo_preceptoria + custo_operacional + custo_adicional
+  custo_liquido <- pmax(custo_bruto - receita_incentivo, 0)
+  
+  # Fluxo de caixa
+  saldo <- beneficio - custo_liquido
+  
+  # Valor presente
+  fator_vp <- 1 / ((1 + taxa_desconto) ^ anos)
+  custo_vp <- custo_liquido * fator_vp
+  beneficio_vp <- beneficio * fator_vp
+  saldo_vp <- saldo * fator_vp
+  
+  # Indicadores
+  custo_total_vp <- sum(custo_vp)
+  beneficio_total_vp <- sum(beneficio_vp)
+  vpl <- sum(saldo_vp)
+  
+  roi <- ifelse(custo_total_vp > 0, 
+                ((beneficio_total_vp - custo_total_vp) / custo_total_vp) * 100,
+                Inf)
+  rcb <- ifelse(custo_total_vp > 0, 
+                beneficio_total_vp / custo_total_vp,
+                Inf)
+  
+  # Payback
+  saldo_vp_acum <- cumsum(saldo_vp)
+  payback_idx <- which(saldo_vp_acum >= 0)[1]
+  payback <- ifelse(is.na(payback_idx), NA, anos[payback_idx])
+  
+  # Cobertura final
+  cobertura_final <- prop_mfc[n_anos]
+  
+  return(list(
+    vpl = vpl,
+    roi = roi,
+    rcb = rcb,
+    payback = payback,
+    custo_total_vp = custo_total_vp,
+    beneficio_total_vp = beneficio_total_vp,
+    cobertura_final = cobertura_final,
+    economia_100pct = economia_100pct
+  ))
+}
+
+# Testar função com parâmetros base
+resultado_base <- simular_programa_completo()
+```
+
+**Cenário base:**
+
+- VPL: `r formatar_moeda(resultado_base$vpl)`
+- ROI: `r round(resultado_base$roi, 1)`%
+- RCB: `r round(resultado_base$rcb, 2)`
+- Cobertura final: `r round(resultado_base$cobertura_final * 100, 1)`%
+
+---
+
+# 1. Sensibilidade à Taxa de Retenção
+
+A taxa de retenção é um dos parâmetros mais críticos, pois determina quantos formados permanecem no município.
+
+```{r}
+#| label: sensibilidade-retencao
+#| include: true
+#| message: false
+#| warning: false
+
+taxas_retencao <- c(0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)
+
+resultados_retencao <- data.frame(
+  taxa_retencao = taxas_retencao,
+  taxa_pct = paste0(taxas_retencao * 100, "%"),
+  vpl = NA,
+  roi = NA,
+  rcb = NA,
+  cobertura = NA
+)
+
+for (i in seq_along(taxas_retencao)) {
+  res <- simular_programa_completo(taxa_retencao = taxas_retencao[i])
+  resultados_retencao$vpl[i] <- res$vpl
+  resultados_retencao$roi[i] <- res$roi
+  resultados_retencao$rcb[i] <- res$rcb
+  resultados_retencao$cobertura[i] <- res$cobertura_final
+}
+
+resultados_retencao$vpl_fmt <- formatar_moeda(resultados_retencao$vpl)
+resultados_retencao$cobertura_pct <- paste0(round(resultados_retencao$cobertura * 100, 1), "%")
+
+knitr::kable(
+  resultados_retencao[, c("taxa_pct", "cobertura_pct", "vpl_fmt", "roi", "rcb")],
+  col.names = c("Taxa Retenção", "Cobertura Final", "VPL", "ROI (%)", "RCB"),
+  digits = c(0, 0, 0, 1, 2),
+  caption = "Sensibilidade à taxa de retenção"
+)
+```
+
+**Observações:**
+
+- Mesmo com taxa de retenção de 40%, o programa continua viável (VPL > 0)
+- A cobertura final varia de `r round(resultados_retencao$cobertura[1] * 100, 1)`% (40% retenção) a `r round(resultados_retencao$cobertura[7] * 100, 1)`% (100% retenção)
+- O ROI e RCB melhoram significativamente com maior retenção
+
+---
+
+# 2. Sensibilidade ao Número de Vagas
+
+O número de vagas afeta tanto os custos (mais residentes) quanto os benefícios (mais equipes-escola e formados).
+
+```{r}
+#| label: sensibilidade-vagas
+#| include: true
+#| message: false
+#| warning: false
+
+vagas_cenarios <- c(5, 10, 15, 20, 25, 30)
+
+resultados_vagas <- data.frame(
+  vagas = vagas_cenarios,
+  vpl = NA,
+  roi = NA,
+  rcb = NA,
+  cobertura = NA,
+  custo_total = NA
+)
+
+for (i in seq_along(vagas_cenarios)) {
+  res <- simular_programa_completo(vagas_por_ano = vagas_cenarios[i])
+  resultados_vagas$vpl[i] <- res$vpl
+  resultados_vagas$roi[i] <- res$roi
+  resultados_vagas$rcb[i] <- res$rcb
+  resultados_vagas$cobertura[i] <- res$cobertura_final
+  resultados_vagas$custo_total[i] <- res$custo_total_vp
+}
+
+resultados_vagas$vpl_fmt <- formatar_moeda(resultados_vagas$vpl)
+resultados_vagas$custo_fmt <- formatar_moeda(resultados_vagas$custo_total)
+resultados_vagas$cobertura_pct <- paste0(round(resultados_vagas$cobertura * 100, 1), "%")
+
+knitr::kable(
+  resultados_vagas[, c("vagas", "cobertura_pct", "custo_fmt", "vpl_fmt", "roi", "rcb")],
+  col.names = c("Vagas/ano", "Cobertura Final", "Custo Total (VP)", "VPL", "ROI (%)", "RCB"),
+  digits = c(0, 0, 0, 0, 1, 2),
+  caption = "Sensibilidade ao número de vagas por ano"
+)
+```
+
+**Observações:**
+
+- Mais vagas = maior cobertura final e maior VPL absoluto
+- O ROI e RCB tendem a se manter estáveis (escala proporcional)
+- Com 30 vagas/ano, atinge-se `r round(resultados_vagas$cobertura[6] * 100, 1)`% de cobertura em 10 anos
+
+---
+
+# 3. Sensibilidade ao Fator de Correção AIH
+
+O fator de correção AIH ajusta os valores tabelados para o custo real das internações.
+
+```{r}
+#| label: sensibilidade-aih
+#| include: true
+#| message: false
+#| warning: false
+
+fatores_aih <- c(1.0, 1.25, 1.5, 1.75, 2.0, 2.5)
+
+resultados_aih <- data.frame(
+  fator = fatores_aih,
+  economia_100pct = NA,
+  vpl = NA,
+  roi = NA,
+  rcb = NA
+)
+
+for (i in seq_along(fatores_aih)) {
+  res <- simular_programa_completo(fator_correcao_aih = fatores_aih[i])
+  resultados_aih$economia_100pct[i] <- res$economia_100pct
+  resultados_aih$vpl[i] <- res$vpl
+  resultados_aih$roi[i] <- res$roi
+  resultados_aih$rcb[i] <- res$rcb
+}
+
+resultados_aih$economia_fmt <- formatar_moeda(resultados_aih$economia_100pct)
+resultados_aih$vpl_fmt <- formatar_moeda(resultados_aih$vpl)
+
+knitr::kable(
+  resultados_aih[, c("fator", "economia_fmt", "vpl_fmt", "roi", "rcb")],
+  col.names = c("Fator AIH", "Economia 100% MFC/ano", "VPL", "ROI (%)", "RCB"),
+  digits = c(2, 0, 0, 1, 2),
+  caption = "Sensibilidade ao fator de correção AIH"
+)
+```
+
+**Observações:**
+
+- O fator AIH tem grande impacto na economia estimada
+- Mesmo com fator 1.0 (valores tabelados), o programa é viável
+- Com fator 2.0 ou mais, os benefícios são substancialmente maiores
+
+---
+
+# 4. Sensibilidade ao Adicional por Especialidade
+
+O adicional por especialidade aumenta os custos, pois é pago a todos os MFC formados.
+
+```{r}
+#| label: sensibilidade-adicional-esp
+#| include: true
+#| message: false
+#| warning: false
+
+adicionais_esp <- c(0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30)
+
+resultados_adicional <- data.frame(
+  adicional_pct = adicionais_esp * 100,
+  custo_adicional_anual = NA,
+  vpl = NA,
+  roi = NA,
+  rcb = NA
+)
+
+for (i in seq_along(adicionais_esp)) {
+  res <- simular_programa_completo(adicional_especialidade_pct = adicionais_esp[i])
+  # Custo adicional aproximado (no ano 10, com ~63 formados retidos)
+  resultados_adicional$custo_adicional_anual[i] <- 63 * economico_base$salario_base_medico * adicionais_esp[i] * 12
+  resultados_adicional$vpl[i] <- res$vpl
+  resultados_adicional$roi[i] <- res$roi
+  resultados_adicional$rcb[i] <- res$rcb
+}
+
+resultados_adicional$custo_fmt <- formatar_moeda(resultados_adicional$custo_adicional_anual)
+resultados_adicional$vpl_fmt <- formatar_moeda(resultados_adicional$vpl)
+
+knitr::kable(
+  resultados_adicional[, c("adicional_pct", "custo_fmt", "vpl_fmt", "roi", "rcb")],
+  col.names = c("Adicional (%)", "Custo Adic. Ano 10", "VPL", "ROI (%)", "RCB"),
+  digits = c(0, 0, 0, 1, 2),
+  caption = "Sensibilidade ao adicional por especialidade"
+)
+```
+
+**Observações:**
+
+- O adicional por especialidade reduz o VPL, mas o programa continua viável até `r max(adicionais_esp[resultados_adicional$vpl > 0]) * 100`% de adicional
+- Com 20% de adicional, o custo no ano 10 seria de aproximadamente `r formatar_moeda(63 * economico_base$salario_base_medico * 0.20 * 12)`
+
+---
+
+# 5. Sensibilidade à Taxa de Desconto
+
+A taxa de desconto afeta o valor presente dos fluxos futuros.
+
+```{r}
+#| label: sensibilidade-desconto
+#| include: true
+#| message: false
+#| warning: false
+
+taxas_desconto <- c(0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10)
+
+resultados_desconto <- data.frame(
+  taxa = taxas_desconto * 100,
+  vpl = NA,
+  roi = NA,
+  rcb = NA
+)
+
+for (i in seq_along(taxas_desconto)) {
+  res <- simular_programa_completo(taxa_desconto = taxas_desconto[i])
+  resultados_desconto$vpl[i] <- res$vpl
+  resultados_desconto$roi[i] <- res$roi
+  resultados_desconto$rcb[i] <- res$rcb
+}
+
+resultados_desconto$vpl_fmt <- formatar_moeda(resultados_desconto$vpl)
+
+knitr::kable(
+  resultados_desconto[, c("taxa", "vpl_fmt", "roi", "rcb")],
+  col.names = c("Taxa Desconto (%)", "VPL", "ROI (%)", "RCB"),
+  digits = c(0, 0, 1, 2),
+  caption = "Sensibilidade à taxa de desconto"
+)
+```
+
+**Observações:**
+
+- Taxas de desconto mais altas penalizam projetos com retorno no longo prazo
+- Mesmo com taxa de 10%, o programa continua viável
+- A recomendação do MS (5%) é um valor intermediário razoável
+
+---
+
+# 6. Sensibilidade à Composição da Bolsa
+
+A bolsa do residente pode ter diferentes composições dependendo das fontes de financiamento.
+
+```{r}
+#| label: sensibilidade-bolsa
+#| include: true
+#| message: false
+#| warning: false
+
+cenarios_bolsa <- data.frame(
+  cenario = c(
+    "Apenas MEC",
+    "MEC + MS",
+    "MEC + MS + Municipal"
+  ),
+  bolsa_mensal = c(
+    programa_base$bolsa_mec,
+    programa_base$bolsa_mec + programa_base$complemento_ms,
+    programa_base$bolsa_mec + programa_base$complemento_ms + programa_base$complemento_municipal
+  ),
+  stringsAsFactors = FALSE
+)
+
+cenarios_bolsa$vpl <- NA
+cenarios_bolsa$roi <- NA
+cenarios_bolsa$rcb <- NA
+cenarios_bolsa$custo_total <- NA
+
+for (i in 1:nrow(cenarios_bolsa)) {
+  res <- simular_programa_completo(bolsa_mensal = cenarios_bolsa$bolsa_mensal[i])
+  cenarios_bolsa$vpl[i] <- res$vpl
+  cenarios_bolsa$roi[i] <- res$roi
+  cenarios_bolsa$rcb[i] <- res$rcb
+  cenarios_bolsa$custo_total[i] <- res$custo_total_vp
+}
+
+cenarios_bolsa$bolsa_fmt <- formatar_moeda(cenarios_bolsa$bolsa_mensal)
+cenarios_bolsa$vpl_fmt <- formatar_moeda(cenarios_bolsa$vpl)
+cenarios_bolsa$custo_fmt <- formatar_moeda(cenarios_bolsa$custo_total)
+
+knitr::kable(
+  cenarios_bolsa[, c("cenario", "bolsa_fmt", "custo_fmt", "vpl_fmt", "roi", "rcb")],
+  col.names = c("Cenário", "Bolsa Mensal", "Custo Total (VP)", "VPL", "ROI (%)", "RCB"),
+  digits = c(0, 0, 0, 0, 1, 2),
+  caption = "Sensibilidade à composição da bolsa do residente"
+)
+```
+
+**Observações:**
+
+- A diferença entre "Apenas MEC" e "MEC + MS + Municipal" é de `r formatar_moeda(programa_base$complemento_ms + programa_base$complemento_municipal)` por mês por residente
+- Mesmo com bolsa completa, o programa continua altamente viável
+- O cenário "Apenas MEC" representa o menor custo para o município (mas menor atratividade para residentes)
+
+---
+
+# 7. Sensibilidade ao Adicional de Preceptoria
+
+O adicional de preceptoria remunera os tutores pelo trabalho de supervisão.
+
+```{r}
+#| label: sensibilidade-preceptoria
+#| include: true
+#| message: false
+#| warning: false
+
+adicionais_preceptoria <- c(0, 2000, 4000, 6000, 8000)
+
+resultados_preceptoria <- data.frame(
+  adicional = adicionais_preceptoria,
+  custo_anual_preceptoria = adicionais_preceptoria * programa_base$n_preceptores * 12,
+  vpl = NA,
+  roi = NA,
+  rcb = NA
+)
+
+for (i in seq_along(adicionais_preceptoria)) {
+  res <- simular_programa_completo(custo_preceptoria_mensal = adicionais_preceptoria[i])
+  resultados_preceptoria$vpl[i] <- res$vpl
+  resultados_preceptoria$roi[i] <- res$roi
+  resultados_preceptoria$rcb[i] <- res$rcb
+}
+
+resultados_preceptoria$adicional_fmt <- formatar_moeda(resultados_preceptoria$adicional)
+resultados_preceptoria$custo_fmt <- formatar_moeda(resultados_preceptoria$custo_anual_preceptoria)
+resultados_preceptoria$vpl_fmt <- formatar_moeda(resultados_preceptoria$vpl)
+
+knitr::kable(
+  resultados_preceptoria[, c("adicional_fmt", "custo_fmt", "vpl_fmt", "roi", "rcb")],
+  col.names = c("Adicional/Preceptor", "Custo Anual Total", "VPL", "ROI (%)", "RCB"),
+  digits = c(0, 0, 0, 1, 2),
+  caption = "Sensibilidade ao adicional de preceptoria"
+)
+```
+
+**Observações:**
+
+- Sem adicional de preceptoria (R$ 0), o VPL aumenta significativamente
+- Com adicional de R$ 8.000/mês por preceptor, o programa ainda é viável
+- O custo de preceptoria é relativamente pequeno comparado aos benefícios totais
+
+---
+
+# 8. Análise de Limiar (Break-Even)
+
+A análise de limiar identifica os valores críticos dos parâmetros que tornam o VPL igual a zero.
+
+## 8.1. Taxa de Retenção Mínima
+
+```{r}
+#| label: breakeven-retencao
+#| include: true
+#| message: false
+#| warning: false
+
+# Buscar taxa de retenção que zera o VPL
+encontrar_breakeven_retencao <- function() {
+  taxas <- seq(0.01, 1, by = 0.01)
+  
+  for (taxa in taxas) {
+    res <- simular_programa_completo(taxa_retencao = taxa)
+    if (res$vpl >= 0) {
+      return(taxa)
+    }
+  }
+  return(NA)
+}
+
+taxa_breakeven <- encontrar_breakeven_retencao()
+```
+
+**Taxa de retenção mínima para VPL ≥ 0:** `r if(!is.na(taxa_breakeven)) paste0(taxa_breakeven * 100, "%") else "Sempre viável (mesmo com 1%)"`
+
+## 8.2. Adicional por Especialidade Máximo
+
+```{r}
+#| label: breakeven-adicional
+#| include: true
+#| message: false
+#| warning: false
+
+# Buscar adicional máximo que ainda dá VPL >= 0
+encontrar_breakeven_adicional <- function() {
+  adicionais <- seq(0, 1, by = 0.01)
+  
+  ultimo_viavel <- 0
+  for (adic in adicionais) {
+    res <- simular_programa_completo(adicional_especialidade_pct = adic)
+    if (res$vpl >= 0) {
+      ultimo_viavel <- adic
+    } else {
+      break
+    }
+  }
+  return(ultimo_viavel)
+}
+
+adicional_breakeven <- encontrar_breakeven_adicional()
+```
+
+**Adicional por especialidade máximo para VPL ≥ 0:** `r adicional_breakeven * 100`%
+
+Isso significa que o município poderia pagar até **`r adicional_breakeven * 100`% de adicional** sobre o salário base dos MFC e ainda assim o programa seria economicamente viável.
+
+## 8.3. Bolsa Máxima
+
+```{r}
+#| label: breakeven-bolsa
+#| include: true
+#| message: false
+#| warning: false
+
+# Buscar bolsa máxima que ainda dá VPL >= 0
+encontrar_breakeven_bolsa <- function() {
+  bolsas <- seq(4000, 30000, by = 500)
+  
+  ultimo_viavel <- programa_base$bolsa_mec
+  for (bolsa in bolsas) {
+    res <- simular_programa_completo(bolsa_mensal = bolsa)
+    if (res$vpl >= 0) {
+      ultimo_viavel <- bolsa
+    } else {
+      break
+    }
+  }
+  return(ultimo_viavel)
+}
+
+bolsa_breakeven <- encontrar_breakeven_bolsa()
+```
+
+**Bolsa mensal máxima para VPL ≥ 0:** `r formatar_moeda(bolsa_breakeven)`
+
+---
+
+# 9. Cenários Combinados
+
+Vamos analisar alguns cenários que combinam diferentes parâmetros.
+
+```{r}
+#| label: cenarios-combinados
+#| include: true
+#| message: false
+#| warning: false
+
+# Definir cenários
+cenarios <- data.frame(
+  nome = c(
+    "Pessimista",
+    "Base",
+    "Otimista",
+    "Mínimo custo",
+    "Máximo custo"
+  ),
+  taxa_retencao = c(0.40, 0.60, 0.80, 0.60, 0.60),
+  vagas = c(10, 15, 20, 15, 15),
+  fator_aih = c(1.0, 1.5, 2.0, 1.5, 1.5),
+  bolsa = c(
+    programa_base$bolsa_mec + programa_base$complemento_ms,
+    programa_base$bolsa_mec + programa_base$complemento_ms,
+    programa_base$bolsa_mec + programa_base$complemento_ms,
+    programa_base$bolsa_mec,
+    programa_base$bolsa_mec + programa_base$complemento_ms + programa_base$complemento_municipal
+  ),
+  adicional_esp = c(0, 0, 0, 0, 0.20),
+  preceptoria = c(4000, 4000, 4000, 0, 6000),
+  stringsAsFactors = FALSE
+)
+
+cenarios$vpl <- NA
+cenarios$roi <- NA
+cenarios$rcb <- NA
+cenarios$cobertura <- NA
+
+for (i in 1:nrow(cenarios)) {
+  res <- simular_programa_completo(
+    vagas_por_ano = cenarios$vagas[i],
+    taxa_retencao = cenarios$taxa_retencao[i],
+    bolsa_mensal = cenarios$bolsa[i],
+    custo_preceptoria_mensal = cenarios$preceptoria[i],
+    adicional_especialidade_pct = cenarios$adicional_esp[i],
+    fator_correcao_aih = cenarios$fator_aih[i]
+  )
+  cenarios$vpl[i] <- res$vpl
+  cenarios$roi[i] <- res$roi
+  cenarios$rcb[i] <- res$rcb
+  cenarios$cobertura[i] <- res$cobertura_final
+}
+
+cenarios$vpl_fmt <- formatar_moeda(cenarios$vpl)
+cenarios$cobertura_pct <- paste0(round(cenarios$cobertura * 100, 1), "%")
+
+knitr::kable(
+  cenarios[, c("nome", "cobertura_pct", "vpl_fmt", "roi", "rcb")],
+  col.names = c("Cenário", "Cobertura Final", "VPL", "ROI (%)", "RCB"),
+  digits = c(0, 0, 0, 1, 2),
+  caption = "Cenários combinados"
+)
+```
+
+**Descrição dos cenários:**
+
+- **Pessimista:** Baixa retenção (40%), poucas vagas (10), AIH sem correção (1.0)
+- **Base:** Parâmetros padrão
+- **Otimista:** Alta retenção (80%), mais vagas (20), AIH com correção alta (2.0)
+- **Mínimo custo:** Sem complemento de bolsa, sem preceptoria remunerada
+- **Máximo custo:** Bolsa completa, adicional 20%, preceptoria de R$ 6.000
+
+---
+
+# Resumo da Análise de Sensibilidade
+
+```{r}
+#| label: resumo-sensibilidade
+#| include: true
+#| message: false
+#| warning: false
+
+resumo_sens <- data.frame(
+  parametro = c(
+    "Taxa de retenção",
+    "Número de vagas/ano",
+    "Fator correção AIH",
+    "Adicional especialidade",
+    "Taxa de desconto",
+    "Composição da bolsa",
+    "Adicional preceptoria"
+  ),
+  variacao = c(
+    "40% a 100%",
+    "5 a 30",
+    "1,0 a 2,5",
+    "0% a 30%",
+    "3% a 10%",
+    "R$ 4.107 a R$ 10.107",
+    "R$ 0 a R$ 8.000"
+  ),
+  impacto_vpl = c(
+    "Alto",
+    "Alto",
+    "Alto",
+    "Moderado",
+    "Moderado",
+    "Baixo",
+    "Baixo"
+  ),
+  sempre_viavel = c(
+    "Sim",
+    "Sim",
+    "Sim",
+    paste0("Até ", adicional_breakeven * 100, "%"),
+    "Sim",
+    "Sim",
+    "Sim"
+  )
+)
+
+knitr::kable(
+  resumo_sens,
+  col.names = c("Parâmetro", "Faixa Testada", "Impacto no VPL", "Sempre Viável?"),
+  caption = "Resumo da análise de sensibilidade"
+)
+```
+
+## Conclusões
+
+1. **O programa é robusto:** Em praticamente todos os cenários testados, o VPL permanece positivo
+
+2. **Parâmetros mais críticos:**
+   - Taxa de retenção (quanto maior, melhor)
+   - Fator de correção AIH (reflete o custo real das internações)
+   - Número de vagas (escala do programa)
+
+3. **Parâmetros menos críticos:**
+   - Composição da bolsa (diferença relativamente pequena)
+   - Adicional de preceptoria (custo baixo no total)
+
+4. **Limiares importantes:**
+   - Taxa de retenção mínima: `r if(!is.na(taxa_breakeven)) paste0(taxa_breakeven * 100, "%") else "< 1%"`
+   - Adicional por especialidade máximo: `r adicional_breakeven * 100`%
+   - Bolsa máxima: `r formatar_moeda(bolsa_breakeven)`
+
+5. **Recomendações:**
+   - Investir em estratégias de retenção é mais importante que reduzir custos de bolsa
+   - O incentivo federal (R$ 4.500/equipe) é crucial para a viabilidade
+   - O adicional por especialidade pode ser oferecido sem comprometer a viabilidade

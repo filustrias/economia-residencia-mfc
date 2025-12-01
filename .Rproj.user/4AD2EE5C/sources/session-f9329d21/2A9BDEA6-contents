@@ -1,0 +1,898 @@
+---
+title: "Indicadores Econômicos"
+---
+
+# Introdução
+
+Este capítulo aprofunda a análise dos indicadores econômicos utilizados para avaliar a viabilidade do programa de residência em MFC. 
+
+**Objetivos:**
+
+1. Explicar detalhadamente cada indicador econômico
+2. Calcular os indicadores para o cenário base
+3. Mostrar o detalhamento ano a ano dos cálculos
+4. Apresentar critérios de decisão baseados nos indicadores
+5. Discutir as limitações da análise puramente financeira
+
+---
+
+# Preparação: Carregar Dados e Executar Simulação
+
+```{r}
+#| label: setup-indicadores
+#| include: true
+#| message: false
+#| warning: false
+
+# ============================================================
+# CONFIGURAÇÕES E FUNÇÕES
+# ============================================================
+
+options(scipen = 999, digits = 2, OutDec = ",")
+
+formatar_numero <- function(x, decimais = 0) {
+  format(round(x, decimais), big.mark = ".", decimal.mark = ",", nsmall = decimais)
+}
+
+formatar_moeda <- function(x) {
+  paste0("R$ ", formatar_numero(x))
+}
+
+# ============================================================
+# PARÂMETROS
+# ============================================================
+
+municipio <- list(
+  nome = "Esperança",
+  populacao = 500000,
+  n_medicos = 100
+)
+
+programa <- list(
+  vagas_por_ano = 15,
+  n_preceptores_inicial = 4,
+  bolsa_total = 8106.90,
+  custo_preceptoria = 4000.00,
+  incentivo_equipe_residente = 4500.00,
+  custo_operacional_anual = 50000,
+  taxa_retencao = 0.60
+)
+
+economico <- list(
+  taxa_desconto = 0.05,
+  horizonte_anos = 10
+)
+
+# ============================================================
+# DADOS RESUMIDOS PARA SIMULAÇÃO
+# ============================================================
+
+# Benefício anual por % de cobertura MFC (calculado no Cap. 3)
+# Este é o benefício total quando a cobertura vai de 0% para X%
+# Valores aproximados baseados nos dados dos estudos
+
+beneficio_por_pct_cobertura <- function(prop_mfc) {
+  # Benefício máximo anual (100% MFC) = ~R$ 1.150.000
+  # Relação aproximadamente linear
+  beneficio_maximo <- 1150000
+  return(beneficio_maximo * prop_mfc)
+}
+
+# ============================================================
+# SIMULAÇÃO DA EXPANSÃO
+# ============================================================
+
+simular_expansao <- function(n_medicos, vagas_ano, taxa_retencao, 
+                              n_preceptores, horizonte) {
+  anos <- 0:horizonte
+  n_anos <- length(anos)
+  
+  n_mfc <- numeric(n_anos)
+  n_residentes <- numeric(n_anos)
+  
+  for (i in 2:n_anos) {
+    ano <- anos[i]
+    if (ano == 1) {
+      n_mfc[i] <- n_preceptores
+      n_residentes[i] <- vagas_ano
+    } else if (ano == 2) {
+      n_mfc[i] <- n_mfc[i-1]
+      n_residentes[i] <- vagas_ano * 2
+    } else {
+      novos_mfc <- round(vagas_ano * taxa_retencao)
+      n_mfc[i] <- n_mfc[i-1] + novos_mfc
+      n_residentes[i] <- vagas_ano * 2
+    }
+  }
+  
+  prop_mfc <- pmin(n_mfc / n_medicos, 1)
+  
+  return(data.frame(
+    ano = anos,
+    n_mfc = n_mfc,
+    n_residentes = n_residentes,
+    prop_mfc = prop_mfc
+  ))
+}
+
+# Executar simulação
+expansao <- simular_expansao(
+  n_medicos = municipio$n_medicos,
+  vagas_ano = programa$vagas_por_ano,
+  taxa_retencao = programa$taxa_retencao,
+  n_preceptores = programa$n_preceptores_inicial,
+  horizonte = economico$horizonte_anos
+)
+
+# ============================================================
+# CALCULAR CUSTOS E BENEFÍCIOS
+# ============================================================
+
+# Custos
+custos <- data.frame(
+  ano = expansao$ano,
+  custo_bolsas = expansao$n_residentes * programa$bolsa_total * 12,
+  custo_preceptoria = ifelse(expansao$ano > 0, programa$n_preceptores_inicial, 0) * 
+                       programa$custo_preceptoria * 12,
+  custo_operacional = ifelse(expansao$ano > 0, programa$custo_operacional_anual, 0),
+  receita_incentivo = expansao$n_residentes * programa$incentivo_equipe_residente * 12
+)
+
+custos$custo_bruto <- custos$custo_bolsas + custos$custo_preceptoria + custos$custo_operacional
+custos$custo_liquido <- pmax(custos$custo_bruto - custos$receita_incentivo, 0)
+
+# Benefícios
+beneficios <- data.frame(
+  ano = expansao$ano,
+  prop_mfc = expansao$prop_mfc,
+  beneficio = sapply(expansao$prop_mfc, beneficio_por_pct_cobertura)
+)
+
+# Fluxo de caixa
+fluxo <- data.frame(
+  ano = expansao$ano,
+  custo = custos$custo_liquido,
+  beneficio = beneficios$beneficio,
+  saldo = beneficios$beneficio - custos$custo_liquido
+)
+```
+
+Simulação executada. Agora vamos analisar cada indicador em detalhes.
+
+---
+
+# Indicador 1: Valor Presente (VP)
+
+## O que é Valor Presente?
+
+O **Valor Presente (VP)** é o valor equivalente hoje de uma quantia que será recebida ou paga no futuro. Este conceito é fundamental em economia porque reconhece que **dinheiro tem valor no tempo**.
+
+**Por que R$ 100 hoje valem mais que R$ 100 daqui a um ano?**
+
+1. **Inflação**: Os preços sobem ao longo do tempo, então R$ 100 compram menos coisas no futuro
+2. **Custo de oportunidade**: R$ 100 investidos hoje renderão juros e valerão mais no futuro
+3. **Risco**: Dinheiro prometido para o futuro é incerto; pode não ser recebido
+
+## Fórmula do Valor Presente
+
+$$
+VP = \frac{VF}{(1 + r)^n}
+$$
+
+Onde:
+
+- $VP$ = Valor Presente (o que queremos calcular)
+- $VF$ = Valor Futuro (quantia no ano $n$)
+- $r$ = Taxa de desconto (ex: 5% = 0,05)
+- $n$ = Número de anos no futuro
+
+## Demonstração Prática
+
+Vamos ver como R$ 100.000 "perdem valor" ao longo do tempo quando aplicamos uma taxa de desconto de 5%:
+
+```{r}
+#| label: demonstracao-vp
+#| include: true
+#| message: false
+#| warning: false
+
+# Função de valor presente
+calcular_vp <- function(valor_futuro, ano, taxa) {
+  valor_futuro / ((1 + taxa) ^ ano)
+}
+
+# Demonstração
+demo_vp <- data.frame(
+  ano = 0:10,
+  valor_futuro = 100000
+)
+
+demo_vp$valor_presente <- sapply(demo_vp$ano, function(a) {
+  calcular_vp(100000, a, 0.05)
+})
+
+demo_vp$fator_desconto <- 1 / ((1 + 0.05) ^ demo_vp$ano)
+demo_vp$perda_acumulada <- 100000 - demo_vp$valor_presente
+
+# Formatar
+demo_vp$vf_fmt <- formatar_moeda(demo_vp$valor_futuro)
+demo_vp$vp_fmt <- formatar_moeda(demo_vp$valor_presente)
+demo_vp$fator_fmt <- round(demo_vp$fator_desconto, 4)
+demo_vp$perda_fmt <- formatar_moeda(demo_vp$perda_acumulada)
+
+knitr::kable(
+  demo_vp[, c("ano", "vf_fmt", "fator_fmt", "vp_fmt", "perda_fmt")],
+  col.names = c("Ano", "Valor Futuro", "Fator de Desconto", "Valor Presente", "Diferença"),
+  caption = "Efeito do desconto temporal sobre R$ 100.000 (taxa de 5% a.a.)"
+)
+```
+
+**Como ler a tabela:**
+
+- **Ano 0**: R$ 100.000 hoje valem R$ 100.000 (sem desconto)
+- **Ano 5**: R$ 100.000 daqui a 5 anos valem R$ 78.353 em valores de hoje
+- **Ano 10**: R$ 100.000 daqui a 10 anos valem R$ 61.391 em valores de hoje
+
+O **fator de desconto** é o multiplicador que converte valor futuro em valor presente. No ano 5, o fator é 0,7835, ou seja, multiplica-se o valor futuro por 0,7835 para obter o valor presente.
+
+## Aplicação ao Nosso Projeto
+
+No programa de residência, os custos ocorrem principalmente nos primeiros anos (são "mais caros" em valor presente), enquanto os benefícios crescem ao longo do tempo (são "mais baratos" em valor presente). Isso penaliza projetos com retorno tardio.
+
+---
+
+# Indicador 2: Valor Presente Líquido (VPL)
+
+## O que é VPL?
+
+O **Valor Presente Líquido (VPL)** é o indicador mais importante para avaliar a viabilidade econômica de um projeto. Ele responde à pergunta fundamental:
+
+> **"Este projeto cria ou destrói valor?"**
+
+O VPL é calculado somando todos os fluxos de caixa futuros (benefícios menos custos), convertidos para valor presente:
+
+$$
+VPL = \sum_{t=0}^{T} \frac{B_t - C_t}{(1 + r)^t}
+$$
+
+Onde:
+
+- $B_t$ = Benefício no ano $t$
+- $C_t$ = Custo no ano $t$  
+- $r$ = Taxa de desconto
+- $T$ = Horizonte temporal
+
+## Critérios de Decisão
+
+| VPL | Interpretação | Decisão |
+|-----|---------------|---------|
+| VPL > 0 | Benefícios superam custos em valores presentes | Projeto **viável** economicamente |
+| VPL = 0 | Benefícios igualam custos | Projeto no **ponto de equilíbrio** |
+| VPL < 0 | Custos superam benefícios em valores presentes | Projeto **inviável** economicamente |
+
+## Cálculo Detalhado do VPL
+
+Vamos calcular o VPL do nosso projeto passo a passo:
+
+```{r}
+#| label: calculo-vpl-detalhado
+#| include: true
+#| message: false
+#| warning: false
+
+# Calcular valor presente de cada componente
+vpl_detalhado <- data.frame(
+  ano = fluxo$ano,
+  custo_nominal = fluxo$custo,
+  beneficio_nominal = fluxo$beneficio,
+  saldo_nominal = fluxo$saldo
+)
+
+# Aplicar desconto
+taxa <- economico$taxa_desconto
+
+vpl_detalhado$fator_desconto <- 1 / ((1 + taxa) ^ vpl_detalhado$ano)
+vpl_detalhado$custo_vp <- vpl_detalhado$custo_nominal * vpl_detalhado$fator_desconto
+vpl_detalhado$beneficio_vp <- vpl_detalhado$beneficio_nominal * vpl_detalhado$fator_desconto
+vpl_detalhado$saldo_vp <- vpl_detalhado$saldo_nominal * vpl_detalhado$fator_desconto
+
+# Calcular acumulados
+vpl_detalhado$saldo_vp_acum <- cumsum(vpl_detalhado$saldo_vp)
+
+# Formatar para exibição
+vpl_display <- data.frame(
+  ano = vpl_detalhado$ano,
+  custo = round(vpl_detalhado$custo_nominal / 1000, 1),
+  beneficio = round(vpl_detalhado$beneficio_nominal / 1000, 1),
+  saldo = round(vpl_detalhado$saldo_nominal / 1000, 1),
+  fator = round(vpl_detalhado$fator_desconto, 4),
+  saldo_vp = round(vpl_detalhado$saldo_vp / 1000, 1),
+  vpl_acum = round(vpl_detalhado$saldo_vp_acum / 1000, 1)
+)
+
+knitr::kable(
+  vpl_display,
+  col.names = c("Ano", "Custo", "Benefício", "Saldo", "Fator Desc.", "Saldo VP", "VPL Acum."),
+  caption = "Cálculo detalhado do VPL (valores em R$ mil)"
+)
+```
+
+```{r}
+#| label: resultado-vpl
+#| include: true
+#| message: false
+#| warning: false
+
+# Totais
+vpl_total <- sum(vpl_detalhado$saldo_vp)
+custo_vp_total <- sum(vpl_detalhado$custo_vp)
+beneficio_vp_total <- sum(vpl_detalhado$beneficio_vp)
+
+# Tabela resumo
+resumo_vpl <- data.frame(
+  metrica = c("Custo total (valor presente)",
+              "Benefício total (valor presente)",
+              "VPL (Valor Presente Líquido)"),
+  valor = c(formatar_moeda(custo_vp_total),
+            formatar_moeda(beneficio_vp_total),
+            formatar_moeda(vpl_total))
+)
+
+knitr::kable(
+  resumo_vpl,
+  col.names = c("Métrica", "Valor"),
+  caption = "Resumo do VPL"
+)
+```
+
+## Interpretação do VPL
+
+O VPL de **`r formatar_moeda(vpl_total)`** indica que:
+
+```{r}
+#| label: interpretacao-vpl
+#| include: true
+#| message: false
+#| warning: false
+#| results: asis
+
+if (vpl_total > 0) {
+  cat("- O projeto **gera valor líquido** de", formatar_moeda(vpl_total), "\n")
+  cat("- Os benefícios superam os custos, mesmo considerando o valor do dinheiro no tempo\n")
+  cat("- Do ponto de vista estritamente financeiro, o projeto é **viável**\n")
+} else if (vpl_total < 0) {
+  cat("- O projeto **destrói valor** de", formatar_moeda(abs(vpl_total)), "\n")
+  cat("- Os custos superam os benefícios em valores presentes\n")
+  cat("- Do ponto de vista estritamente financeiro, o projeto é **inviável**\n")
+  cat("- Porém, existem benefícios não monetizáveis que podem justificar a implementação\n")
+} else {
+  cat("- O projeto está no **ponto de equilíbrio**\n")
+  cat("- Benefícios igualam custos em valores presentes\n")
+}
+```
+
+---
+
+# Indicador 3: Taxa Interna de Retorno (TIR)
+
+## O que é TIR?
+
+A **Taxa Interna de Retorno (TIR)** é a taxa de desconto que faz o VPL ser igual a zero. Em outras palavras, é a "rentabilidade" do projeto.
+
+$$
+VPL = \sum_{t=0}^{T} \frac{B_t - C_t}{(1 + TIR)^t} = 0
+$$
+
+## Critérios de Decisão
+
+| Comparação | Interpretação | Decisão |
+|------------|---------------|---------|
+| TIR > Taxa de desconto | Projeto rende mais que o custo de oportunidade | Projeto **viável** |
+| TIR = Taxa de desconto | Projeto rende exatamente o custo de oportunidade | **Indiferente** |
+| TIR < Taxa de desconto | Projeto rende menos que o custo de oportunidade | Projeto **inviável** |
+
+No nosso caso, usamos taxa de desconto de 5%. Portanto:
+
+- Se TIR > 5%: projeto viável
+- Se TIR < 5%: projeto inviável
+
+## Cálculo da TIR
+
+```{r}
+#| label: calculo-tir
+#| include: true
+#| message: false
+#| warning: false
+
+# Função para calcular VPL com uma taxa específica
+calcular_vpl_taxa <- function(taxa, fluxos) {
+  anos <- seq_along(fluxos) - 1
+  vp <- fluxos / ((1 + taxa) ^ anos)
+  return(sum(vp))
+}
+
+# Tentar encontrar a TIR
+# A TIR é a taxa que faz VPL = 0
+# Usamos o método de busca
+
+fluxos_caixa <- fluxo$saldo
+
+# Verificar se há mudança de sinal no fluxo (necessário para TIR existir)
+tem_negativos <- any(fluxos_caixa < 0)
+tem_positivos <- any(fluxos_caixa > 0)
+
+if (tem_negativos && tem_positivos) {
+  # Buscar TIR entre -50% e 100%
+  resultado_tir <- tryCatch({
+    uniroot(function(r) calcular_vpl_taxa(r, fluxos_caixa), 
+            interval = c(-0.5, 1.0))
+  }, error = function(e) NULL)
+  
+  if (!is.null(resultado_tir)) {
+    tir <- resultado_tir$root
+    tir_pct <- round(tir * 100, 2)
+  } else {
+    tir <- NA
+    tir_pct <- NA
+  }
+} else {
+  tir <- NA
+  tir_pct <- NA
+}
+
+# Exibir resultado
+resultado_tir_df <- data.frame(
+  metrica = c("Taxa Interna de Retorno (TIR)",
+              "Taxa de desconto utilizada",
+              "Diferença (TIR - Taxa desconto)"),
+  valor = c(
+    ifelse(is.na(tir_pct), "Não calculável", paste0(tir_pct, "%")),
+    paste0(economico$taxa_desconto * 100, "%"),
+    ifelse(is.na(tir_pct), "-", paste0(round((tir - economico$taxa_desconto) * 100, 2), " p.p."))
+  )
+)
+
+knitr::kable(
+  resultado_tir_df,
+  col.names = c("Métrica", "Valor"),
+  caption = "Taxa Interna de Retorno"
+)
+```
+
+```{r}
+#| label: interpretacao-tir
+#| include: true
+#| message: false
+#| warning: false
+#| results: asis
+
+if (!is.na(tir)) {
+  if (tir > economico$taxa_desconto) {
+    cat("**Interpretação:** A TIR de", paste0(tir_pct, "%"), "é **maior** que a taxa de desconto de 5%.\n\n")
+    cat("Isso significa que o projeto rende mais do que o custo de oportunidade do capital.\n")
+    cat("O projeto é **viável** pelo critério da TIR.\n")
+  } else {
+    cat("**Interpretação:** A TIR de", paste0(tir_pct, "%"), "é **menor** que a taxa de desconto de 5%.\n\n")
+    cat("Isso significa que o projeto rende menos do que o custo de oportunidade do capital.\n")
+    cat("O projeto é **inviável** pelo critério da TIR.\n")
+  }
+} else {
+  cat("**Nota:** A TIR não pôde ser calculada. Isso pode ocorrer quando:\n\n")
+  cat("- Todos os fluxos de caixa têm o mesmo sinal (todos positivos ou todos negativos)\n")
+  cat("- O projeto não tem um padrão convencional de investimento e retorno\n")
+}
+```
+
+---
+
+# Indicador 4: Retorno sobre Investimento (ROI)
+
+## O que é ROI?
+
+O **ROI (Return on Investment)** é uma medida percentual que indica quanto de retorno se obtém para cada real investido. É um indicador simples e intuitivo, muito utilizado para comunicar resultados a gestores.
+
+$$
+ROI = \frac{Benefício_{total} - Custo_{total}}{Custo_{total}} \times 100\%
+$$
+
+## Interpretação do ROI
+
+| ROI | Significado | Exemplo |
+|-----|-------------|---------|
+| ROI = 100% | Dobrou o investimento | Investiu R$ 100, recebeu R$ 200 |
+| ROI = 50% | Ganhou 50% sobre o investido | Investiu R$ 100, recebeu R$ 150 |
+| ROI = 0% | Empate | Investiu R$ 100, recebeu R$ 100 |
+| ROI = -30% | Perdeu 30% do investido | Investiu R$ 100, recebeu R$ 70 |
+
+## Cálculo do ROI
+
+```{r}
+#| label: calculo-roi
+#| include: true
+#| message: false
+#| warning: false
+
+# Totais nominais
+custo_total_nominal <- sum(fluxo$custo)
+beneficio_total_nominal <- sum(fluxo$beneficio)
+
+# ROI nominal
+roi_nominal <- ((beneficio_total_nominal - custo_total_nominal) / custo_total_nominal) * 100
+
+# ROI com valores presentes
+roi_vp <- ((beneficio_vp_total - custo_vp_total) / custo_vp_total) * 100
+
+# Tabela comparativa
+roi_df <- data.frame(
+  tipo = c("ROI Nominal (sem desconto)", "ROI em Valor Presente"),
+  custo_total = c(formatar_moeda(custo_total_nominal), formatar_moeda(custo_vp_total)),
+  beneficio_total = c(formatar_moeda(beneficio_total_nominal), formatar_moeda(beneficio_vp_total)),
+  roi = c(paste0(round(roi_nominal, 1), "%"), paste0(round(roi_vp, 1), "%"))
+)
+
+knitr::kable(
+  roi_df,
+  col.names = c("Tipo de Cálculo", "Custo Total", "Benefício Total", "ROI"),
+  caption = "Cálculo do ROI"
+)
+```
+
+**Qual ROI usar?**
+
+- **ROI Nominal**: Mais simples, não considera o valor do dinheiro no tempo. Útil para comunicação rápida.
+- **ROI em Valor Presente**: Tecnicamente mais correto, considera o custo de oportunidade do capital.
+
+```{r}
+#| label: interpretacao-roi
+#| include: true
+#| message: false
+#| warning: false
+#| results: asis
+
+cat("**Interpretação do ROI em Valor Presente (", round(roi_vp, 1), "%):**\n\n", sep = "")
+
+if (roi_vp > 0) {
+  cat("- Para cada R$ 100 investidos no programa, obtém-se R$", round(100 + roi_vp, 0), "de retorno\n")
+  cat("- O lucro é de R$", round(roi_vp, 0), "para cada R$ 100 investidos\n")
+  cat("- O projeto é **rentável**\n")
+} else if (roi_vp < 0) {
+  cat("- Para cada R$ 100 investidos no programa, obtém-se R$", round(100 + roi_vp, 0), "de retorno\n")
+  cat("- A perda é de R$", round(abs(roi_vp), 0), "para cada R$ 100 investidos\n")
+  cat("- O projeto **não é rentável** do ponto de vista financeiro\n")
+} else {
+  cat("- O projeto empata: retorno igual ao investimento\n")
+}
+```
+
+---
+
+# Indicador 5: Razão Custo-Benefício (RCB)
+
+## O que é RCB?
+
+A **Razão Custo-Benefício (RCB)** indica quantos reais de benefício são gerados para cada real de custo. É uma forma direta de comparar entradas e saídas.
+
+$$
+RCB = \frac{Benefício_{total}}{Custo_{total}}
+$$
+
+## Critérios de Decisão
+
+| RCB | Interpretação | Decisão |
+|-----|---------------|---------|
+| RCB > 1 | Benefícios superam custos | Projeto **viável** |
+| RCB = 1 | Benefícios igualam custos | **Indiferente** |
+| RCB < 1 | Custos superam benefícios | Projeto **inviável** |
+
+## Cálculo da RCB
+
+```{r}
+#| label: calculo-rcb
+#| include: true
+#| message: false
+#| warning: false
+
+# RCB nominal e em valor presente
+rcb_nominal <- beneficio_total_nominal / custo_total_nominal
+rcb_vp <- beneficio_vp_total / custo_vp_total
+
+rcb_df <- data.frame(
+  tipo = c("RCB Nominal", "RCB em Valor Presente"),
+  beneficio = c(formatar_moeda(beneficio_total_nominal), formatar_moeda(beneficio_vp_total)),
+  custo = c(formatar_moeda(custo_total_nominal), formatar_moeda(custo_vp_total)),
+  rcb = c(round(rcb_nominal, 2), round(rcb_vp, 2))
+)
+
+knitr::kable(
+  rcb_df,
+  col.names = c("Tipo de Cálculo", "Benefício Total", "Custo Total", "RCB"),
+  caption = "Cálculo da Razão Custo-Benefício"
+)
+```
+
+```{r}
+#| label: interpretacao-rcb
+#| include: true
+#| message: false
+#| warning: false
+#| results: asis
+
+cat("**Interpretação da RCB em Valor Presente (", round(rcb_vp, 2), "):**\n\n", sep = "")
+
+if (rcb_vp > 1) {
+  cat("- Para cada R$ 1,00 investido, obtém-se R$", round(rcb_vp, 2), "de benefício\n")
+  cat("- O projeto gera", round((rcb_vp - 1) * 100, 0), "% a mais de benefício do que custa\n")
+  cat("- O projeto é **eficiente**\n")
+} else if (rcb_vp < 1) {
+  cat("- Para cada R$ 1,00 investido, obtém-se apenas R$", round(rcb_vp, 2), "de benefício\n")
+  cat("- O projeto recupera apenas", round(rcb_vp * 100, 0), "% do investimento\n")
+  cat("- O projeto é **ineficiente** do ponto de vista financeiro\n")
+} else {
+  cat("- Para cada R$ 1,00 investido, obtém-se R$ 1,00 de benefício\n")
+  cat("- O projeto está no ponto de equilíbrio\n")
+}
+```
+
+---
+
+# Indicador 6: Payback (Tempo de Retorno)
+
+## O que é Payback?
+
+O **Payback** é o tempo necessário para que os benefícios acumulados igualem os custos acumulados. Em outras palavras, é o momento em que o investimento "se paga".
+
+Existem dois tipos:
+
+- **Payback Simples**: Usa valores nominais (sem desconto)
+- **Payback Descontado**: Usa valores presentes (mais conservador)
+
+## Por que o Payback é importante?
+
+1. **Liquidez**: Projetos com payback curto liberam recursos mais rapidamente
+2. **Risco**: Quanto mais longo o payback, maior a incerteza
+3. **Comunicação**: É fácil de entender ("o investimento se paga em X anos")
+
+## Cálculo do Payback
+
+```{r}
+#| label: calculo-payback
+#| include: true
+#| message: false
+#| warning: false
+
+# Calcular payback simples e descontado
+payback_df <- data.frame(
+  ano = fluxo$ano,
+  custo = fluxo$custo,
+  beneficio = fluxo$beneficio,
+  custo_acum = cumsum(fluxo$custo),
+  beneficio_acum = cumsum(fluxo$beneficio),
+  saldo_acum = cumsum(fluxo$saldo)
+)
+
+# Payback simples: primeiro ano onde saldo acumulado >= 0
+payback_simples_idx <- which(payback_df$saldo_acum >= 0)[1]
+payback_simples <- if(is.na(payback_simples_idx)) NA else payback_df$ano[payback_simples_idx]
+
+# Para payback descontado
+payback_desc_df <- data.frame(
+  ano = fluxo$ano,
+  saldo_vp = vpl_detalhado$saldo_vp,
+  saldo_vp_acum = cumsum(vpl_detalhado$saldo_vp)
+)
+
+payback_desc_idx <- which(payback_desc_df$saldo_vp_acum >= 0)[1]
+payback_descontado <- if(is.na(payback_desc_idx)) NA else payback_desc_df$ano[payback_desc_idx]
+
+# Tabela de evolução do saldo acumulado
+payback_evolucao <- data.frame(
+  ano = payback_df$ano,
+  custo_acum = round(payback_df$custo_acum / 1000, 1),
+  beneficio_acum = round(payback_df$beneficio_acum / 1000, 1),
+  saldo_acum_nominal = round(payback_df$saldo_acum / 1000, 1),
+  saldo_acum_vp = round(payback_desc_df$saldo_vp_acum / 1000, 1)
+)
+
+knitr::kable(
+  payback_evolucao,
+  col.names = c("Ano", "Custo Acum.", "Benefício Acum.", "Saldo Acum. Nominal", "Saldo Acum. VP"),
+  caption = "Evolução do saldo acumulado para cálculo do Payback (R$ mil)"
+)
+```
+
+```{r}
+#| label: resultado-payback
+#| include: true
+#| message: false
+#| warning: false
+
+payback_resultado <- data.frame(
+  tipo = c("Payback Simples", "Payback Descontado"),
+  resultado = c(
+    ifelse(is.na(payback_simples), "Não atingido em 10 anos", paste0("Ano ", payback_simples)),
+    ifelse(is.na(payback_descontado), "Não atingido em 10 anos", paste0("Ano ", payback_descontado))
+  )
+)
+
+knitr::kable(
+  payback_resultado,
+  col.names = c("Tipo de Payback", "Resultado"),
+  caption = "Resultado do Payback"
+)
+```
+
+```{r}
+#| label: interpretacao-payback
+#| include: true
+#| message: false
+#| warning: false
+#| results: asis
+
+cat("**Interpretação:**\n\n")
+
+if (!is.na(payback_simples)) {
+  cat("- **Payback Simples**: O investimento se paga no **ano", payback_simples, "**\n")
+  cat("  - A partir do ano", payback_simples + 1, ", todo benefício adicional é \"lucro\"\n")
+} else {
+  cat("- **Payback Simples**: O investimento **não se paga** no horizonte de 10 anos\n")
+  cat("  - Os custos acumulados superam os benefícios acumulados durante todo o período\n")
+}
+
+cat("\n")
+
+if (!is.na(payback_descontado)) {
+  cat("- **Payback Descontado**: O investimento se paga no **ano", payback_descontado, "**\n")
+  cat("  - Este é o payback mais conservador, considerando o valor do dinheiro no tempo\n")
+} else {
+  cat("- **Payback Descontado**: O investimento **não se paga** no horizonte de 10 anos\n")
+  cat("  - Em valores presentes, os custos sempre superam os benefícios\n")
+}
+```
+
+---
+
+# Resumo dos Indicadores
+
+## Painel Consolidado
+
+```{r}
+#| label: painel-indicadores
+#| include: true
+#| message: false
+#| warning: false
+
+painel <- data.frame(
+  indicador = c(
+    "VPL (Valor Presente Líquido)",
+    "TIR (Taxa Interna de Retorno)",
+    "ROI (Retorno sobre Investimento)",
+    "RCB (Razão Custo-Benefício)",
+    "Payback Simples",
+    "Payback Descontado"
+  ),
+  valor = c(
+    formatar_moeda(vpl_total),
+    ifelse(is.na(tir_pct), "Não calculável", paste0(tir_pct, "%")),
+    paste0(round(roi_vp, 1), "%"),
+    round(rcb_vp, 2),
+    ifelse(is.na(payback_simples), "Não atingido", paste0("Ano ", payback_simples)),
+    ifelse(is.na(payback_descontado), "Não atingido", paste0("Ano ", payback_descontado))
+  ),
+  criterio = c(
+    "VPL > 0",
+    "TIR > 5%",
+    "ROI > 0%",
+    "RCB > 1",
+    "Quanto menor, melhor",
+    "Quanto menor, melhor"
+  ),
+  avaliacao = c(
+    ifelse(vpl_total > 0, "✓ Viável", "✗ Inviável"),
+    ifelse(!is.na(tir) && tir > economico$taxa_desconto, "✓ Viável", "✗ Inviável"),
+    ifelse(roi_vp > 0, "✓ Viável", "✗ Inviável"),
+    ifelse(rcb_vp > 1, "✓ Viável", "✗ Inviável"),
+    ifelse(!is.na(payback_simples) && payback_simples <= 10, "✓ Aceitável", "⚠ Longo"),
+    ifelse(!is.na(payback_descontado) && payback_descontado <= 10, "✓ Aceitável", "⚠ Longo")
+  )
+)
+
+knitr::kable(
+  painel,
+  col.names = c("Indicador", "Valor", "Critério de Viabilidade", "Avaliação"),
+  caption = "Painel consolidado de indicadores econômicos"
+)
+```
+
+## Critérios de Decisão
+
+Para que um projeto seja considerado **economicamente viável**, idealmente deve atender aos seguintes critérios:
+
+| Indicador | Critério | Peso na Decisão |
+|-----------|----------|-----------------|
+| VPL | > 0 | **Principal** - indicador mais importante |
+| TIR | > Taxa de desconto (5%) | Secundário - confirma a viabilidade |
+| RCB | > 1 | Secundário - facilita comunicação |
+| ROI | > 0% | Secundário - facilita comunicação |
+| Payback | Quanto menor, melhor | Complementar - indica risco e liquidez |
+
+---
+
+# Limitações da Análise Econômica
+
+## Benefícios Não Monetizáveis
+
+A análise econômica captura apenas os benefícios que podem ser convertidos em valores monetários. Existem benefícios importantes que **não foram incluídos** nesta análise:
+
+**1. Qualidade do cuidado**
+
+- Melhor manejo de condições crônicas
+- Diagnósticos mais precisos
+- Menor uso de medicamentos desnecessários
+- Melhor coordenação do cuidado
+
+**2. Satisfação dos usuários**
+
+- Maior vínculo com o profissional
+- Melhor comunicação médico-paciente
+- Maior adesão ao tratamento
+
+**3. Formação de recursos humanos**
+
+- Criação de cultura de educação permanente
+- Desenvolvimento de competências locais
+- Atração de outros profissionais qualificados
+
+**4. Fortalecimento do sistema**
+
+- Maior resolutividade da APS
+- Redução da pressão sobre urgências e emergências
+- Melhor integração com outros níveis de atenção
+
+**5. Impactos sociais**
+
+- Redução de mortalidade evitável
+- Melhoria na qualidade de vida
+- Redução de incapacidade por doenças crônicas
+
+## Limitações dos Dados
+
+**1. Extrapolação de estudos**
+
+- Os dados vêm de estudos do Rio de Janeiro
+- A aplicabilidade a outros contextos pode variar
+- Efeitos podem ser diferentes em municípios menores ou maiores
+
+**2. Custos subestimados**
+
+- Valores SIGTAP/AIH representam apenas repasse federal
+- Custos reais podem ser 50% a 100% maiores
+- Usamos fator de correção de 1,5x para internações
+
+**3. Horizonte temporal**
+
+- Análise limitada a 10 anos
+- Benefícios podem continuar além deste período
+- Formação de MFC tem impacto de longo prazo
+
+## Recomendação
+
+Mesmo que os indicadores econômicos indiquem **inviabilidade financeira**, a decisão de implementar o programa deve considerar:
+
+1. Os benefícios não monetizáveis listados acima
+2. O papel estratégico da formação de recursos humanos
+3. Os objetivos de política de saúde do município
+4. A disponibilidade de financiamento federal (que reduz custos locais)
+
+A análise econômica é uma **ferramenta de apoio à decisão**, não o único critério.
+
+---
+
+# Próximos Passos
+
+No próximo capítulo (Análise de Sensibilidade), exploraremos como os indicadores variam quando alteramos os parâmetros do modelo:
+
+1. Taxa de retenção (40%, 60%, 80%)
+2. Número de vagas (10, 15, 20)
+3. Fator de correção AIH (1.0, 1.5, 2.0)
+4. Cenários com adicional por especialidade
+5. Análise de limiar: qual taxa de retenção torna o projeto viável?

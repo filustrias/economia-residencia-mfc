@@ -1,0 +1,1005 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Análise de Custo-Benefício da Residência em MFC",
+    "section": "",
+    "text": "Prefácio\nEste documento apresenta um modelo de simulação econômica para avaliação do retorno sobre investimento em programas de Residência em Medicina de Família e Comunidade (MFC) no contexto da Atenção Primária à Saúde brasileira.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Análise de Custo-Benefício da Residência em MFC</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#objetivo",
+    "href": "index.html#objetivo",
+    "title": "Análise de Custo-Benefício da Residência em MFC",
+    "section": "Objetivo",
+    "text": "Objetivo\nDemonstrar o valor econômico da formação especializada em Medicina de Família e Comunidade, fornecendo evidências para gestores e formuladores de políticas públicas sobre o retorno do investimento em programas de residência.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Análise de Custo-Benefício da Residência em MFC</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#fonte-dos-dados",
+    "href": "index.html#fonte-dos-dados",
+    "title": "Análise de Custo-Benefício da Residência em MFC",
+    "section": "Fonte dos Dados",
+    "text": "Fonte dos Dados\nO modelo utiliza dados de três estudos de coorte retrospectivos realizados no município do Rio de Janeiro:\n\nEstudo 1 (PLOS Global Public Health): Internações por Condições Sensíveis à APS\nEstudo 2 (BMJ Open): Encaminhamentos para especialistas\nEstudo 3 (BMC Family Practice): Solicitação de exames laboratoriais\n\n\nCaracterísticas dos estudos\n\nPopulação: ~600.000 pacientes cadastrados na APS\nProporção MFC: 33,6% atendidos por médicos de família\nProporção Generalistas: 66,4% atendidos por médicos sem residência em MFC\nPeríodo: 2013-2018",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Análise de Custo-Benefício da Residência em MFC</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#estrutura-do-documento",
+    "href": "index.html#estrutura-do-documento",
+    "title": "Análise de Custo-Benefício da Residência em MFC",
+    "section": "Estrutura do Documento",
+    "text": "Estrutura do Documento\nO documento está organizado nos seguintes capítulos:\n\nConfiguração e Dados: Parâmetros do estudo e conversão para cenário baseline\nFunções de Simulação: Funções R para cálculo de eventos e custos\nSimulação de Cenários: Projeção temporal da expansão do programa\nIndicadores Econômicos: Cálculo de ROI, VPL, RCB e Payback\nVisualizações: Gráficos e tabelas de resultados\nAnálise de Sensibilidade: Variação de parâmetros críticos\nDiscussão e Conclusões: Interpretação dos resultados",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Análise de Custo-Benefício da Residência em MFC</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#reprodutibilidade",
+    "href": "index.html#reprodutibilidade",
+    "title": "Análise de Custo-Benefício da Residência em MFC",
+    "section": "Reprodutibilidade",
+    "text": "Reprodutibilidade\nTodo o código R utilizado nas análises está disponível neste documento. Para reproduzir as análises:",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Análise de Custo-Benefício da Residência em MFC</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#citação",
+    "href": "index.html#citação",
+    "title": "Análise de Custo-Benefício da Residência em MFC",
+    "section": "Citação",
+    "text": "Citação\nPara citar este trabalho:\n\nJantsch, A.G. (2025). Análise de Custo-Benefício da Residência em Medicina de Família e Comunidade: Modelo de Simulação Econômica.\n\n\nÚltima atualização: r Sys.Date()",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Análise de Custo-Benefício da Residência em MFC</span>"
+    ]
+  },
+  {
+    "objectID": "00_sumario_executivo.html",
+    "href": "00_sumario_executivo.html",
+    "title": "Sumário Executivo",
+    "section": "",
+    "text": "O Problema\nO Brasil enfrenta escassez de médicos de família qualificados na atenção primária. Programas de residência podem formar esses profissionais, mas gestores municipais frequentemente questionam: vale a pena o investimento?\n\n\n\nA Proposta\nImplantar um programa de residência em Medicina de Família e Comunidade em um município de 500 mil habitantes com 100 equipes de saúde da família.\n\n\n\nEstrutura do Programa\n\n\n\n\n\nPreceptores\n8\n\n\nEquipes-escola\n16\n\n\nResidentes por ano\n32\n\n\nFormados por ano\n16\n\n\nHorizonte de análise\n10 anos\n\n\n\n\n\n\nA Resposta\nSim, vale a pena. O programa se paga desde o primeiro ano e gera economia crescente ao longo do tempo.\n\n\n\n\n\n\n\n\n\n\n\n\nNúmeros-Chave\n\n\n\nIndicador\nValor\n\n\n\n\nCobertura por médicos de família ao final\n64%\n\n\nMédicos formados e retidos\n48\n\n\nEconomia acumulada em 10 anos\nR$ 4,5 milhões\n\n\nRetorno desde o\nAno 1\n\n\n\n\n\n\nPor que Funciona?\nO programa gera economia de três formas:\n\nModelo de residência mais barato: Um preceptor com 4 residentes custa menos que 2 médicos contratados, gerando economia de R$ 12.600 por par de equipes por ano.\nEconomia em saúde: Médicos de família reduzem internações (64% menos por insuficiência cardíaca), encaminhamentos (60% menos para cardiologia) e exames (92% menos dosagens de TSH).\nInvestimento que se paga: O adicional por especialidade para reter os formados (10% do salário) é compensado pela economia em saúde que eles geram.\n\n\n\n\nConclusão\nO programa de residência em Medicina de Família e Comunidade não é apenas uma necessidade de saúde pública — é um investimento economicamente inteligente que gera retorno positivo desde o primeiro ano e benefícios crescentes ao longo do tempo.\nA decisão não é “se”, mas “quando começar”.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Sumário Executivo</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html",
+    "href": "01_configuracao_dados.html",
+    "title": "Configuração e Dados de Entrada",
+    "section": "",
+    "text": "Introdução\nEste capítulo apresenta todos os dados de entrada necessários para o modelo econômico da Residência em Medicina de Família e Comunidade (MFC).\nObjetivo: Documentar de forma transparente e reproduzível:",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html#médico-da-estratégia-saúde-da-família",
+    "href": "01_configuracao_dados.html#médico-da-estratégia-saúde-da-família",
+    "title": "Configuração e Dados de Entrada",
+    "section": "Médico da Estratégia Saúde da Família",
+    "text": "Médico da Estratégia Saúde da Família\n\n\nCódigo\ncustos_pessoal &lt;- list(\n  # Salário base\n  salario_base_medico = 16000,\n  \n\n  # Encargos trabalhistas (INSS patronal, FGTS, férias, 13º, etc.)\n  encargos_trabalhistas_pct = 0.70,\n  \n  # Adicional de preceptoria (sobre o salário base)\n  adicional_preceptoria_pct = 0.10,\n  \n  # Bolsa do residente\n  bolsa_mec = 4106.90,\n  complemento_ms = 4000.00,\n  complemento_municipal = 2000.00  # Opcional\n)\n\n# Cálculos derivados\ncustos_pessoal$custo_medico_total &lt;- custos_pessoal$salario_base_medico * \n                                      (1 + custos_pessoal$encargos_trabalhistas_pct)\n\ncustos_pessoal$adicional_preceptoria_valor &lt;- custos_pessoal$salario_base_medico * \n                                               custos_pessoal$adicional_preceptoria_pct\n\ncustos_pessoal$custo_preceptor_total &lt;- custos_pessoal$custo_medico_total + \n                                         custos_pessoal$adicional_preceptoria_valor * \n                                         (1 + custos_pessoal$encargos_trabalhistas_pct)\n\ncustos_pessoal$bolsa_total_mec_ms &lt;- custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms\n\ncustos_pessoal$bolsa_total_completa &lt;- custos_pessoal$bolsa_total_mec_ms + \n                                        custos_pessoal$complemento_municipal\n\n\n\nCusto do Médico CLT\n\n\n\nItem\nValor Mensal\n\n\n\n\nSalário base\nR$ 16.000\n\n\nEncargos trabalhistas (70%)\nR$ 11.200\n\n\nCusto total médico CLT\nR$ 27.200\n\n\n\nNota sobre encargos trabalhistas:\nOs 70% de encargos incluem:\n\nINSS patronal (20%)\nFGTS (8%)\nFérias + 1/3 constitucional (11,1%)\n13º salário (8,3%)\nProvisão para rescisão (estimado)\nOutros encargos (SAT, Sistema S, etc.)\n\n\n\nCusto do Preceptor\n\n\n\nItem\nValor Mensal\n\n\n\n\nCusto base (médico CLT)\nR$ 27.200\n\n\nAdicional preceptoria (10% do salário base)\nR$ 1.600\n\n\nEncargos sobre adicional (70%)\nR$ 1.120\n\n\nCusto total preceptor\nR$ 29.920\n\n\n\n\n\nBolsa do Residente\n\n\n\nFonte\nValor Mensal\n\n\n\n\nBolsa MEC\nR$ 4.107\n\n\nComplemento Ministério da Saúde\nR$ 4.000\n\n\nBolsa total (MEC + MS)\nR$ 8.107\n\n\nComplemento municipal (opcional)\nR$ 2.000\n\n\nBolsa total com complemento municipal\nR$ 10.107\n\n\n\nImportante: A bolsa do residente não tem encargos trabalhistas, pois não é relação de emprego CLT.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html#fonte-dos-dados",
+    "href": "01_configuracao_dados.html#fonte-dos-dados",
+    "title": "Configuração e Dados de Entrada",
+    "section": "Fonte dos Dados",
+    "text": "Fonte dos Dados\nOs dados epidemiológicos provêm de três estudos de coorte retrospectivos realizados no Rio de Janeiro:\n\n\nCódigo\nestudo &lt;- list(\n  populacao = 600000,\n  prop_mfc = 0.336,\n  prop_gen = 0.664\n)\n\n\n\n\n\nParâmetro\nValor\n\n\n\n\nPopulação do estudo\n6e+05 pacientes\n\n\nPacientes atendidos por MFC\n33.6%\n\n\nPacientes atendidos por generalistas\n66.4%\n\n\n\n\nOs Três Estudos\n\n\n\n\n\n\n\n\nEstudo\nDesfecho\nPublicação\n\n\n\n\n1\nInternações por Condições Sensíveis à APS (ICSAP)\nPLOS Global Public Health, 2023\n\n\n2\nEncaminhamentos e exames diagnósticos\nBMJ Open, 2023\n\n\n3\nExames laboratoriais\nBMC Primary Care, 2024\n\n\n\n\n\nInterpretação do Risco Relativo (RR)\n\\[RR = \\frac{\\text{Taxa em pacientes de MFC}}{\\text{Taxa em pacientes de generalistas}}\\]\n\nRR = 1,00: Sem diferença\nRR &lt; 1,00: MFC tem menor taxa (economia)\nRR &gt; 1,00: MFC tem maior taxa (custo adicional)\n\nExemplo: RR = 0,50 significa que pacientes de MFC têm metade da taxa de eventos.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html#encaminhamentos-ambulatoriais",
+    "href": "01_configuracao_dados.html#encaminhamentos-ambulatoriais",
+    "title": "Configuração e Dados de Entrada",
+    "section": "Encaminhamentos Ambulatoriais",
+    "text": "Encaminhamentos Ambulatoriais\n\n\nCódigo\nenc_ambulatoriais &lt;- data.frame(\n  especialidade = c(\n    \"Cardiologia\", \"Neurologia\", \"Psiquiatria\", \"Dermatologia\",\n    \"Pneumologia\", \"Doenças infecciosas\", \"Urologia\", \"Alergologia\",\n    \"Nefrologia\", \"Endocrinologia\", \"Gastroenterologia\", \"Angiologia\",\n    \"Reumatologia\", \"Fisioterapia\", \"Reabilitação\", \"Oftalmologia\",\n    \"ORL\", \"Ortopedia\", \"Ginecologia\", \"Pré-natal alto risco\"\n  ),\n  rr = c(\n    0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,\n    0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,\n    0.71, 0.52, 0.86, 0.66\n  ),\n  eventos_ano = c(\n    2008, 1835, 897, 4144, 903, 290, 1762, 480,\n    603, 1021, 867, 1030, 830, 2390, 1173, 8713,\n    2269, 4934, 738, 991\n  ),\n  stringsAsFactors = FALSE\n)\n\nknitr::kable(\n  enc_ambulatoriais,\n  col.names = c(\"Especialidade\", \"RR\", \"Eventos/ano\"),\n  caption = \"Encaminhamentos ambulatoriais (20 especialidades)\"\n)\n\n\n\nEncaminhamentos ambulatoriais (20 especialidades)\n\n\nEspecialidade\nRR\nEventos/ano\n\n\n\n\nCardiologia\n0,40\n2008\n\n\nNeurologia\n0,50\n1835\n\n\nPsiquiatria\n0,45\n897\n\n\nDermatologia\n0,49\n4144\n\n\nPneumologia\n0,54\n903\n\n\nDoenças infecciosas\n0,74\n290\n\n\nUrologia\n0,57\n1762\n\n\nAlergologia\n0,54\n480\n\n\nNefrologia\n0,63\n603\n\n\nEndocrinologia\n0,42\n1021\n\n\nGastroenterologia\n0,38\n867\n\n\nAngiologia\n0,35\n1030\n\n\nReumatologia\n0,47\n830\n\n\nFisioterapia\n1,17\n2390\n\n\nReabilitação\n1,68\n1173\n\n\nOftalmologia\n1,09\n8713\n\n\nORL\n0,71\n2269\n\n\nOrtopedia\n0,52\n4934\n\n\nGinecologia\n0,86\n738\n\n\nPré-natal alto risco\n0,66\n991\n\n\n\n\n\nNota: RR &gt; 1 em Fisioterapia, Reabilitação e Oftalmologia sugere que MFC identifica mais necessidades nestas áreas.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html#encaminhamentos-cirúrgicos",
+    "href": "01_configuracao_dados.html#encaminhamentos-cirúrgicos",
+    "title": "Configuração e Dados de Entrada",
+    "section": "Encaminhamentos Cirúrgicos",
+    "text": "Encaminhamentos Cirúrgicos\n\n\nCódigo\nenc_cirurgicos &lt;- data.frame(\n  especialidade = c(\n    \"Cirurgia geral\", \"Cirurgia vascular\", \"Neurocirurgia\",\n    \"Proctologia\", \"Cirurgia cabeça/pescoço\", \"Mastologia\"\n  ),\n  rr = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),\n  eventos_ano = c(4458, 989, 147, 1968, 859, 359),\n  stringsAsFactors = FALSE\n)\n\nknitr::kable(\n  enc_cirurgicos,\n  col.names = c(\"Especialidade\", \"RR\", \"Eventos/ano\"),\n  caption = \"Encaminhamentos cirúrgicos (6 especialidades)\"\n)\n\n\n\nEncaminhamentos cirúrgicos (6 especialidades)\n\n\nEspecialidade\nRR\nEventos/ano\n\n\n\n\nCirurgia geral\n1,21\n4458\n\n\nCirurgia vascular\n0,87\n989\n\n\nNeurocirurgia\n1,22\n147\n\n\nProctologia\n0,91\n1968\n\n\nCirurgia cabeça/pescoço\n1,19\n859\n\n\nMastologia\n0,87\n359",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html#exames-diagnósticos",
+    "href": "01_configuracao_dados.html#exames-diagnósticos",
+    "title": "Configuração e Dados de Entrada",
+    "section": "Exames Diagnósticos",
+    "text": "Exames Diagnósticos\n\n\nCódigo\nexames_diagnosticos &lt;- data.frame(\n  exame = c(\n    \"Ecocardiograma\", \"Eletroencefalograma\", \"Endoscopia digestiva\",\n    \"Ultrassonografia\", \"Radiografia\", \"Outros diagnósticos\"\n  ),\n  rr = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),\n  eventos_ano = c(1201, 385, 510, 1090, 431, 2424),\n  custo_unitario = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00),\n  stringsAsFactors = FALSE\n)\n\nexames_diagnosticos$custo_fmt &lt;- formatar_moeda(exames_diagnosticos$custo_unitario)\n\nknitr::kable(\n  exames_diagnosticos[, c(\"exame\", \"rr\", \"eventos_ano\", \"custo_fmt\")],\n  col.names = c(\"Exame\", \"RR\", \"Eventos/ano\", \"Custo Unitário\"),\n  caption = \"Exames diagnósticos (6 tipos)\"\n)\n\n\n\nExames diagnósticos (6 tipos)\n\n\nExame\nRR\nEventos/ano\nCusto Unitário\n\n\n\n\nEcocardiograma\n0,66\n1201\nR$ 40\n\n\nEletroencefalograma\n0,96\n385\nR$ 13\n\n\nEndoscopia digestiva\n0,76\n510\nR$ 86\n\n\nUltrassonografia\n0,49\n1090\nR$ 48\n\n\nRadiografia\n0,72\n431\nR$ 30\n\n\nOutros diagnósticos\n0,98\n2424\nR$ 45",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html#exames-laboratoriais",
+    "href": "01_configuracao_dados.html#exames-laboratoriais",
+    "title": "Configuração e Dados de Entrada",
+    "section": "Exames Laboratoriais",
+    "text": "Exames Laboratoriais\n\n\nCódigo\nexames_laboratoriais &lt;- data.frame(\n  exame = c(\n    \"Hemograma\", \"Glicemia jejum\", \"Colesterol total\", \"HDL\",\n    \"LDL\", \"Triglicerídeos\", \"Creatinina\", \"Ureia\",\n    \"TGO\", \"TGP\", \"GGT\", \"Bilirrubinas\",\n    \"Ácido úrico\", \"TSH\", \"T4 livre\", \"PSA\",\n    \"Hemoglobina glicada\", \"Glicemia pós-prandial\", \"Curva glicêmica\", \"Frutosamina\",\n    \"Sódio\", \"Potássio\", \"Cálcio\", \"EAS\",\n    \"Urocultura\", \"Vitamina D\", \"Vitamina B12\", \"Ferritina\",\n    \"Ferro sérico\", \"Fosfatase alcalina\"\n  ),\n  rr = c(\n    0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81,\n    0.94, 0.41, 0.82, 0.23, 0.71, 0.08, 0.13, 0.56,\n    0.78, 0.48, 0.47, 0.69, 0.64, 0.74, 0.09, 0.67,\n    0.44, 0.56, 0.60, 0.48, 0.47, 0.36\n  ),\n  eventos_ano = c(\n    51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673,\n    31127, 22163, 33828, 15603, 11679, 791, 886, 5432,\n    2304, 9181, 9363, 3505, 4386, 1957, 604, 41333,\n    1866, 674, 863, 210, 216, 4365\n  ),\n  custo_unitario = c(\n    4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85,\n    3.51, 3.51, 3.51, 1.85, 8.96, 8.71, 8.71, 11.60,\n    2.01, 2.01, 2.01, 2.01, 3.51, 2.63, 1.65, 3.70,\n    1.85, 10.15, 10.15, 18.55, 18.55, 16.42\n  ),\n  stringsAsFactors = FALSE\n)\n\nexames_laboratoriais$custo_fmt &lt;- formatar_moeda(exames_laboratoriais$custo_unitario)\n\nknitr::kable(\n  exames_laboratoriais[, c(\"exame\", \"rr\", \"eventos_ano\", \"custo_fmt\")],\n  col.names = c(\"Exame\", \"RR\", \"Eventos/ano\", \"Custo Unitário\"),\n  caption = \"Exames laboratoriais (30 tipos)\"\n)\n\n\n\nExames laboratoriais (30 tipos)\n\n\nExame\nRR\nEventos/ano\nCusto Unitário\n\n\n\n\nHemograma\n0,53\n51757\nR$ 4\n\n\nGlicemia jejum\n0,85\n43746\nR$ 2\n\n\nColesterol total\n0,29\n22577\nR$ 2\n\n\nHDL\n0,42\n10517\nR$ 2\n\n\nLDL\n0,73\n18265\nR$ 2\n\n\nTriglicerídeos\n0,46\n9072\nR$ 2\n\n\nCreatinina\n0,64\n25720\nR$ 8\n\n\nUreia\n0,81\n34673\nR$ 2\n\n\nTGO\n0,94\n31127\nR$ 4\n\n\nTGP\n0,41\n22163\nR$ 4\n\n\nGGT\n0,82\n33828\nR$ 4\n\n\nBilirrubinas\n0,23\n15603\nR$ 2\n\n\nÁcido úrico\n0,71\n11679\nR$ 9\n\n\nTSH\n0,08\n791\nR$ 9\n\n\nT4 livre\n0,13\n886\nR$ 9\n\n\nPSA\n0,56\n5432\nR$ 12\n\n\nHemoglobina glicada\n0,78\n2304\nR$ 2\n\n\nGlicemia pós-prandial\n0,48\n9181\nR$ 2\n\n\nCurva glicêmica\n0,47\n9363\nR$ 2\n\n\nFrutosamina\n0,69\n3505\nR$ 2\n\n\nSódio\n0,64\n4386\nR$ 4\n\n\nPotássio\n0,74\n1957\nR$ 3\n\n\nCálcio\n0,09\n604\nR$ 2\n\n\nEAS\n0,67\n41333\nR$ 4\n\n\nUrocultura\n0,44\n1866\nR$ 2\n\n\nVitamina D\n0,56\n674\nR$ 10\n\n\nVitamina B12\n0,60\n863\nR$ 10\n\n\nFerritina\n0,48\n210\nR$ 19\n\n\nFerro sérico\n0,47\n216\nR$ 19\n\n\nFosfatase alcalina\n0,36\n4365\nR$ 16\n\n\n\n\n\nDestaques:\n\nTSH (RR = 0,08): MFC solicita 92% menos dosagens de TSH\nCálcio (RR = 0,09): MFC solicita 91% menos dosagens de cálcio\nColesterol total (RR = 0,29): MFC solicita 71% menos dosagens de colesterol",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html#internações-por-condições-sensíveis-à-aps-icsap",
+    "href": "01_configuracao_dados.html#internações-por-condições-sensíveis-à-aps-icsap",
+    "title": "Configuração e Dados de Entrada",
+    "section": "Internações por Condições Sensíveis à APS (ICSAP)",
+    "text": "Internações por Condições Sensíveis à APS (ICSAP)\n\n\nCódigo\nicsap &lt;- data.frame(\n  condicao = c(\n    \"Doenças imunopreveníveis\", \"Gastroenterites\", \"Anemia\",\n    \"Deficiências nutricionais\", \"Infecções ouvido/vias aéreas\",\n    \"Pneumonias bacterianas\", \"Asma\", \"Doenças pulmonares\",\n    \"Hipertensão\", \"Angina\", \"Insuficiência cardíaca\",\n    \"Doenças cerebrovasculares\", \"Diabetes mellitus\", \"Epilepsias\"\n  ),\n  rr = c(\n    0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78,\n    0.45, 0.57, 0.36, 0.82, 1.06, 0.59\n  ),\n  eventos_ano = c(\n    128, 160, 244, 271, 230, 86, 54, 136,\n    45, 114, 116, 331, 28, 41\n  ),\n  custo_medio = c(\n    761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 853.21, 646.69,\n    527.15, 1969.07, 1969.07, 679.82, 502.60, 612.67\n  ),\n  stringsAsFactors = FALSE\n)\n\nicsap$custo_fmt &lt;- formatar_moeda(icsap$custo_medio)\n\nknitr::kable(\n  icsap[, c(\"condicao\", \"rr\", \"eventos_ano\", \"custo_fmt\")],\n  col.names = c(\"Condição\", \"RR\", \"Internações/ano\", \"Custo Médio\"),\n  caption = \"Internações por Condições Sensíveis à APS (14 grupos)\"\n)\n\n\n\nInternações por Condições Sensíveis à APS (14 grupos)\n\n\nCondição\nRR\nInternações/ano\nCusto Médio\n\n\n\n\nDoenças imunopreveníveis\n0,83\n128\nR$ 761\n\n\nGastroenterites\n0,76\n160\nR$ 1.178\n\n\nAnemia\n0,74\n244\nR$ 1.757\n\n\nDeficiências nutricionais\n0,62\n271\nR$ 4.774\n\n\nInfecções ouvido/vias aéreas\n0,52\n230\nR$ 2.554\n\n\nPneumonias bacterianas\n0,79\n86\nR$ 957\n\n\nAsma\n0,35\n54\nR$ 853\n\n\nDoenças pulmonares\n0,78\n136\nR$ 647\n\n\nHipertensão\n0,45\n45\nR$ 527\n\n\nAngina\n0,57\n114\nR$ 1.969\n\n\nInsuficiência cardíaca\n0,36\n116\nR$ 1.969\n\n\nDoenças cerebrovasculares\n0,82\n331\nR$ 680\n\n\nDiabetes mellitus\n1,06\n28\nR$ 503\n\n\nEpilepsias\n0,59\n41\nR$ 613\n\n\n\n\n\nDestaques:\n\nAsma (RR = 0,35): MFC reduz internações por asma em 65%\nInsuficiência cardíaca (RR = 0,36): MFC reduz internações em 64%\nHipertensão (RR = 0,45): MFC reduz internações em 55%\nDiabetes (RR = 1,06): Único grupo com RR &gt; 1 (sem diferença significativa)",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html#consultas-especializadas",
+    "href": "01_configuracao_dados.html#consultas-especializadas",
+    "title": "Configuração e Dados de Entrada",
+    "section": "Consultas Especializadas",
+    "text": "Consultas Especializadas\n\n\nCódigo\ncusto_consulta &lt;- 50.00\n\n\n\n\n\n\n\n\n\n\nProcedimento\nCusto Unitário\nFonte\n\n\n\n\nConsulta especializada (média)\nR$ 50\nEstimativa baseada em SIGTAP\n\n\n\nNota: O valor de R$ 50,00 é uma média ponderada considerando consultas médicas especializadas na tabela SIGTAP.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "01_configuracao_dados.html#resumo-dos-custos-de-internação",
+    "href": "01_configuracao_dados.html#resumo-dos-custos-de-internação",
+    "title": "Configuração e Dados de Entrada",
+    "section": "Resumo dos Custos de Internação",
+    "text": "Resumo dos Custos de Internação\n\n\nCódigo\nresumo_icsap &lt;- data.frame(\n  estatistica = c(\"Mínimo\", \"Mediana\", \"Média\", \"Máximo\"),\n  valor = c(\n    min(icsap$custo_medio),\n    median(icsap$custo_medio),\n    mean(icsap$custo_medio),\n    max(icsap$custo_medio)\n  )\n)\n\nresumo_icsap$valor_fmt &lt;- formatar_moeda(resumo_icsap$valor)\n\nknitr::kable(\n  resumo_icsap[, c(\"estatistica\", \"valor_fmt\")],\n  col.names = c(\"Estatística\", \"Custo por Internação\"),\n  caption = \"Resumo dos custos de internação ICSAP\"\n)\n\n\n\nResumo dos custos de internação ICSAP\n\n\nEstatística\nCusto por Internação\n\n\n\n\nMínimo\nR$ 503\n\n\nMediana\nR$ 905\n\n\nMédia\nR$ 1.410\n\n\nMáximo\nR$ 4.774",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Configuração e Dados de Entrada</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html",
+    "href": "02_metodologia_funcoes.html",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "",
+    "text": "Introdução\nEste capítulo apresenta a metodologia do modelo econômico e as funções de cálculo utilizadas na simulação.\nEstrutura do capítulo:",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#o-problema",
+    "href": "02_metodologia_funcoes.html#o-problema",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "O Problema",
+    "text": "O Problema\nOs estudos originais observaram eventos em uma população mista: 33,6% dos pacientes eram atendidos por médicos de família e 66,4% por médicos generalistas.\nPara calcular a economia potencial, precisamos saber: quantos eventos ocorreriam se 100% da população fosse atendida por generalistas?\nEste é o cenário baseline (0% de cobertura por médicos de família).",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#a-solução-matemática",
+    "href": "02_metodologia_funcoes.html#a-solução-matemática",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "A Solução Matemática",
+    "text": "A Solução Matemática\nSe chamarmos de:\n\n\\(E_{obs}\\) = eventos observados na população mista\n\\(E_{base}\\) = eventos no cenário baseline (0% médicos de família)\n\\(p_{MFC}\\) = proporção atendida por médicos de família (0,336)\n\\(p_{gen}\\) = proporção atendida por generalistas (0,664)\n\\(RR\\) = risco relativo (taxa em médicos de família ÷ taxa em generalistas)\n\nA relação entre eventos observados e baseline é:\n\\[E_{obs} = E_{base} \\times (p_{MFC} \\times RR + p_{gen})\\]\nResolvendo para \\(E_{base}\\):\n\\[E_{base} = \\frac{E_{obs}}{p_{MFC} \\times RR + p_{gen}}\\]",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#função-de-conversão",
+    "href": "02_metodologia_funcoes.html#função-de-conversão",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Função de Conversão",
+    "text": "Função de Conversão\n\n\nCódigo\nconverter_para_baseline &lt;- function(valor_observado, \n                                     risco_relativo, \n                                     proporcao_mfc = 0.336, \n                                     proporcao_gen = 0.664,\n                                     populacao_estudo = 600000, \n                                     populacao_alvo = 500000) {\n  #' Converte eventos observados para o cenário baseline (0% médicos de família)\n  #'\n\n  #' @param valor_observado Número de eventos observados no estudo\n\n  #' @param risco_relativo Razão entre taxa de médicos de família e generalistas\n  #' @param proporcao_mfc Proporção de pacientes atendidos por médicos de família no estudo\n  #' @param proporcao_gen Proporção de pacientes atendidos por generalistas no estudo\n  #' @param populacao_estudo População do estudo original\n  #' @param populacao_alvo População do município simulado\n  #'\n  #' @return Número de eventos esperados no baseline para a população alvo\n  \n  # Calcular o denominador (fator de mistura)\n  denominador &lt;- (proporcao_mfc * risco_relativo) + proporcao_gen\n  \n  # Converter para baseline na população do estudo\n  baseline_estudo &lt;- valor_observado / denominador\n  \n  # Ajustar para a população alvo\n  baseline_alvo &lt;- baseline_estudo * (populacao_alvo / populacao_estudo)\n  \n  return(baseline_alvo)\n}",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#exemplo-hemograma",
+    "href": "02_metodologia_funcoes.html#exemplo-hemograma",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Exemplo: Hemograma",
+    "text": "Exemplo: Hemograma\nVamos aplicar a função ao exame de hemograma:\n\n\nCódigo\n# Dados do estudo\nhemograma_observado &lt;- 51757  # eventos/ano na população mista\nhemograma_rr &lt;- 0.53          # médicos de família solicitam 53% do que generalistas\n\n# Converter para baseline\nhemograma_baseline &lt;- converter_para_baseline(\n  valor_observado = hemograma_observado,\n  risco_relativo = hemograma_rr\n)\n\n\n\n\n\nCenário\nHemogramas/ano\n\n\n\n\nObservado (população mista)\n51.757\n\n\nBaseline (0% médicos de família)\n51.219\n\n\nCom 100% médicos de família\n27.146\n\n\n\nInterpretação: Se toda a população fosse atendida por generalistas, esperaríamos 51.219 hemogramas por ano. Com 100% de médicos de família, esse número cairia para 27.146.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#conceito",
+    "href": "02_metodologia_funcoes.html#conceito",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Conceito",
+    "text": "Conceito\nA economia em saúde vem da diferença entre o que seria gasto com generalistas e o que é gasto com médicos de família:\n\\[\\text{Economia} = E_{base} \\times (1 - RR) \\times \\text{Custo unitário}\\]\nOnde:\n\n\\(E_{base}\\) = eventos no baseline\n\\((1 - RR)\\) = redução proporcional de eventos\nCusto unitário = valor do procedimento na tabela do Sistema Único de Saúde",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#função-principal-economia-com-100-de-cobertura",
+    "href": "02_metodologia_funcoes.html#função-principal-economia-com-100-de-cobertura",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Função Principal: Economia com 100% de Cobertura",
+    "text": "Função Principal: Economia com 100% de Cobertura\nEsta função calcula a economia anual se todas as equipes fossem cobertas por médicos de família:\n\n\nCódigo\ncalcular_economia_total &lt;- function(fator_correcao_internacoes = 1.5) {\n  #' Calcula a economia anual em saúde com 100% de cobertura por médicos de família\n  #'\n  #' @param fator_correcao_internacoes Fator para corrigir defasagem da tabela de internações\n  #'\n  #' @return Lista com economia por categoria e total\n  \n  custo_consulta &lt;- 50.00\n  \n\n  # ==========================================\n  # ENCAMINHAMENTOS AMBULATORIAIS\n  # ==========================================\n  \n  enc_amb &lt;- data.frame(\n    risco_relativo = c(0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,\n                       0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,\n                       0.71, 0.52, 0.86, 0.66),\n    observado = c(2008, 1835, 897, 4144, 903, 290, 1762, 480,\n                  603, 1021, 867, 1030, 830, 2390, 1173, 8713,\n                  2269, 4934, 738, 991)\n  )\n  \n  enc_amb$baseline &lt;- mapply(converter_para_baseline, \n                              enc_amb$observado, \n                              enc_amb$risco_relativo)\n  enc_amb$economia &lt;- enc_amb$baseline * (1 - enc_amb$risco_relativo) * custo_consulta\n  economia_enc_amb &lt;- sum(enc_amb$economia)\n  \n  # ==========================================\n  # ENCAMINHAMENTOS CIRÚRGICOS\n  # ==========================================\n  \n  enc_cir &lt;- data.frame(\n    risco_relativo = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),\n    observado = c(4458, 989, 147, 1968, 859, 359)\n  )\n  \n  enc_cir$baseline &lt;- mapply(converter_para_baseline, \n                              enc_cir$observado, \n                              enc_cir$risco_relativo)\n  enc_cir$economia &lt;- enc_cir$baseline * (1 - enc_cir$risco_relativo) * custo_consulta\n  economia_enc_cir &lt;- sum(enc_cir$economia)\n  \n  # ==========================================\n  # EXAMES DIAGNÓSTICOS\n  # ==========================================\n  \n  diag &lt;- data.frame(\n    risco_relativo = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),\n    observado = c(1201, 385, 510, 1090, 431, 2424),\n    custo = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00)\n  )\n  \n  diag$baseline &lt;- mapply(converter_para_baseline, \n                           diag$observado, \n                           diag$risco_relativo)\n  diag$economia &lt;- diag$baseline * (1 - diag$risco_relativo) * diag$custo\n  economia_diag &lt;- sum(diag$economia)\n  \n  # ==========================================\n  # EXAMES LABORATORIAIS\n  # ==========================================\n  \n  lab &lt;- data.frame(\n    risco_relativo = c(0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81, \n                       0.94, 0.41, 0.82, 0.23, 0.71, 0.08, 0.13, 0.56, \n                       0.78, 0.48, 0.47, 0.69, 0.64, 0.74, 0.09, 0.67, \n                       0.44, 0.56, 0.60, 0.48, 0.47, 0.36),\n    observado = c(51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673, \n                  31127, 22163, 33828, 15603, 11679, 791, 886, 5432, \n                  2304, 9181, 9363, 3505, 4386, 1957, 604, 41333, \n                  1866, 674, 863, 210, 216, 4365),\n    custo = c(4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85, \n              3.51, 3.51, 3.51, 1.85, 8.96, 8.71, 8.71, 11.60, \n              2.01, 2.01, 2.01, 2.01, 3.51, 2.63, 1.65, 3.70, \n              1.85, 10.15, 10.15, 18.55, 18.55, 16.42)\n  )\n  \n  lab$baseline &lt;- mapply(converter_para_baseline, \n                          lab$observado, \n                          lab$risco_relativo)\n  lab$economia &lt;- lab$baseline * (1 - lab$risco_relativo) * lab$custo\n  economia_lab &lt;- sum(lab$economia)\n  \n  # ==========================================\n  # INTERNAÇÕES EVITÁVEIS\n  # ==========================================\n  \n  internacoes &lt;- data.frame(\n    risco_relativo = c(0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78, \n                       0.45, 0.57, 0.36, 0.82, 1.06, 0.59),\n    observado = c(128, 160, 244, 271, 230, 86, 54, 136, \n                  45, 114, 116, 331, 28, 41),\n    custo = c(761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, \n              853.21, 646.69, 527.15, 1969.07, 1969.07, 679.82, \n              502.60, 612.67)\n  )\n  \n  internacoes$baseline &lt;- mapply(converter_para_baseline, \n                                  internacoes$observado, \n                                  internacoes$risco_relativo)\n  internacoes$economia &lt;- internacoes$baseline * \n                           (1 - internacoes$risco_relativo) * \n                           internacoes$custo * \n                           fator_correcao_internacoes\n  economia_internacoes &lt;- sum(internacoes$economia)\n  \n  # ==========================================\n  # TOTALIZAÇÃO\n  # ==========================================\n  \n  economia_encaminhamentos &lt;- economia_enc_amb + economia_enc_cir\n  economia_exames &lt;- economia_diag + economia_lab\n  economia_total &lt;- economia_encaminhamentos + economia_exames + economia_internacoes\n  \n  return(list(\n    encaminhamentos = economia_encaminhamentos,\n    exames = economia_exames,\n    internacoes = economia_internacoes,\n    total = economia_total\n  ))\n}",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#resultado-economia-potencial",
+    "href": "02_metodologia_funcoes.html#resultado-economia-potencial",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Resultado: Economia Potencial",
+    "text": "Resultado: Economia Potencial\n\n\nCódigo\neconomia &lt;- calcular_economia_total(fator_correcao_internacoes = 1.5)\n\n\n\n\n\nCategoria\nEconomia Anual (100% cobertura)\nPercentual\n\n\n\n\nEncaminhamentos\nR$ 504.331\n16.6%\n\n\nExames\nR$ 615.020\n20.2%\n\n\nInternações\nR$ 1.919.752\n63.2%\n\n\nTotal\nR$ 3.039.103\n100%\n\n\n\nInterpretação: Se todas as 100 equipes do município fossem cobertas por médicos de família, a economia anual seria de aproximadamente R$ 3.039.103.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#conceito-1",
+    "href": "02_metodologia_funcoes.html#conceito-1",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Conceito",
+    "text": "Conceito\nO modelo de residência gera economia porque 1 preceptor supervisiona 2 equipes com apoio de 4 residentes, enquanto o modelo tradicional precisaria de 2 médicos.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#parâmetros-de-custo",
+    "href": "02_metodologia_funcoes.html#parâmetros-de-custo",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Parâmetros de Custo",
+    "text": "Parâmetros de Custo\n\n\nCódigo\ncustos &lt;- list(\n  # Médico\n  salario_base = 16000,\n  encargos_pct = 0.70,\n  \n\n  # Preceptor\n  adicional_preceptoria_pct = 0.10,\n  \n  # Residente\n  bolsa_mec = 4106.90,\n  complemento_ms = 4000.00,\n  \n  # Incentivo\n  incentivo_federal = 4500,\n  \n  # Operacional\n  custo_operacional_anual = 50000\n)\n\n# Cálculos derivados\ncustos$custo_medico &lt;- custos$salario_base * (1 + custos$encargos_pct)\ncustos$adicional_preceptoria &lt;- custos$salario_base * custos$adicional_preceptoria_pct\ncustos$custo_preceptor &lt;- custos$custo_medico + \n                           custos$adicional_preceptoria * (1 + custos$encargos_pct)\ncustos$bolsa_total &lt;- custos$bolsa_mec + custos$complemento_ms",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#comparativo-modelo-tradicional-versus-residência",
+    "href": "02_metodologia_funcoes.html#comparativo-modelo-tradicional-versus-residência",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Comparativo: Modelo Tradicional versus Residência",
+    "text": "Comparativo: Modelo Tradicional versus Residência\n\n\nCódigo\n# Para 2 equipes:\n\n# Modelo tradicional\ncusto_tradicional &lt;- 2 * custos$custo_medico * 12\n\n# Modelo residência\ncusto_preceptor_anual &lt;- custos$custo_preceptor * 12\ncusto_residentes_anual &lt;- 4 * custos$bolsa_total * 12\nreceita_incentivo_anual &lt;- 2 * custos$incentivo_federal * 12\ncusto_residencia &lt;- custo_preceptor_anual + custo_residentes_anual - receita_incentivo_anual\n\n# Economia\neconomia_modelo &lt;- custo_tradicional - custo_residencia\n\n\n\n\n\nItem\nModelo Tradicional\nModelo Residência\n\n\n\n\nMédicos/Preceptor\n2 médicos\n1 preceptor\n\n\nCusto médicos/preceptor\nR$ 652.800\nR$ 359.040\n\n\nResidentes\n-\n4 residentes\n\n\nCusto residentes\n-\nR$ 389.131\n\n\nIncentivo federal\n-\nR$ -108.000\n\n\nCusto total anual\nR$ 652.800\nR$ 640.171\n\n\n\nEconomia por par de equipes-escola: R$ 12.629 por ano",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#função-de-simulação",
+    "href": "02_metodologia_funcoes.html#função-de-simulação",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Função de Simulação",
+    "text": "Função de Simulação\nEsta função simula a evolução do programa ao longo de 10 anos:\n\n\nCódigo\nsimular_programa &lt;- function(\n    taxa_retencao = 0.60,\n    adicional_especialidade_pct = 0.10,\n    fator_correcao_internacoes = 1.5,\n    taxa_desconto = 0.05,\n    horizonte = 10\n) {\n  #' Simula o programa de residência e calcula indicadores econômicos\n  #'\n  #' @param taxa_retencao Proporção dos formados que permanece no município\n  #' @param adicional_especialidade_pct Adicional salarial para médicos de família (sobre salário base)\n  #' @param fator_correcao_internacoes Fator de correção para custos de internação\n  #' @param taxa_desconto Taxa de desconto anual para valor presente\n  #' @param horizonte Número de anos da simulação\n  #'\n  #' @return Lista com indicadores e dados anuais\n  \n  # Parâmetros fixos\n  salario_base &lt;- 16000\n  encargos_pct &lt;- 0.70\n  bolsa_total &lt;- 4106.90 + 4000.00\n  incentivo_federal &lt;- 4500\n  custo_operacional &lt;- 50000\n  n_equipes_total &lt;- 100\n  \n  # Custos calculados\n  custo_medico &lt;- salario_base * (1 + encargos_pct)\n  custo_preceptor &lt;- custo_medico + salario_base * 0.10 * (1 + encargos_pct)\n  \n  # Vetores de evolução\n  anos &lt;- 0:horizonte\n  n_anos &lt;- length(anos)\n  \n  n_preceptores &lt;- c(0, 4, rep(8, horizonte - 1))\n  n_equipes_escola &lt;- c(0, 8, rep(16, horizonte - 1))\n  n_residentes &lt;- c(0, 16, rep(32, horizonte - 1))\n  \n  # Formados retidos (acumulado)\n  formados_retidos &lt;- numeric(n_anos)\n  for (i in 1:n_anos) {\n    if (i &lt;= 3) {\n      formados_retidos[i] &lt;- 0\n    } else if (i == 4) {\n      formados_retidos[i] &lt;- round(16 * taxa_retencao)\n    } else {\n      formados_retidos[i] &lt;- formados_retidos[i-1] + round(16 * taxa_retencao)\n    }\n  }\n  \n  # Cobertura por médicos de família\n  equipes_mfc &lt;- pmin(n_equipes_escola + formados_retidos, n_equipes_total)\n  cobertura_mfc &lt;- equipes_mfc / n_equipes_total\n  \n  # ==========================================\n  # ECONOMIA DO MODELO DE RESIDÊNCIA\n  # ==========================================\n  \n  custo_2medicos &lt;- 2 * custo_medico * 12\n  custo_1prec_4res &lt;- custo_preceptor * 12 + \n                       4 * bolsa_total * 12 - \n                       2 * incentivo_federal * 12\n  economia_por_par &lt;- custo_2medicos - custo_1prec_4res\n  economia_modelo &lt;- (n_equipes_escola / 2) * economia_por_par\n  \n  # ==========================================\n  # INVESTIMENTO EM FIXAÇÃO\n  # ==========================================\n  \n  adicional_mensal &lt;- salario_base * adicional_especialidade_pct\n  investimento_fixacao &lt;- formados_retidos * adicional_mensal * (1 + encargos_pct) * 12\n  \n  # ==========================================\n  # CUSTO OPERACIONAL\n  # ==========================================\n  \n  custo_operacional_vetor &lt;- c(0, rep(custo_operacional, horizonte))\n  \n  # ==========================================\n  # ECONOMIA EM SAÚDE\n  # ==========================================\n  \n  economia_saude &lt;- calcular_economia_total(fator_correcao_internacoes)\n  beneficio_saude &lt;- economia_saude$total * cobertura_mfc\n  \n  # ==========================================\n  # SALDO E VALOR PRESENTE\n  # ==========================================\n  \n  economia_pessoal &lt;- economia_modelo - investimento_fixacao - custo_operacional_vetor\n  saldo &lt;- economia_pessoal + beneficio_saude\n  \n  fator_desconto &lt;- 1 / ((1 + taxa_desconto) ^ anos)\n  saldo_valor_presente &lt;- saldo * fator_desconto\n  valor_presente_liquido &lt;- sum(saldo_valor_presente)\n  \n  # ==========================================\n  # RETORNO\n  # ==========================================\n  \n  dados &lt;- data.frame(\n    ano = anos,\n    preceptores = n_preceptores,\n    equipes_escola = n_equipes_escola,\n    residentes = n_residentes,\n    formados_retidos = formados_retidos,\n    equipes_mfc = equipes_mfc,\n    cobertura_mfc = cobertura_mfc,\n    economia_modelo = economia_modelo,\n    investimento_fixacao = investimento_fixacao,\n    custo_operacional = custo_operacional_vetor,\n    economia_pessoal = economia_pessoal,\n    beneficio_saude = beneficio_saude,\n    saldo = saldo,\n    saldo_valor_presente = saldo_valor_presente\n  )\n  \n  return(list(\n    valor_presente_liquido = valor_presente_liquido,\n    cobertura_final = cobertura_mfc[n_anos],\n    formados_total = formados_retidos[n_anos],\n    economia_modelo_total = sum(economia_modelo),\n    investimento_fixacao_total = sum(investimento_fixacao),\n    beneficio_saude_total = sum(beneficio_saude),\n    dados = dados\n  ))\n}",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#exemplo-cenário-base",
+    "href": "02_metodologia_funcoes.html#exemplo-cenário-base",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Exemplo: Cenário Base",
+    "text": "Exemplo: Cenário Base\n\n\nCódigo\nresultado &lt;- simular_programa(\n  taxa_retencao = 0.60,\n  adicional_especialidade_pct = 0.10\n)\n\n\n\nEvolução do Programa\n\n\nCódigo\nevolucao &lt;- resultado$dados[, c(\"ano\", \"preceptores\", \"equipes_escola\", \n                                 \"residentes\", \"formados_retidos\", \"equipes_mfc\")]\nevolucao$cobertura &lt;- paste0(round(resultado$dados$cobertura_mfc * 100, 0), \"%\")\n\nknitr::kable(\n  evolucao,\n  col.names = c(\"Ano\", \"Preceptores\", \"Equipes-Escola\", \"Residentes\", \n                \"Formados Retidos\", \"Equipes com Médico de Família\", \"Cobertura\"),\n  caption = \"Evolução do programa ao longo de 10 anos\"\n)\n\n\n\nEvolução do programa ao longo de 10 anos\n\n\n\n\n\n\n\n\n\n\n\nAno\nPreceptores\nEquipes-Escola\nResidentes\nFormados Retidos\nEquipes com Médico de Família\nCobertura\n\n\n\n\n0\n0\n0\n0\n0\n0\n0%\n\n\n1\n4\n8\n16\n0\n8\n8%\n\n\n2\n8\n16\n32\n0\n16\n16%\n\n\n3\n8\n16\n32\n10\n26\n26%\n\n\n4\n8\n16\n32\n20\n36\n36%\n\n\n5\n8\n16\n32\n30\n46\n46%\n\n\n6\n8\n16\n32\n40\n56\n56%\n\n\n7\n8\n16\n32\n50\n66\n66%\n\n\n8\n8\n16\n32\n60\n76\n76%\n\n\n9\n8\n16\n32\n70\n86\n86%\n\n\n10\n8\n16\n32\n80\n96\n96%\n\n\n\n\n\n\n\nFluxo Financeiro\n\n\nCódigo\nfluxo &lt;- data.frame(\n  ano = resultado$dados$ano,\n  economia_modelo = round(resultado$dados$economia_modelo / 1000, 0),\n  investimento = round(resultado$dados$investimento_fixacao / 1000, 0),\n  beneficio = round(resultado$dados$beneficio_saude / 1000, 0),\n  saldo = round(resultado$dados$saldo / 1000, 0)\n)\n\nknitr::kable(\n  fluxo,\n  col.names = c(\"Ano\", \"Economia do Modelo\", \"Investimento em Fixação\", \n                \"Economia em Saúde\", \"Saldo\"),\n  caption = \"Fluxo financeiro anual (R$ mil)\"\n)\n\n\n\nFluxo financeiro anual (R$ mil)\n\n\n\n\n\n\n\n\n\nAno\nEconomia do Modelo\nInvestimento em Fixação\nEconomia em Saúde\nSaldo\n\n\n\n\n0\n0\n0\n0\n0\n\n\n1\n51\n0\n243\n244\n\n\n2\n101\n0\n486\n537\n\n\n3\n101\n326\n790\n515\n\n\n4\n101\n653\n1094\n492\n\n\n5\n101\n979\n1398\n470\n\n\n6\n101\n1306\n1702\n447\n\n\n7\n101\n1632\n2006\n425\n\n\n8\n101\n1958\n2310\n402\n\n\n9\n101\n2285\n2614\n380\n\n\n10\n101\n2611\n2918\n357\n\n\n\n\n\n\n\nIndicadores Finais\n\n\n\nIndicador\nValor\n\n\n\n\nCobertura por médicos de família (ano 10)\n96%\n\n\nMédicos formados e retidos\n80\n\n\nEconomia do modelo (10 anos)\nR$ 959.789\n\n\nInvestimento em fixação (10 anos)\nR$ 11.750.400\n\n\nEconomia em saúde (10 anos)\nR$ 15.560.208\n\n\nValor Presente Líquido\nR$ 3.309.523",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#taxa-de-desconto",
+    "href": "02_metodologia_funcoes.html#taxa-de-desconto",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Taxa de Desconto",
+    "text": "Taxa de Desconto\nA taxa de desconto reflete o fato de que dinheiro hoje vale mais do que dinheiro no futuro. O Ministério da Saúde recomenda usar 5% ao ano para avaliações econômicas em saúde.\nFórmula do valor presente:\n\\[VP = \\frac{VF}{(1 + r)^n}\\]\nOnde:\n\n\\(VP\\) = valor presente\n\\(VF\\) = valor futuro\n\\(r\\) = taxa de desconto (0,05)\n\\(n\\) = número de anos",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#valor-presente-líquido",
+    "href": "02_metodologia_funcoes.html#valor-presente-líquido",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Valor Presente Líquido",
+    "text": "Valor Presente Líquido\nO Valor Presente Líquido é a soma de todos os saldos anuais convertidos para valor presente:\n\\[VPL = \\sum_{t=0}^{T} \\frac{Saldo_t}{(1 + r)^t}\\]\nInterpretação:\n\n\n\nResultado\nSignificado\n\n\n\n\nValor Presente Líquido &gt; 0\nPrograma economicamente viável\n\n\nValor Presente Líquido = 0\nPrograma se paga exatamente\n\n\nValor Presente Líquido &lt; 0\nPrograma tem custo líquido",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "02_metodologia_funcoes.html#demonstração-do-desconto-temporal",
+    "href": "02_metodologia_funcoes.html#demonstração-do-desconto-temporal",
+    "title": "Metodologia e Funções de Cálculo",
+    "section": "Demonstração do Desconto Temporal",
+    "text": "Demonstração do Desconto Temporal\n\n\nCódigo\ndemo &lt;- data.frame(\n  ano = 0:10,\n  valor_nominal = 1000\n)\n\ndemo$fator &lt;- 1 / ((1 + 0.05) ^ demo$ano)\ndemo$valor_presente &lt;- demo$valor_nominal * demo$fator\n\nknitr::kable(\n  demo[, c(\"ano\", \"valor_nominal\", \"valor_presente\")],\n  col.names = c(\"Ano\", \"Valor Nominal (R$)\", \"Valor Presente (R$)\"),\n  digits = c(0, 0, 2),\n  caption = \"Efeito do desconto temporal sobre R$ 1.000 (taxa 5% ao ano)\"\n)\n\n\n\nEfeito do desconto temporal sobre R$ 1.000 (taxa 5% ao ano)\n\n\nAno\nValor Nominal (R\\()| Valor Presente (R\\))\n\n\n\n\n\n0\n1000\n1000\n\n\n1\n1000\n952\n\n\n2\n1000\n907\n\n\n3\n1000\n864\n\n\n4\n1000\n823\n\n\n5\n1000\n784\n\n\n6\n1000\n746\n\n\n7\n1000\n711\n\n\n8\n1000\n677\n\n\n9\n1000\n645\n\n\n10\n1000\n614\n\n\n\n\n\nInterpretação: R$ 1.000 recebidos no ano 10 equivalem a R$ 613.91 em valores de hoje.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Metodologia e Funções de Cálculo</span>"
+    ]
+  },
+  {
+    "objectID": "03_simulacao_cenarios.html",
+    "href": "03_simulacao_cenarios.html",
+    "title": "Cálculo da Economia em Saúde",
+    "section": "",
+    "text": "Introdução\nEste capítulo calcula a economia em saúde gerada pela cobertura de médicos de família, detalhando os resultados por categoria de procedimento.\nEstrutura:",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Cálculo da Economia em Saúde</span>"
+    ]
+  },
+  {
+    "objectID": "03_simulacao_cenarios.html#encaminhamentos-ambulatoriais",
+    "href": "03_simulacao_cenarios.html#encaminhamentos-ambulatoriais",
+    "title": "Cálculo da Economia em Saúde",
+    "section": "Encaminhamentos Ambulatoriais",
+    "text": "Encaminhamentos Ambulatoriais\n\n\nCódigo\nenc_ambulatoriais &lt;- data.frame(\n  especialidade = c(\n    \"Cardiologia\", \"Neurologia\", \"Psiquiatria\", \"Dermatologia\",\n    \"Pneumologia\", \"Doenças infecciosas\", \"Urologia\", \"Alergologia\",\n    \"Nefrologia\", \"Endocrinologia\", \"Gastroenterologia\", \"Angiologia\",\n    \"Reumatologia\", \"Fisioterapia\", \"Reabilitação\", \"Oftalmologia\",\n    \"Otorrinolaringologia\", \"Ortopedia\", \"Ginecologia\", \"Pré-natal alto risco\"\n  ),\n  risco_relativo = c(\n    0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,\n    0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,\n    0.71, 0.52, 0.86, 0.66\n  ),\n  observado = c(\n    2008, 1835, 897, 4144, 903, 290, 1762, 480,\n    603, 1021, 867, 1030, 830, 2390, 1173, 8713,\n    2269, 4934, 738, 991\n  ),\n  stringsAsFactors = FALSE\n)\n\n# Calcular baseline e economia\nenc_ambulatoriais$baseline &lt;- mapply(converter_para_baseline, \n                                      enc_ambulatoriais$observado, \n                                      enc_ambulatoriais$risco_relativo)\n\nenc_ambulatoriais$reducao_pct &lt;- (1 - enc_ambulatoriais$risco_relativo) * 100\n\nenc_ambulatoriais$eventos_evitados &lt;- enc_ambulatoriais$baseline * \n                                       (1 - enc_ambulatoriais$risco_relativo)\n\nenc_ambulatoriais$economia &lt;- enc_ambulatoriais$eventos_evitados * custo_consulta\n\n\n\nEspecialidades com Maior Economia\n\n\nCódigo\n# Ordenar por economia\nenc_amb_ordenado &lt;- enc_ambulatoriais[order(-enc_ambulatoriais$economia), ]\n\n# Top 10\ntop10_amb &lt;- enc_amb_ordenado[1:10, c(\"especialidade\", \"risco_relativo\", \n                                       \"eventos_evitados\", \"economia\")]\ntop10_amb$reducao &lt;- paste0(round((1 - top10_amb$risco_relativo) * 100, 0), \"%\")\ntop10_amb$economia_fmt &lt;- formatar_moeda(top10_amb$economia)\ntop10_amb$eventos_fmt &lt;- formatar_numero(top10_amb$eventos_evitados)\n\nknitr::kable(\n  top10_amb[, c(\"especialidade\", \"reducao\", \"eventos_fmt\", \"economia_fmt\")],\n  col.names = c(\"Especialidade\", \"Redução\", \"Consultas Evitadas/ano\", \"Economia/ano\"),\n  caption = \"10 especialidades ambulatoriais com maior economia\"\n)\n\n\n\n10 especialidades ambulatoriais com maior economia\n\n\n\n\n\n\n\n\n\n\nEspecialidade\nRedução\nConsultas Evitadas/ano\nEconomia/ano\n\n\n\n\n18\nOrtopedia\n48%\n2.353\nR$ 117.655\n\n\n4\nDermatologia\n51%\n2.125\nR$ 106.271\n\n\n1\nCardiologia\n60%\n1.258\nR$ 62.876\n\n\n2\nNeurologia\n50%\n919\nR$ 45.949\n\n\n7\nUrologia\n43%\n738\nR$ 36.901\n\n\n12\nAngiologia\n65%\n714\nR$ 35.691\n\n\n10\nEndocrinologia\n58%\n613\nR$ 30.647\n\n\n17\nOtorrinolaringologia\n29%\n608\nR$ 30.377\n\n\n11\nGastroenterologia\n62%\n566\nR$ 28.291\n\n\n3\nPsiquiatria\n55%\n504\nR$ 25.216\n\n\n\n\n\n\n\nEspecialidades com Aumento de Encaminhamentos\nAlgumas especialidades apresentam risco relativo maior que 1, indicando que médicos de família encaminham mais para estas áreas:\n\n\nCódigo\nenc_aumento &lt;- enc_ambulatoriais[enc_ambulatoriais$risco_relativo &gt; 1, \n                                  c(\"especialidade\", \"risco_relativo\", \"economia\")]\nenc_aumento$aumento &lt;- paste0(\"+\", round((enc_aumento$risco_relativo - 1) * 100, 0), \"%\")\nenc_aumento$custo_adicional &lt;- formatar_moeda(-enc_aumento$economia)\n\nknitr::kable(\n  enc_aumento[, c(\"especialidade\", \"aumento\", \"custo_adicional\")],\n  col.names = c(\"Especialidade\", \"Aumento\", \"Custo Adicional/ano\"),\n  caption = \"Especialidades com aumento de encaminhamentos\"\n)\n\n\n\nEspecialidades com aumento de encaminhamentos\n\n\n\nEspecialidade\nAumento\nCusto Adicional/ano\n\n\n\n\n14\nFisioterapia\n+17%\nR$ 16.014\n\n\n15\nReabilitação\n+68%\nR$ 27.054\n\n\n16\nOftalmologia\n+9%\nR$ 31.715\n\n\n\n\n\nInterpretação: Médicos de família encaminham mais para Fisioterapia, Reabilitação e Oftalmologia. Isso pode indicar melhor identificação de necessidades nestas áreas.\n\n\nTotal de Encaminhamentos Ambulatoriais\n\n\nCódigo\neconomia_enc_amb &lt;- sum(enc_ambulatoriais$economia)\n\n\nEconomia total com encaminhamentos ambulatoriais: R$ 533.169 por ano",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Cálculo da Economia em Saúde</span>"
+    ]
+  },
+  {
+    "objectID": "03_simulacao_cenarios.html#encaminhamentos-cirúrgicos",
+    "href": "03_simulacao_cenarios.html#encaminhamentos-cirúrgicos",
+    "title": "Cálculo da Economia em Saúde",
+    "section": "Encaminhamentos Cirúrgicos",
+    "text": "Encaminhamentos Cirúrgicos\n\n\nCódigo\nenc_cirurgicos &lt;- data.frame(\n  especialidade = c(\n    \"Cirurgia geral\", \"Cirurgia vascular\", \"Neurocirurgia\",\n    \"Proctologia\", \"Cirurgia de cabeça e pescoço\", \"Mastologia\"\n  ),\n  risco_relativo = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),\n  observado = c(4458, 989, 147, 1968, 859, 359),\n  stringsAsFactors = FALSE\n)\n\nenc_cirurgicos$baseline &lt;- mapply(converter_para_baseline, \n                                   enc_cirurgicos$observado, \n                                   enc_cirurgicos$risco_relativo)\n\nenc_cirurgicos$eventos_evitados &lt;- enc_cirurgicos$baseline * \n                                    (1 - enc_cirurgicos$risco_relativo)\n\nenc_cirurgicos$economia &lt;- enc_cirurgicos$eventos_evitados * custo_consulta\n\nenc_cirurgicos$efeito &lt;- ifelse(enc_cirurgicos$risco_relativo &lt; 1, \n                                 paste0(\"-\", round((1 - enc_cirurgicos$risco_relativo) * 100, 0), \"%\"),\n                                 paste0(\"+\", round((enc_cirurgicos$risco_relativo - 1) * 100, 0), \"%\"))\n\nenc_cirurgicos$economia_fmt &lt;- ifelse(enc_cirurgicos$economia &gt;= 0,\n                                       formatar_moeda(enc_cirurgicos$economia),\n                                       paste0(\"(\", formatar_moeda(-enc_cirurgicos$economia), \")\"))\n\nknitr::kable(\n  enc_cirurgicos[, c(\"especialidade\", \"efeito\", \"economia_fmt\")],\n  col.names = c(\"Especialidade Cirúrgica\", \"Efeito\", \"Economia/ano\"),\n  caption = \"Encaminhamentos cirúrgicos (valores negativos entre parênteses)\"\n)\n\n\n\nEncaminhamentos cirúrgicos (valores negativos entre parênteses)\n\n\nEspecialidade Cirúrgica\nEfeito\nEconomia/ano\n\n\n\n\nCirurgia geral\n+21%\n(R$ 36.437)\n\n\nCirurgia vascular\n-13%\nR$ 5.602\n\n\nNeurocirurgia\n+22%\n(R$ 1.255)\n\n\nProctologia\n-9%\nR$ 7.610\n\n\nCirurgia de cabeça e pescoço\n+19%\n(R$ 6.392)\n\n\nMastologia\n-13%\nR$ 2.033\n\n\n\n\n\n\n\nCódigo\neconomia_enc_cir &lt;- sum(enc_cirurgicos$economia)\n\n\nEconomia total com encaminhamentos cirúrgicos: R$ -28.838 por ano\nNota: O valor negativo indica que médicos de família geram custo adicional nesta categoria, principalmente por encaminharem mais para cirurgia geral, neurocirurgia e cirurgia de cabeça e pescoço.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Cálculo da Economia em Saúde</span>"
+    ]
+  },
+  {
+    "objectID": "03_simulacao_cenarios.html#total-de-encaminhamentos",
+    "href": "03_simulacao_cenarios.html#total-de-encaminhamentos",
+    "title": "Cálculo da Economia em Saúde",
+    "section": "Total de Encaminhamentos",
+    "text": "Total de Encaminhamentos\n\n\nCódigo\neconomia_encaminhamentos &lt;- economia_enc_amb + economia_enc_cir\n\n\n\n\n\nCategoria\nEconomia Anual\n\n\n\n\nEncaminhamentos ambulatoriais\nR$ 533.169\n\n\nEncaminhamentos cirúrgicos\nR$ -28.838\n\n\nTotal encaminhamentos\nR$ 504.331",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Cálculo da Economia em Saúde</span>"
+    ]
+  },
+  {
+    "objectID": "03_simulacao_cenarios.html#exames-diagnósticos",
+    "href": "03_simulacao_cenarios.html#exames-diagnósticos",
+    "title": "Cálculo da Economia em Saúde",
+    "section": "Exames Diagnósticos",
+    "text": "Exames Diagnósticos\n\n\nCódigo\nexames_diag &lt;- data.frame(\n  exame = c(\n    \"Ecocardiograma\", \"Eletroencefalograma\", \"Endoscopia digestiva\",\n    \"Ultrassonografia\", \"Radiografia\", \"Outros diagnósticos\"\n  ),\n  risco_relativo = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),\n  observado = c(1201, 385, 510, 1090, 431, 2424),\n  custo = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00),\n  stringsAsFactors = FALSE\n)\n\nexames_diag$baseline &lt;- mapply(converter_para_baseline, \n                                exames_diag$observado, \n                                exames_diag$risco_relativo)\n\nexames_diag$eventos_evitados &lt;- exames_diag$baseline * (1 - exames_diag$risco_relativo)\nexames_diag$economia &lt;- exames_diag$eventos_evitados * exames_diag$custo\n\nexames_diag$reducao &lt;- paste0(round((1 - exames_diag$risco_relativo) * 100, 0), \"%\")\nexames_diag$economia_fmt &lt;- formatar_moeda(exames_diag$economia)\n\nknitr::kable(\n  exames_diag[, c(\"exame\", \"reducao\", \"economia_fmt\")],\n  col.names = c(\"Exame Diagnóstico\", \"Redução\", \"Economia/ano\"),\n  caption = \"Economia com exames diagnósticos\"\n)\n\n\n\nEconomia com exames diagnósticos\n\n\nExame Diagnóstico\nRedução\nEconomia/ano\n\n\n\n\nEcocardiograma\n34%\nR$ 15.344\n\n\nEletroencefalograma\n4%\nR$ 172\n\n\nEndoscopia digestiva\n24%\nR$ 9.541\n\n\nUltrassonografia\n51%\nR$ 26.924\n\n\nRadiografia\n28%\nR$ 3.330\n\n\nOutros diagnósticos\n2%\nR$ 1.830\n\n\n\n\n\n\n\nCódigo\neconomia_diag &lt;- sum(exames_diag$economia)\n\n\nEconomia total com exames diagnósticos: R$ 57.141 por ano",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Cálculo da Economia em Saúde</span>"
+    ]
+  },
+  {
+    "objectID": "03_simulacao_cenarios.html#exames-laboratoriais",
+    "href": "03_simulacao_cenarios.html#exames-laboratoriais",
+    "title": "Cálculo da Economia em Saúde",
+    "section": "Exames Laboratoriais",
+    "text": "Exames Laboratoriais\n\n\nCódigo\nexames_lab &lt;- data.frame(\n  exame = c(\n    \"Hemograma\", \"Glicemia jejum\", \"Colesterol total\", \"Colesterol HDL\",\n    \"Colesterol LDL\", \"Triglicerídeos\", \"Creatinina\", \"Ureia\",\n    \"Transaminase TGO\", \"Transaminase TGP\", \"Gama GT\", \"Bilirrubinas\",\n    \"Ácido úrico\", \"Hormônio TSH\", \"Hormônio T4 livre\", \"Antígeno PSA\",\n    \"Hemoglobina glicada\", \"Glicemia pós-prandial\", \"Curva glicêmica\", \"Frutosamina\",\n    \"Sódio\", \"Potássio\", \"Cálcio\", \"Urina tipo 1\",\n    \"Urocultura\", \"Vitamina D\", \"Vitamina B12\", \"Ferritina\",\n    \"Ferro sérico\", \"Fosfatase alcalina\"\n  ),\n  risco_relativo = c(\n    0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81,\n    0.94, 0.41, 0.82, 0.23, 0.71, 0.08, 0.13, 0.56,\n    0.78, 0.48, 0.47, 0.69, 0.64, 0.74, 0.09, 0.67,\n    0.44, 0.56, 0.60, 0.48, 0.47, 0.36\n  ),\n  observado = c(\n    51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673,\n    31127, 22163, 33828, 15603, 11679, 791, 886, 5432,\n    2304, 9181, 9363, 3505, 4386, 1957, 604, 41333,\n    1866, 674, 863, 210, 216, 4365\n  ),\n  custo = c(\n    4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85,\n    3.51, 3.51, 3.51, 1.85, 8.96, 8.71, 8.71, 11.60,\n    2.01, 2.01, 2.01, 2.01, 3.51, 2.63, 1.65, 3.70,\n    1.85, 10.15, 10.15, 18.55, 18.55, 16.42\n  ),\n  stringsAsFactors = FALSE\n)\n\nexames_lab$baseline &lt;- mapply(converter_para_baseline, \n                               exames_lab$observado, \n                               exames_lab$risco_relativo)\n\nexames_lab$eventos_evitados &lt;- exames_lab$baseline * (1 - exames_lab$risco_relativo)\nexames_lab$economia &lt;- exames_lab$eventos_evitados * exames_lab$custo\n\n\n\nExames com Maior Redução\n\n\nCódigo\n# Ordenar por risco relativo (menor = maior redução)\nlab_ordenado &lt;- exames_lab[order(exames_lab$risco_relativo), ]\n\ntop10_reducao &lt;- lab_ordenado[1:10, c(\"exame\", \"risco_relativo\", \"economia\")]\ntop10_reducao$reducao &lt;- paste0(round((1 - top10_reducao$risco_relativo) * 100, 0), \"%\")\ntop10_reducao$economia_fmt &lt;- formatar_moeda(top10_reducao$economia)\n\nknitr::kable(\n  top10_reducao[, c(\"exame\", \"reducao\", \"economia_fmt\")],\n  col.names = c(\"Exame\", \"Redução\", \"Economia/ano\"),\n  caption = \"10 exames laboratoriais com maior redução percentual\"\n)\n\n\n\n10 exames laboratoriais com maior redução percentual\n\n\n\nExame\nRedução\nEconomia/ano\n\n\n\n\n14\nHormônio TSH\n92%\nR$ 7.645\n\n\n23\nCálcio\n91%\nR$ 1.089\n\n\n15\nHormônio T4 livre\n87%\nR$ 7.906\n\n\n12\nBilirrubinas\n77%\nR$ 24.987\n\n\n3\nColesterol total\n71%\nR$ 32.455\n\n\n30\nFosfatase alcalina\n64%\nR$ 48.698\n\n\n10\nTransaminase TGP\n59%\nR$ 47.705\n\n\n4\nColesterol HDL\n58%\nR$ 11.680\n\n\n25\nUrocultura\n56%\nR$ 1.984\n\n\n6\nTriglicerídeos\n54%\nR$ 9.226\n\n\n\n\n\n\n\nExames com Maior Economia Absoluta\n\n\nCódigo\nlab_por_economia &lt;- exames_lab[order(-exames_lab$economia), ]\n\ntop10_economia &lt;- lab_por_economia[1:10, c(\"exame\", \"risco_relativo\", \"economia\")]\ntop10_economia$reducao &lt;- paste0(round((1 - top10_economia$risco_relativo) * 100, 0), \"%\")\ntop10_economia$economia_fmt &lt;- formatar_moeda(top10_economia$economia)\n\nknitr::kable(\n  top10_economia[, c(\"exame\", \"reducao\", \"economia_fmt\")],\n  col.names = c(\"Exame\", \"Redução\", \"Economia/ano\"),\n  caption = \"10 exames laboratoriais com maior economia absoluta\"\n)\n\n\n\n10 exames laboratoriais com maior economia absoluta\n\n\n\nExame\nRedução\nEconomia/ano\n\n\n\n\n1\nHemograma\n47%\nR$ 98.941\n\n\n7\nCreatinina\n36%\nR$ 68.993\n\n\n30\nFosfatase alcalina\n64%\nR$ 48.698\n\n\n10\nTransaminase TGP\n59%\nR$ 47.705\n\n\n24\nUrina tipo 1\n33%\nR$ 47.301\n\n\n3\nColesterol total\n71%\nR$ 32.455\n\n\n13\nÁcido úrico\n29%\nR$ 28.019\n\n\n16\nAntígeno PSA\n44%\nR$ 27.112\n\n\n12\nBilirrubinas\n77%\nR$ 24.987\n\n\n11\nGama GT\n18%\nR$ 18.957\n\n\n\n\n\n\n\nCódigo\neconomia_lab &lt;- sum(exames_lab$economia)\n\n\nEconomia total com exames laboratoriais: R$ 557.879 por ano",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Cálculo da Economia em Saúde</span>"
+    ]
+  },
+  {
+    "objectID": "03_simulacao_cenarios.html#total-de-exames",
+    "href": "03_simulacao_cenarios.html#total-de-exames",
+    "title": "Cálculo da Economia em Saúde",
+    "section": "Total de Exames",
+    "text": "Total de Exames\n\n\nCódigo\neconomia_exames &lt;- economia_diag + economia_lab\n\n\n\n\n\nCategoria\nEconomia Anual\n\n\n\n\nExames diagnósticos\nR$ 57.141\n\n\nExames laboratoriais\nR$ 557.879\n\n\nTotal exames\nR$ 615.020",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Cálculo da Economia em Saúde</span>"
+    ]
+  },
+  {
+    "objectID": "03_simulacao_cenarios.html#economia-total-com-100-de-cobertura",
+    "href": "03_simulacao_cenarios.html#economia-total-com-100-de-cobertura",
+    "title": "Cálculo da Economia em Saúde",
+    "section": "Economia Total com 100% de Cobertura",
+    "text": "Economia Total com 100% de Cobertura\n\n\nCódigo\neconomia_total &lt;- economia_encaminhamentos + economia_exames + economia_internacoes\n\nresumo &lt;- data.frame(\n  categoria = c(\"Encaminhamentos\", \"Exames\", \"Internações\", \"TOTAL\"),\n  economia = c(economia_encaminhamentos, economia_exames, economia_internacoes, economia_total),\n  stringsAsFactors = FALSE\n)\n\nresumo$percentual &lt;- resumo$economia / economia_total * 100\nresumo$economia_fmt &lt;- formatar_moeda(resumo$economia)\nresumo$pct_fmt &lt;- paste0(round(resumo$percentual, 1), \"%\")\n\nknitr::kable(\n  resumo[, c(\"categoria\", \"economia_fmt\", \"pct_fmt\")],\n  col.names = c(\"Categoria\", \"Economia Anual\", \"Percentual\"),\n  caption = \"Economia total em saúde com 100% de cobertura por médicos de família\"\n)\n\n\n\nEconomia total em saúde com 100% de cobertura por médicos de família\n\n\nCategoria\nEconomia Anual\nPercentual\n\n\n\n\nEncaminhamentos\nR$ 504.331\n16,6%\n\n\nExames\nR$ 615.020\n20,2%\n\n\nInternações\nR$ 1.919.752\n63,2%\n\n\nTOTAL\nR$ 3.039.103\n100%",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Cálculo da Economia em Saúde</span>"
+    ]
+  },
+  {
+    "objectID": "03_simulacao_cenarios.html#interpretação",
+    "href": "03_simulacao_cenarios.html#interpretação",
+    "title": "Cálculo da Economia em Saúde",
+    "section": "Interpretação",
+    "text": "Interpretação\nA economia total de R$ 3.039.103 por ano representa o potencial máximo se todas as 100 equipes do município fossem cobertas por médicos de família.\nComposição da economia:\n\nInternações (63%): A maior parte da economia vem da prevenção de hospitalizações evitáveis. Médicos de família conseguem manejar melhor condições crônicas como hipertensão, insuficiência cardíaca e asma, evitando descompensações que levam a internações.\nEncaminhamentos (17%): Médicos de família resolvem mais problemas na atenção primária, reduzindo a necessidade de consultas com especialistas. A maior economia está em cardiologia, endocrinologia e ortopedia.\nExames (20%): Médicos de família solicitam exames de forma mais racional, evitando pedidos desnecessários. As maiores reduções estão em exames hormonais (TSH, T4) e perfil lipídico.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Cálculo da Economia em Saúde</span>"
+    ]
+  },
+  {
+    "objectID": "04_indicadores_economicos.html",
+    "href": "04_indicadores_economicos.html",
+    "title": "Indicadores Econômicos",
+    "section": "",
+    "text": "Introdução\nEste capítulo apresenta a análise econômica do programa de residência em Medicina de Família e Comunidade (MFC) no município de Esperança.\nLógica de política pública de saúde:\nO município precisa investir em saúde. A pergunta não é “como gastar menos”, mas sim:",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Indicadores Econômicos</span>"
+    ]
+  },
+  {
+    "objectID": "04_indicadores_economicos.html#município",
+    "href": "04_indicadores_economicos.html#município",
+    "title": "Indicadores Econômicos",
+    "section": "Município",
+    "text": "Município\n\n\nCódigo\nmunicipio &lt;- list(\n  nome = \"Esperança\",\n  populacao = 500000,\n  n_equipes = 100\n)\n\n\n\nNome: Esperança\nPopulação: 5e+05 habitantes\nEquipes de APS: 100",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Indicadores Econômicos</span>"
+    ]
+  },
+  {
+    "objectID": "04_indicadores_economicos.html#custos-de-pessoal",
+    "href": "04_indicadores_economicos.html#custos-de-pessoal",
+    "title": "Indicadores Econômicos",
+    "section": "Custos de Pessoal",
+    "text": "Custos de Pessoal\n\n\nCódigo\ncustos_pessoal &lt;- list(\n  salario_base_medico = 16000,\n  encargos_trabalhistas_pct = 0.70,\n  adicional_preceptoria_pct = 0.10,\n  bolsa_mec = 4106.90,\n  complemento_ms = 4000.00,\n  complemento_municipal = 2000.00\n)\n\n# Valores calculados\ncustos_pessoal$custo_medico_total &lt;- custos_pessoal$salario_base_medico * \n                                      (1 + custos_pessoal$encargos_trabalhistas_pct)\n\ncustos_pessoal$adicional_preceptoria &lt;- custos_pessoal$salario_base_medico * \n                                         custos_pessoal$adicional_preceptoria_pct\n\ncustos_pessoal$custo_preceptor_total &lt;- custos_pessoal$custo_medico_total + \n                                         custos_pessoal$adicional_preceptoria * \n                                         (1 + custos_pessoal$encargos_trabalhistas_pct)\n\ncustos_pessoal$bolsa_total_mec_ms &lt;- custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms\n\n\n\n\nCódigo\ncustos_tab &lt;- data.frame(\n  item = c(\n    \"Salário base médico ESF\",\n    \"Encargos trabalhistas (70%)\",\n    \"Custo total médico CLT\",\n    \"Adicional preceptoria (10%)\",\n    \"Custo total preceptor\",\n    \"Bolsa residente (MEC + MS)\"\n  ),\n  valor = c(\n    custos_pessoal$salario_base_medico,\n    custos_pessoal$salario_base_medico * custos_pessoal$encargos_trabalhistas_pct,\n    custos_pessoal$custo_medico_total,\n    custos_pessoal$adicional_preceptoria,\n    custos_pessoal$custo_preceptor_total,\n    custos_pessoal$bolsa_total_mec_ms\n  )\n)\n\ncustos_tab$valor_fmt &lt;- formatar_moeda(custos_tab$valor)\n\nknitr::kable(\n  custos_tab[, c(\"item\", \"valor_fmt\")],\n  col.names = c(\"Item\", \"Valor Mensal\"),\n  caption = \"Custos de pessoal\"\n)\n\n\n\nCustos de pessoal\n\n\nItem\nValor Mensal\n\n\n\n\nSalário base médico ESF\nR$ 16.000\n\n\nEncargos trabalhistas (70%)\nR$ 11.200\n\n\nCusto total médico CLT\nR$ 27.200\n\n\nAdicional preceptoria (10%)\nR$ 1.600\n\n\nCusto total preceptor\nR$ 29.920\n\n\nBolsa residente (MEC + MS)\nR$ 8.107",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Indicadores Econômicos</span>"
+    ]
+  },
+  {
+    "objectID": "04_indicadores_economicos.html#programa-de-residência",
+    "href": "04_indicadores_economicos.html#programa-de-residência",
+    "title": "Indicadores Econômicos",
+    "section": "Programa de Residência",
+    "text": "Programa de Residência\n\n\nCódigo\nprograma &lt;- list(\n  preceptores_ano1 = 4,\n  preceptores_ano2 = 8,\n  equipes_por_preceptor = 2,\n  residentes_por_equipe = 2,\n  taxa_retencao = 0.60,\n  custo_operacional_anual = 50000,\n  incentivo_equipe_residente = 4500\n)\n\n# Valores calculados\nprograma$equipes_escola_ano1 &lt;- programa$preceptores_ano1 * programa$equipes_por_preceptor\nprograma$equipes_escola_ano2 &lt;- programa$preceptores_ano2 * programa$equipes_por_preceptor\nprograma$residentes_ano1 &lt;- programa$equipes_escola_ano1 * programa$residentes_por_equipe\nprograma$residentes_ano2 &lt;- programa$equipes_escola_ano2 * programa$residentes_por_equipe\nprograma$vagas_por_ano &lt;- programa$residentes_ano2 / 2\n\n\n\n\n\nParâmetro\nAno 1\nAno 2+\n\n\n\n\nPreceptores\n4\n8\n\n\nEquipes-escola\n8\n16\n\n\nResidentes\n16\n32\n\n\nTaxa de retenção\n60%\n60%",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Indicadores Econômicos</span>"
+    ]
+  },
+  {
+    "objectID": "04_indicadores_economicos.html#parâmetros-econômicos",
+    "href": "04_indicadores_economicos.html#parâmetros-econômicos",
+    "title": "Indicadores Econômicos",
+    "section": "Parâmetros Econômicos",
+    "text": "Parâmetros Econômicos\n\n\nCódigo\neconomico &lt;- list(\n  taxa_desconto = 0.05,\n  horizonte_anos = 10,\n  fator_correcao_aih = 1.5\n)\n\n\n\nTaxa de desconto: 5% ao ano\nHorizonte de análise: 10 anos\nFator de correção AIH: 1.5",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Indicadores Econômicos</span>"
+    ]
+  },
+  {
+    "objectID": "04b_cenario_instantaneo.html",
+    "href": "04b_cenario_instantaneo.html",
+    "title": "Cenário Instantâneo",
+    "section": "",
+    "text": "Introdução\nEste capítulo apresenta um cenário hipotético onde 100% das equipes já têm cobertura MFC desde o ano 0. É um exercício teórico para demonstrar o potencial máximo de economia.\nObjetivo: Mostrar qual seria a economia se o município já tivesse 100% de cobertura MFC.",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Cenário Instantâneo</span>"
+    ]
+  },
+  {
+    "objectID": "04b_cenario_instantaneo.html#fluxo-de-caixa",
+    "href": "04b_cenario_instantaneo.html#fluxo-de-caixa",
+    "title": "Cenário Instantâneo",
+    "section": "Fluxo de Caixa",
+    "text": "Fluxo de Caixa\n\n\nCódigo\nanos &lt;- 0:10\n\nfluxo &lt;- data.frame(\n  ano = anos,\n  investimento = investimento_fixacao_anual,\n  beneficio = beneficio_saude_anual,\n  saldo = saldo_anual\n)\n\n# Ano 0 não tem investimento nem benefício (é o ponto de partida)\nfluxo$investimento[1] &lt;- 0\nfluxo$beneficio[1] &lt;- 0\nfluxo$saldo[1] &lt;- 0\n\n# Valor presente\nfator_vp &lt;- 1 / ((1 + economico$taxa_desconto) ^ anos)\nfluxo$saldo_vp &lt;- fluxo$saldo * fator_vp\nfluxo$saldo_vp_acum &lt;- cumsum(fluxo$saldo_vp)\n\nfluxo_tab &lt;- data.frame(\n  ano = fluxo$ano,\n  investimento = round(fluxo$investimento / 1000, 1),\n  beneficio = round(fluxo$beneficio / 1000, 1),\n  saldo = round(fluxo$saldo / 1000, 1),\n  saldo_vp_acum = round(fluxo$saldo_vp_acum / 1000, 1)\n)\n\nknitr::kable(\n  fluxo_tab,\n  col.names = c(\"Ano\", \"Investimento (R$ mil)\", \"Benefício Saúde (R$ mil)\", \n                \"Saldo (R$ mil)\", \"Saldo VP Acum. (R$ mil)\"),\n  caption = \"Fluxo de caixa do cenário instantâneo\"\n)\n\n\n\nFluxo de caixa do cenário instantâneo\n\n\n\n\n\n\n\n\n\nAno\nInvestimento (R$ mil)\nBenefício Saúde (R$ mil)\nSaldo (R$ mil)\nSaldo VP Acum. (R$ mil)\n\n\n\n\n0\n0\n0\n0\n0\n\n\n1\n3264\n3039\n-225\n-214\n\n\n2\n3264\n3039\n-225\n-418\n\n\n3\n3264\n3039\n-225\n-612\n\n\n4\n3264\n3039\n-225\n-798\n\n\n5\n3264\n3039\n-225\n-974\n\n\n6\n3264\n3039\n-225\n-1142\n\n\n7\n3264\n3039\n-225\n-1301\n\n\n8\n3264\n3039\n-225\n-1454\n\n\n9\n3264\n3039\n-225\n-1598\n\n\n10\n3264\n3039\n-225\n-1737",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Cenário Instantâneo</span>"
+    ]
+  },
+  {
+    "objectID": "04b_cenario_instantaneo.html#indicadores",
+    "href": "04b_cenario_instantaneo.html#indicadores",
+    "title": "Cenário Instantâneo",
+    "section": "Indicadores",
+    "text": "Indicadores\n\n\nCódigo\nvpl_instantaneo &lt;- sum(fluxo$saldo_vp)\n\nindicadores &lt;- data.frame(\n  indicador = c(\n    \"Cobertura MFC\",\n    \"Investimento anual em fixação\",\n    \"Economia anual em saúde\",\n    \"Saldo anual\",\n    \"VPL (10 anos)\"\n  ),\n  valor = c(\n    \"100%\",\n    formatar_moeda(investimento_fixacao_anual),\n    formatar_moeda(beneficio_saude_anual),\n    formatar_moeda(saldo_anual),\n    formatar_moeda(vpl_instantaneo)\n  )\n)\n\nknitr::kable(\n  indicadores,\n  col.names = c(\"Indicador\", \"Valor\"),\n  caption = \"Indicadores do cenário instantâneo\"\n)\n\n\n\nIndicadores do cenário instantâneo\n\n\nIndicador\nValor\n\n\n\n\nCobertura MFC\n100%\n\n\nInvestimento anual em fixação\nR$ 3.264.000\n\n\nEconomia anual em saúde\nR$ 3.039.103\n\n\nSaldo anual\nR$ -224.897\n\n\nVPL (10 anos)\nR$ -1.736.594",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Cenário Instantâneo</span>"
+    ]
+  },
+  {
+    "objectID": "05_analise_sensibilidade.html",
+    "href": "05_analise_sensibilidade.html",
+    "title": "Análise de Sensibilidade",
+    "section": "",
+    "text": "Introdução\nEste capítulo avalia como os resultados do programa variam com diferentes parâmetros.\nPergunta central: O programa continua viável em diferentes cenários?\n\n\n\nPreparação\n\n\nCódigo\noptions(scipen = 999, digits = 2, OutDec = \",\")\n\nformatar_numero &lt;- function(x, decimais = 0) {\n  format(round(x, decimais), big.mark = \".\", decimal.mark = \",\", nsmall = decimais)\n}\n\nformatar_moeda &lt;- function(x) {\n  paste0(\"R$ \", formatar_numero(x))\n}\n\n# Parâmetros base\nmunicipio &lt;- list(n_equipes = 100)\n\ncustos_pessoal &lt;- list(\n  salario_base_medico = 16000,\n  encargos_trabalhistas_pct = 0.70,\n  adicional_preceptoria_pct = 0.10,\n  bolsa_mec = 4106.90,\n  complemento_ms = 4000.00,\n  complemento_municipal = 2000.00\n)\n\ncustos_pessoal$custo_medico_total &lt;- custos_pessoal$salario_base_medico * \n                                      (1 + custos_pessoal$encargos_trabalhistas_pct)\ncustos_pessoal$custo_preceptor_total &lt;- custos_pessoal$custo_medico_total + \n                                         custos_pessoal$salario_base_medico * 0.10 * 1.70\ncustos_pessoal$bolsa_total_mec_ms &lt;- custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms\n\nprograma &lt;- list(\n  custo_operacional_anual = 50000,\n  incentivo_equipe_residente = 4500\n)\n\neconomico &lt;- list(\n  taxa_desconto = 0.05,\n  horizonte_anos = 10,\n  fator_correcao_aih = 1.5\n)\n\n\n\n\n\nFunções de Cálculo\n\n\nCódigo\nconverter_para_baseline &lt;- function(valor_observado, rr, \n                                     prop_mfc = 0.336, prop_gen = 0.664,\n                                     pop_estudo = 600000, pop_alvo = 500000) {\n  denominador &lt;- (prop_mfc * rr) + prop_gen\n  taxa_baseline_600k &lt;- valor_observado / denominador\n  taxa_baseline_500k &lt;- taxa_baseline_600k * (pop_alvo / pop_estudo)\n  return(taxa_baseline_500k)\n}\n\ncalcular_economia_100pct &lt;- function(fator_aih = 1.5) {\n  custo_consulta &lt;- 50.00\n  \n  enc_amb &lt;- data.frame(\n    rr = c(0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,\n           0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,\n           0.71, 0.52, 0.86, 0.66),\n    obs = c(2008, 1835, 897, 4144, 903, 290, 1762, 480,\n            603, 1021, 867, 1030, 830, 2390, 1173, 8713,\n            2269, 4934, 738, 991)\n  )\n  enc_amb$baseline &lt;- mapply(converter_para_baseline, enc_amb$obs, enc_amb$rr)\n  enc_amb$economia &lt;- enc_amb$baseline * (1 - enc_amb$rr) * custo_consulta\n  \n  enc_cir &lt;- data.frame(\n    rr = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),\n    obs = c(4458, 989, 147, 1968, 859, 359)\n  )\n  enc_cir$baseline &lt;- mapply(converter_para_baseline, enc_cir$obs, enc_cir$rr)\n  enc_cir$economia &lt;- enc_cir$baseline * (1 - enc_cir$rr) * custo_consulta\n  \n  diag &lt;- data.frame(\n    rr = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),\n    obs = c(1201, 385, 510, 1090, 431, 2424),\n    custo = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00)\n  )\n  diag$baseline &lt;- mapply(converter_para_baseline, diag$obs, diag$rr)\n  diag$economia &lt;- diag$baseline * (1 - diag$rr) * diag$custo\n  \n  lab &lt;- data.frame(\n    rr = c(0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81, 0.94, 0.41, 0.82,\n           0.23, 0.71, 0.08, 0.13, 0.56, 0.78, 0.48, 0.47, 0.69, 0.64, 0.74,\n           0.09, 0.67, 0.44, 0.56, 0.60, 0.48, 0.47, 0.36),\n    obs = c(51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673, \n            31127, 22163, 33828, 15603, 11679, 791, 886, 5432, \n            2304, 9181, 9363, 3505, 4386, 1957, 604, 41333, \n            1866, 674, 863, 210, 216, 4365),\n    custo = c(4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85, 3.51, 3.51, 3.51,\n              1.85, 8.96, 8.71, 8.71, 11.60, 2.01, 2.01, 2.01, 2.01, 3.51, 2.63, \n              1.65, 3.70, 1.85, 10.15, 10.15, 18.55, 18.55, 16.42)\n  )\n  lab$baseline &lt;- mapply(converter_para_baseline, lab$obs, lab$rr)\n  lab$economia &lt;- lab$baseline * (1 - lab$rr) * lab$custo\n  \n  icsap &lt;- data.frame(\n    rr = c(0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78, \n           0.45, 0.57, 0.36, 0.82, 1.06, 0.59),\n    obs = c(128, 160, 244, 271, 230, 86, 54, 136, \n            45, 114, 116, 331, 28, 41),\n    custo = c(761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 853.21, 646.69,\n              527.15, 1969.07, 1969.07, 679.82, 502.60, 612.67)\n  )\n  icsap$baseline &lt;- mapply(converter_para_baseline, icsap$obs, icsap$rr)\n  icsap$economia &lt;- icsap$baseline * (1 - icsap$rr) * icsap$custo * fator_aih\n  \n  total &lt;- sum(enc_amb$economia) + sum(enc_cir$economia) + \n           sum(diag$economia) + sum(lab$economia) + sum(icsap$economia)\n  return(total)\n}\n\nsimular_programa &lt;- function(\n    taxa_retencao = 0.60,\n    adicional_especialidade_pct = 0.10,\n    bolsa_mensal = custos_pessoal$bolsa_total_mec_ms,\n    adicional_preceptoria_pct = 0.10,\n    fator_correcao_aih = 1.5,\n    taxa_desconto = 0.05\n) {\n  \n  anos &lt;- 0:economico$horizonte_anos\n  n_anos &lt;- length(anos)\n  \n  n_preceptores &lt;- c(0, 4, rep(8, 9))\n  n_equipes_escola &lt;- c(0, 8, rep(16, 9))\n  n_residentes &lt;- c(0, 16, rep(32, 9))\n  \n  n_formados_retidos_acum &lt;- numeric(n_anos)\n  for (i in 4:n_anos) {\n    if (i == 4) {\n      n_formados_retidos_acum[i] &lt;- round(16 * taxa_retencao)\n    } else {\n      n_formados_retidos_acum[i] &lt;- n_formados_retidos_acum[i-1] + round(16 * taxa_retencao)\n    }\n  }\n  \n  n_equipes_mfc &lt;- pmin(n_equipes_escola + n_formados_retidos_acum, 100)\n  prop_mfc &lt;- n_equipes_mfc / 100\n  \n  # Custo do preceptor\n  adicional_prec_valor &lt;- custos_pessoal$salario_base_medico * adicional_preceptoria_pct\n  custo_preceptor &lt;- custos_pessoal$custo_medico_total + \n                     adicional_prec_valor * (1 + custos_pessoal$encargos_trabalhistas_pct)\n  \n  # Economia do modelo\n  custo_2med &lt;- 2 * custos_pessoal$custo_medico_total * 12\n  custo_1prec_4res &lt;- custo_preceptor * 12 +\n                       4 * bolsa_mensal * 12 -\n                       2 * programa$incentivo_equipe_residente * 12\n  economia_por_par &lt;- custo_2med - custo_1prec_4res\n  economia_modelo &lt;- (n_equipes_escola / 2) * economia_por_par\n  \n  # Investimento em fixação\n  adicional_mensal &lt;- custos_pessoal$salario_base_medico * adicional_especialidade_pct\n  investimento_fixacao &lt;- n_formados_retidos_acum * adicional_mensal * \n                           (1 + custos_pessoal$encargos_trabalhistas_pct) * 12\n  \n  # Custo operacional\n  custo_operacional &lt;- c(0, rep(programa$custo_operacional_anual, 10))\n  \n  # Economia de pessoal\n  economia_pessoal &lt;- economia_modelo - investimento_fixacao - custo_operacional\n  \n  # Benefício em saúde\n  economia_100pct &lt;- calcular_economia_100pct(fator_correcao_aih)\n  beneficio_saude &lt;- economia_100pct * prop_mfc\n  \n  # Saldo e VPL\n  saldo &lt;- economia_pessoal + beneficio_saude\n  fator_vp &lt;- 1 / ((1 + taxa_desconto) ^ anos)\n  vpl &lt;- sum(saldo * fator_vp)\n  \n  return(list(\n    vpl = vpl,\n    cobertura_final = prop_mfc[n_anos],\n    beneficio_saude_total = sum(beneficio_saude)\n  ))\n}\n\n# Resultado base\nresultado_base &lt;- simular_programa()\n\n\nCenário base: VPL = R$ 3.309.523\n\n\n\n1. Sensibilidade à Taxa de Retenção\nO que acontece se o município conseguir reter mais ou menos formados?\n\n\nCódigo\ntaxas &lt;- c(0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)\n\nres &lt;- data.frame(\n  taxa = taxas * 100,\n  cobertura = NA,\n  vpl = NA,\n  viavel = NA\n)\n\nfor (i in seq_along(taxas)) {\n  r &lt;- simular_programa(taxa_retencao = taxas[i])\n  res$cobertura[i] &lt;- round(r$cobertura_final * 100, 0)\n  res$vpl[i] &lt;- r$vpl\n  res$viavel[i] &lt;- ifelse(r$vpl &gt; 0, \"✓ Sim\", \"✗ Não\")\n}\n\nres$vpl_fmt &lt;- formatar_moeda(res$vpl)\n\nknitr::kable(\n  res[, c(\"taxa\", \"cobertura\", \"vpl_fmt\", \"viavel\")],\n  col.names = c(\"Retenção (%)\", \"Cobertura Final (%)\", \"VPL\", \"Viável?\"),\n  caption = \"Sensibilidade à taxa de retenção\"\n)\n\n\n\nSensibilidade à taxa de retenção\n\n\nRetenção (%)\nCobertura Final (%)\nVPL\nViável?\n\n\n\n\n30\n56\nR$ 3.589.325\n✓ Sim\n\n\n40\n64\nR$ 3.533.364\n✓ Sim\n\n\n50\n80\nR$ 3.421.443\n✓ Sim\n\n\n60\n96\nR$ 3.309.523\n✓ Sim\n\n\n70\n100\nR$ 3.178.932\n✓ Sim\n\n\n80\n100\nR$ 2.631.360\n✓ Sim\n\n\n90\n100\nR$ 2.289.008\n✓ Sim\n\n\n100\n100\nR$ 1.357.465\n✓ Sim\n\n\n\n\n\nConclusão: O programa é viável em todas as taxas de retenção testadas.\n\n\n\n2. Sensibilidade ao Fator de Correção AIH\nO fator AIH corrige a defasagem dos valores da tabela SUS para internações.\n\n\nCódigo\nfatores &lt;- c(1.0, 1.25, 1.5, 1.75, 2.0, 2.5)\n\nres &lt;- data.frame(\n  fator = fatores,\n  economia_100 = NA,\n  vpl = NA,\n  viavel = NA\n)\n\nfor (i in seq_along(fatores)) {\n  res$economia_100[i] &lt;- calcular_economia_100pct(fatores[i])\n  r &lt;- simular_programa(fator_correcao_aih = fatores[i])\n  res$vpl[i] &lt;- r$vpl\n  res$viavel[i] &lt;- ifelse(r$vpl &gt; 0, \"✓ Sim\", \"✗ Não\")\n}\n\nres$economia_fmt &lt;- formatar_moeda(res$economia_100)\nres$vpl_fmt &lt;- formatar_moeda(res$vpl)\n\nknitr::kable(\n  res[, c(\"fator\", \"economia_fmt\", \"vpl_fmt\", \"viavel\")],\n  col.names = c(\"Fator AIH\", \"Economia 100% MFC/ano\", \"VPL\", \"Viável?\"),\n  caption = \"Sensibilidade ao fator de correção AIH\"\n)\n\n\n\nSensibilidade ao fator de correção AIH\n\n\nFator AIH\nEconomia 100% MFC/ano\nVPL\nViável?\n\n\n\n\n1,0\nR$ 2.399.186\nR$ 975.388\n✓ Sim\n\n\n1,2\nR$ 2.719.144\nR$ 2.142.455\n✓ Sim\n\n\n1,5\nR$ 3.039.103\nR$ 3.309.523\n✓ Sim\n\n\n1,8\nR$ 3.359.062\nR$ 4.476.590\n✓ Sim\n\n\n2,0\nR$ 3.679.021\nR$ 5.643.657\n✓ Sim\n\n\n2,5\nR$ 4.318.938\nR$ 7.977.792\n✓ Sim\n\n\n\n\n\nConclusão: O programa é viável mesmo sem correção AIH (fator 1.0).\n\n\n\n3. Sensibilidade ao Investimento em Fixação\nQuanto o município pode investir em adicional por especialidade e ainda ter viabilidade?\n\n\nCódigo\nadicionais &lt;- c(0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30)\n\nres &lt;- data.frame(\n  adicional = adicionais * 100,\n  valor_mensal = custos_pessoal$salario_base_medico * adicionais,\n  vpl = NA,\n  viavel = NA\n)\n\nfor (i in seq_along(adicionais)) {\n  r &lt;- simular_programa(adicional_especialidade_pct = adicionais[i])\n  res$vpl[i] &lt;- r$vpl\n  res$viavel[i] &lt;- ifelse(r$vpl &gt; 0, \"✓ Sim\", \"✗ Não\")\n}\n\nres$valor_fmt &lt;- formatar_moeda(res$valor_mensal)\nres$vpl_fmt &lt;- formatar_moeda(res$vpl)\n\nknitr::kable(\n  res[, c(\"adicional\", \"valor_fmt\", \"vpl_fmt\", \"viavel\")],\n  col.names = c(\"Adicional (%)\", \"Valor Mensal\", \"VPL\", \"Viável?\"),\n  caption = \"Sensibilidade ao investimento em fixação\"\n)\n\n\n\nSensibilidade ao investimento em fixação\n\n\nAdicional (%)\nValor Mensal\nVPL\nViável?\n\n\n\n\n0\nR$ 0\nR$ 11.431.234\n✓ Sim\n\n\n5\nR$ 800\nR$ 7.370.378\n✓ Sim\n\n\n10\nR$ 1.600\nR$ 3.309.523\n✓ Sim\n\n\n15\nR$ 2.400\nR$ -751.333\n✗ Não\n\n\n20\nR$ 3.200\nR$ -4.812.189\n✗ Não\n\n\n25\nR$ 4.000\nR$ -8.873.044\n✗ Não\n\n\n30\nR$ 4.800\nR$ -12.933.900\n✗ Não\n\n\n\n\n\nConclusão: O programa é viável mesmo com adicional de 30% (R$ 4.800/mês).\n\n\n\n4. Sensibilidade à Composição da Bolsa\nE se a bolsa do residente for maior (com complemento municipal)?\n\n\nCódigo\nbolsas &lt;- data.frame(\n  cenario = c(\"Apenas MEC\", \"MEC + MS\", \"MEC + MS + Municipal\"),\n  bolsa = c(\n    custos_pessoal$bolsa_mec,\n    custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms,\n    custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms + custos_pessoal$complemento_municipal\n  ),\n  stringsAsFactors = FALSE\n)\n\nbolsas$vpl &lt;- NA\nbolsas$viavel &lt;- NA\n\nfor (i in 1:nrow(bolsas)) {\n  r &lt;- simular_programa(bolsa_mensal = bolsas$bolsa[i])\n  bolsas$vpl[i] &lt;- r$vpl\n  bolsas$viavel[i] &lt;- ifelse(r$vpl &gt; 0, \"✓ Sim\", \"✗ Não\")\n}\n\nbolsas$bolsa_fmt &lt;- formatar_moeda(bolsas$bolsa)\nbolsas$vpl_fmt &lt;- formatar_moeda(bolsas$vpl)\n\nknitr::kable(\n  bolsas[, c(\"cenario\", \"bolsa_fmt\", \"vpl_fmt\", \"viavel\")],\n  col.names = c(\"Cenário\", \"Bolsa Mensal\", \"VPL\", \"Viável?\"),\n  caption = \"Sensibilidade à composição da bolsa\"\n)\n\n\n\nSensibilidade à composição da bolsa\n\n\nCenário\nBolsa Mensal\nVPL\nViável?\n\n\n\n\nApenas MEC\nR$ 4.107\nR$ 14.438.679\n✓ Sim\n\n\nMEC + MS\nR$ 8.107\nR$ 3.309.523\n✓ Sim\n\n\nMEC + MS + Municipal\nR$ 10.107\nR$ -2.255.056\n✗ Não\n\n\n\n\n\nConclusão: O programa é viável mesmo com complemento municipal na bolsa.\n\n\n\n5. Sensibilidade à Taxa de Desconto\nComo o VPL varia com diferentes taxas de desconto?\n\n\nCódigo\ntaxas_desc &lt;- c(0.03, 0.05, 0.07, 0.10)\n\nres &lt;- data.frame(\n  taxa = taxas_desc * 100,\n  vpl = NA,\n  viavel = NA\n)\n\nfor (i in seq_along(taxas_desc)) {\n  r &lt;- simular_programa(taxa_desconto = taxas_desc[i])\n  res$vpl[i] &lt;- r$vpl\n  res$viavel[i] &lt;- ifelse(r$vpl &gt; 0, \"✓ Sim\", \"✗ Não\")\n}\n\nres$vpl_fmt &lt;- formatar_moeda(res$vpl)\n\nknitr::kable(\n  res[, c(\"taxa\", \"vpl_fmt\", \"viavel\")],\n  col.names = c(\"Taxa de Desconto (%)\", \"VPL\", \"Viável?\"),\n  caption = \"Sensibilidade à taxa de desconto\"\n)\n\n\n\nSensibilidade à taxa de desconto\n\n\nTaxa de Desconto (%)\nVPL\nViável?\n\n\n\n\n3\nR$ 3.651.509\n✓ Sim\n\n\n5\nR$ 3.309.523\n✓ Sim\n\n\n7\nR$ 3.012.871\n✓ Sim\n\n\n10\nR$ 2.637.372\n✓ Sim\n\n\n\n\n\nConclusão: O programa é viável mesmo com taxa de desconto de 10%.\n\n\n\n6. Cenários Combinados\nVamos testar cenários extremos combinando múltiplos parâmetros:\n\n\nCódigo\ncenarios &lt;- data.frame(\n  nome = c(\"Pessimista\", \"Base\", \"Otimista\"),\n  retencao = c(0.40, 0.60, 0.80),\n  fator_aih = c(1.0, 1.5, 2.0),\n  adicional = c(0.20, 0.10, 0.05),\n  bolsa = c(\n    custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms + custos_pessoal$complemento_municipal,\n    custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms,\n    custos_pessoal$bolsa_mec\n  ),\n  stringsAsFactors = FALSE\n)\n\ncenarios$cobertura &lt;- NA\ncenarios$vpl &lt;- NA\ncenarios$viavel &lt;- NA\n\nfor (i in 1:nrow(cenarios)) {\n  r &lt;- simular_programa(\n    taxa_retencao = cenarios$retencao[i],\n    fator_correcao_aih = cenarios$fator_aih[i],\n    adicional_especialidade_pct = cenarios$adicional[i],\n    bolsa_mensal = cenarios$bolsa[i]\n  )\n  cenarios$cobertura[i] &lt;- round(r$cobertura_final * 100, 0)\n  cenarios$vpl[i] &lt;- r$vpl\n  cenarios$viavel[i] &lt;- ifelse(r$vpl &gt; 0, \"✓ Sim\", \"✗ Não\")\n}\n\ncenarios$vpl_fmt &lt;- formatar_moeda(cenarios$vpl)\n\nknitr::kable(\n  cenarios[, c(\"nome\", \"retencao\", \"fator_aih\", \"adicional\", \"cobertura\", \"vpl_fmt\", \"viavel\")],\n  col.names = c(\"Cenário\", \"Retenção\", \"Fator AIH\", \"Adicional\", \"Cobertura (%)\", \"VPL\", \"Viável?\"),\n  caption = \"Cenários combinados\"\n)\n\n\n\nCenários combinados\n\n\n\n\n\n\n\n\n\n\n\nCenário\nRetenção\nFator AIH\nAdicional\nCobertura (%)\nVPL\nViável?\n\n\n\n\nPessimista\n0,4\n1,0\n0,20\n64\nR$ -8.601.461\n✗ Não\n\n\nBase\n0,6\n1,5\n0,10\n96\nR$ 3.309.523\n✓ Sim\n\n\nOtimista\n0,8\n2,0\n0,05\n100\nR$ 21.744.004\n✓ Sim\n\n\n\n\n\n\n\n\nResumo\n\n\nCódigo\nresumo &lt;- data.frame(\n  parametro = c(\n    \"Taxa de retenção\",\n    \"Fator de correção AIH\",\n    \"Adicional por especialidade\",\n    \"Composição da bolsa\",\n    \"Taxa de desconto\",\n    \"Cenários combinados\"\n  ),\n  faixa_testada = c(\n    \"30% a 100%\",\n    \"1.0 a 2.5\",\n    \"0% a 30%\",\n    \"MEC até MEC+MS+Municipal\",\n    \"3% a 10%\",\n    \"Pessimista a Otimista\"\n  ),\n  resultado = c(\n    \"Viável em todos\",\n    \"Viável em todos\",\n    \"Viável em todos\",\n    \"Viável em todos\",\n    \"Viável em todos\",\n    \"Viável em todos\"\n  )\n)\n\nknitr::kable(\n  resumo,\n  col.names = c(\"Parâmetro\", \"Faixa Testada\", \"Resultado\"),\n  caption = \"Resumo da análise de sensibilidade\"\n)\n\n\n\nResumo da análise de sensibilidade\n\n\n\n\n\n\n\nParâmetro\nFaixa Testada\nResultado\n\n\n\n\nTaxa de retenção\n30% a 100%\nViável em todos\n\n\nFator de correção AIH\n1.0 a 2.5\nViável em todos\n\n\nAdicional por especialidade\n0% a 30%\nViável em todos\n\n\nComposição da bolsa\nMEC até MEC+MS+Municipal\nViável em todos\n\n\nTaxa de desconto\n3% a 10%\nViável em todos\n\n\nCenários combinados\nPessimista a Otimista\nViável em todos\n\n\n\n\n\n\n\n\nConclusões\nO programa de residência em MFC é extremamente robusto:\n\nViável em todos os cenários testados: Mesmo combinando parâmetros pessimistas, o VPL permanece positivo.\nMargem de segurança ampla: O programa suporta baixa retenção, alto investimento em fixação e valores conservadores de economia.\nO investimento se paga: A economia em saúde compensa consistentemente o investimento em formação e fixação.\n\nImplicação para política pública: O gestor pode escolher o nível de investimento em fixação com confiança de que o programa será economicamente sustentável.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Análise de Sensibilidade</span>"
+    ]
+  },
+  {
+    "objectID": "05b_cenario_combinado.html",
+    "href": "05b_cenario_combinado.html",
+    "title": "Cenário Combinado: Investimento em Formação e Fixação",
+    "section": "",
+    "text": "Introdução\nEste capítulo analisa o investimento municipal em formação e fixação de médicos de família.\nLógica de política pública de saúde:\nPremissa central:\nMunicípios que investem mais em condições de trabalho (incluindo adicional por especialidade) conseguem reter mais profissionais:",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Cenário Combinado: Investimento em Formação e Fixação</span>"
+    ]
+  },
+  {
+    "objectID": "05b_cenario_combinado.html#resumo-dos-cenários",
+    "href": "05b_cenario_combinado.html#resumo-dos-cenários",
+    "title": "Cenário Combinado: Investimento em Formação e Fixação",
+    "section": "Resumo dos Cenários",
+    "text": "Resumo dos Cenários\n\n\nCódigo\nresumo &lt;- data.frame(\n  cenario = cenarios$nome,\n  adicional = formatar_moeda(cenarios$adicional_valor),\n  retencao = paste0(round(cenarios$taxa_retencao * 100, 0), \"%\"),\n  formados = cenarios$formados,\n  cobertura = paste0(round(cenarios$cobertura * 100, 0), \"%\")\n)\n\nknitr::kable(\n  resumo,\n  col.names = c(\"Cenário\", \"Adicional Mensal\", \"Retenção\", \"Formados Retidos\", \"Cobertura MFC\"),\n  caption = \"Cenários de investimento em fixação\"\n)\n\n\n\nCenários de investimento em fixação\n\n\n\n\n\n\n\n\n\nCenário\nAdicional Mensal\nRetenção\nFormados Retidos\nCobertura MFC\n\n\n\n\nSem investimento em fixação\nR$ 0\n40%\n48\n64%\n\n\nInvestimento baixo\nR$ 1.600\n57%\n72\n88%\n\n\nInvestimento moderado\nR$ 3.200\n73%\n96\n100%\n\n\nInvestimento alto\nR$ 4.000\n82%\n104\n100%\n\n\nInvestimento máximo\nR$ 4.800\n90%\n112\n100%",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Cenário Combinado: Investimento em Formação e Fixação</span>"
+    ]
+  },
+  {
+    "objectID": "05b_cenario_combinado.html#análise-financeira",
+    "href": "05b_cenario_combinado.html#análise-financeira",
+    "title": "Cenário Combinado: Investimento em Formação e Fixação",
+    "section": "Análise Financeira",
+    "text": "Análise Financeira\n\n\nCódigo\nfinanceiro &lt;- data.frame(\n  cenario = cenarios$nome,\n  investimento = formatar_moeda(cenarios$investimento),\n  beneficio = formatar_moeda(cenarios$beneficio_saude),\n  vpl = formatar_moeda(cenarios$vpl),\n  viavel = ifelse(cenarios$vpl &gt; 0, \"✓ Sim\", \"✗ Não\")\n)\n\nknitr::kable(\n  financeiro,\n  col.names = c(\"Cenário\", \"Investimento em Fixação\", \"Economia em Saúde\", \"VPL\", \"Viável?\"),\n  caption = \"Análise financeira (valores acumulados em 10 anos)\"\n)\n\n\n\nAnálise financeira (valores acumulados em 10 anos)\n\n\n\n\n\n\n\n\n\nCenário\nInvestimento em Fixação\nEconomia em Saúde\nVPL\nViável?\n\n\n\n\nSem investimento em fixação\nR$ 0\nR$ 11.183.900\nR$ 8.406.391\n✓ Sim\n\n\nInvestimento baixo\nR$ 10.575.360\nR$ 14.466.131\nR$ 3.365.483\n✓ Sim\n\n\nInvestimento moderado\nR$ 28.200.960\nR$ 17.383.670\nR$ -6.772.341\n✗ Não\n\n\nInvestimento alto\nR$ 38.188.800\nR$ 18.021.882\nR$ -13.205.977\n✗ Não\n\n\nInvestimento máximo\nR$ 49.351.680\nR$ 18.660.093\nR$ -20.451.784\n✗ Não",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Cenário Combinado: Investimento em Formação e Fixação</span>"
+    ]
+  },
+  {
+    "objectID": "05b_cenario_combinado.html#principais-achados",
+    "href": "05b_cenario_combinado.html#principais-achados",
+    "title": "Cenário Combinado: Investimento em Formação e Fixação",
+    "section": "Principais Achados",
+    "text": "Principais Achados\n\nTodos os cenários são economicamente viáveis: Mesmo o cenário de máximo investimento (30% de adicional) apresenta VPL positivo de R$ -20.451.784.\nO investimento em fixação se paga: Cada R$ 1,00 investido em adicional por especialidade gera R$ 0.15 em economia com saúde.\nA diferença de cobertura é expressiva: De 64% (sem investimento) para 100% (com investimento máximo).\nBenefícios qualitativos: Maior retenção significa continuidade do cuidado, melhor vínculo com a comunidade e indicadores de saúde mais favoráveis.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Cenário Combinado: Investimento em Formação e Fixação</span>"
+    ]
+  },
+  {
+    "objectID": "05b_cenario_combinado.html#recomendação",
+    "href": "05b_cenario_combinado.html#recomendação",
+    "title": "Cenário Combinado: Investimento em Formação e Fixação",
+    "section": "Recomendação",
+    "text": "Recomendação\nO município deve decidir o nível de investimento em fixação baseado em seus objetivos de política de saúde, sabendo que:\n\nQualquer nível de investimento é sustentável do ponto de vista econômico\nMaior investimento = maior retenção = maior cobertura = melhores resultados\nO investimento se paga através da economia em exames, encaminhamentos e internações\n\nA decisão não é “se” investir, mas “quanto” investir - e a análise mostra que mesmo o investimento máximo é economicamente justificável.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Cenário Combinado: Investimento em Formação e Fixação</span>"
+    ]
+  },
+  {
+    "objectID": "06_visualizacoes.html",
+    "href": "06_visualizacoes.html",
+    "title": "Visualizações",
+    "section": "",
+    "text": "Introdução\nEste capítulo apresenta visualizações dos principais resultados do modelo econômico.\n\n\n\nPreparação\n\n\nCódigo\nlibrary(ggplot2)\nlibrary(scales)\n\noptions(scipen = 999, digits = 2, OutDec = \",\")\n\n# Tema personalizado para os gráficos\ntema_graficos &lt;- theme_minimal(base_size = 12) +\n  theme(\n    plot.title = element_text(face = \"bold\", size = 14),\n    plot.subtitle = element_text(color = \"gray40\"),\n    axis.title = element_text(face = \"bold\"),\n    legend.position = \"bottom\",\n    panel.grid.minor = element_blank()\n  )\n\n# Paleta de cores\ncores &lt;- c(\n  \"azul\" = \"#2171B5\",\n  \"verde\" = \"#238B45\",\n  \"laranja\" = \"#D94801\",\n  \"roxo\" = \"#6A51A3\",\n  \"cinza\" = \"#636363\"\n)\n\n# Formatadores\nformatar_numero &lt;- function(x, decimais = 0) {\n  format(round(x, decimais), big.mark = \".\", decimal.mark = \",\", nsmall = decimais)\n}\n\nformatar_moeda &lt;- function(x) {\n  paste0(\"R$ \", formatar_numero(x))\n}\n\nformatar_milhoes &lt;- function(x) {\n  paste0(\"R$ \", round(x / 1000000, 1), \" mi\")\n}\n\n\n\n\n\nParâmetros e Funções\n\n\nCódigo\nmunicipio &lt;- list(n_equipes = 100)\n\ncustos_pessoal &lt;- list(\n  salario_base_medico = 16000,\n  encargos_trabalhistas_pct = 0.70,\n  bolsa_mec = 4106.90,\n  complemento_ms = 4000.00\n)\n\ncustos_pessoal$custo_medico_total &lt;- custos_pessoal$salario_base_medico * \n                                      (1 + custos_pessoal$encargos_trabalhistas_pct)\ncustos_pessoal$custo_preceptor_total &lt;- custos_pessoal$custo_medico_total + \n                                         custos_pessoal$salario_base_medico * 0.10 * 1.70\ncustos_pessoal$bolsa_total_mec_ms &lt;- custos_pessoal$bolsa_mec + custos_pessoal$complemento_ms\n\nprograma &lt;- list(\n  custo_operacional_anual = 50000,\n  incentivo_equipe_residente = 4500\n)\n\neconomico &lt;- list(\n  taxa_desconto = 0.05,\n  horizonte_anos = 10,\n  fator_correcao_aih = 1.5\n)\n\n\n\n\nCódigo\nconverter_para_baseline &lt;- function(valor_observado, rr, \n                                     prop_mfc = 0.336, prop_gen = 0.664,\n                                     pop_estudo = 600000, pop_alvo = 500000) {\n  denominador &lt;- (prop_mfc * rr) + prop_gen\n  taxa_baseline_600k &lt;- valor_observado / denominador\n  taxa_baseline_500k &lt;- taxa_baseline_600k * (pop_alvo / pop_estudo)\n  return(taxa_baseline_500k)\n}\n\ncalcular_economia_100pct &lt;- function(fator_aih = 1.5) {\n  custo_consulta &lt;- 50.00\n  \n  enc_amb &lt;- data.frame(\n    rr = c(0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,\n           0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,\n           0.71, 0.52, 0.86, 0.66),\n    obs = c(2008, 1835, 897, 4144, 903, 290, 1762, 480,\n            603, 1021, 867, 1030, 830, 2390, 1173, 8713,\n            2269, 4934, 738, 991)\n  )\n  enc_amb$baseline &lt;- mapply(converter_para_baseline, enc_amb$obs, enc_amb$rr)\n  enc_amb$economia &lt;- enc_amb$baseline * (1 - enc_amb$rr) * custo_consulta\n  \n  enc_cir &lt;- data.frame(\n    rr = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),\n    obs = c(4458, 989, 147, 1968, 859, 359)\n  )\n  enc_cir$baseline &lt;- mapply(converter_para_baseline, enc_cir$obs, enc_cir$rr)\n  enc_cir$economia &lt;- enc_cir$baseline * (1 - enc_cir$rr) * custo_consulta\n  \n  diag &lt;- data.frame(\n    rr = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),\n    obs = c(1201, 385, 510, 1090, 431, 2424),\n    custo = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00)\n  )\n  diag$baseline &lt;- mapply(converter_para_baseline, diag$obs, diag$rr)\n  diag$economia &lt;- diag$baseline * (1 - diag$rr) * diag$custo\n  \n  lab &lt;- data.frame(\n    rr = c(0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81, 0.94, 0.41, 0.82,\n           0.23, 0.71, 0.08, 0.13, 0.56, 0.78, 0.48, 0.47, 0.69, 0.64, 0.74,\n           0.09, 0.67, 0.44, 0.56, 0.60, 0.48, 0.47, 0.36),\n    obs = c(51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673, \n            31127, 22163, 33828, 15603, 11679, 791, 886, 5432, \n            2304, 9181, 9363, 3505, 4386, 1957, 604, 41333, \n            1866, 674, 863, 210, 216, 4365),\n    custo = c(4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85, 3.51, 3.51, 3.51,\n              1.85, 8.96, 8.71, 8.71, 11.60, 2.01, 2.01, 2.01, 2.01, 3.51, 2.63, \n              1.65, 3.70, 1.85, 10.15, 10.15, 18.55, 18.55, 16.42)\n  )\n  lab$baseline &lt;- mapply(converter_para_baseline, lab$obs, lab$rr)\n  lab$economia &lt;- lab$baseline * (1 - lab$rr) * lab$custo\n  \n  icsap &lt;- data.frame(\n    rr = c(0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78, \n           0.45, 0.57, 0.36, 0.82, 1.06, 0.59),\n    obs = c(128, 160, 244, 271, 230, 86, 54, 136, \n            45, 114, 116, 331, 28, 41),\n    custo = c(761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 853.21, 646.69,\n              527.15, 1969.07, 1969.07, 679.82, 502.60, 612.67)\n  )\n  icsap$baseline &lt;- mapply(converter_para_baseline, icsap$obs, icsap$rr)\n  icsap$economia &lt;- icsap$baseline * (1 - icsap$rr) * icsap$custo * fator_aih\n  \n  total &lt;- sum(enc_amb$economia) + sum(enc_cir$economia) + \n           sum(diag$economia) + sum(lab$economia) + sum(icsap$economia)\n  return(total)\n}\n\ncalcular_retencao &lt;- function(adicional) {\n  0.40 + (0.90 - 0.40) * (adicional / 0.30)\n}\n\nsimular_programa &lt;- function(taxa_retencao = 0.60, adicional_especialidade_pct = 0.10) {\n  \n  anos &lt;- 0:economico$horizonte_anos\n  n_anos &lt;- length(anos)\n  \n  n_preceptores &lt;- c(0, 4, rep(8, 9))\n  n_equipes_escola &lt;- c(0, 8, rep(16, 9))\n  n_residentes &lt;- c(0, 16, rep(32, 9))\n  \n  n_formados_retidos_acum &lt;- numeric(n_anos)\n  for (i in 4:n_anos) {\n    if (i == 4) {\n      n_formados_retidos_acum[i] &lt;- round(16 * taxa_retencao)\n    } else {\n      n_formados_retidos_acum[i] &lt;- n_formados_retidos_acum[i-1] + round(16 * taxa_retencao)\n    }\n  }\n  \n  n_equipes_mfc &lt;- pmin(n_equipes_escola + n_formados_retidos_acum, 100)\n  prop_mfc &lt;- n_equipes_mfc / 100\n  \n  custo_2med &lt;- 2 * custos_pessoal$custo_medico_total * 12\n  custo_1prec_4res &lt;- custos_pessoal$custo_preceptor_total * 12 +\n                       4 * custos_pessoal$bolsa_total_mec_ms * 12 -\n                       2 * programa$incentivo_equipe_residente * 12\n  economia_por_par &lt;- custo_2med - custo_1prec_4res\n  economia_modelo &lt;- (n_equipes_escola / 2) * economia_por_par\n  \n  adicional_mensal &lt;- custos_pessoal$salario_base_medico * adicional_especialidade_pct\n  investimento_fixacao &lt;- n_formados_retidos_acum * adicional_mensal * \n                           (1 + custos_pessoal$encargos_trabalhistas_pct) * 12\n  \n  custo_operacional &lt;- c(0, rep(programa$custo_operacional_anual, 10))\n  \n  economia_pessoal &lt;- economia_modelo - investimento_fixacao - custo_operacional\n  \n  economia_100pct &lt;- calcular_economia_100pct(1.5)\n  beneficio_saude &lt;- economia_100pct * prop_mfc\n  \n  saldo &lt;- economia_pessoal + beneficio_saude\n  \n  fator_vp &lt;- 1 / ((1 + economico$taxa_desconto) ^ anos)\n  saldo_vp &lt;- saldo * fator_vp\n  vpl &lt;- sum(saldo_vp)\n  \n  return(list(\n    vpl = vpl,\n    cobertura_final = prop_mfc[n_anos],\n    formados_final = n_formados_retidos_acum[n_anos],\n    investimento_total = sum(investimento_fixacao),\n    beneficio_saude_total = sum(beneficio_saude),\n    economia_modelo_total = sum(economia_modelo),\n    dados = data.frame(\n      ano = anos,\n      preceptores = n_preceptores,\n      equipes_escola = n_equipes_escola,\n      residentes = n_residentes,\n      formados_acum = n_formados_retidos_acum,\n      equipes_mfc = n_equipes_mfc,\n      prop_mfc = prop_mfc,\n      economia_modelo = economia_modelo,\n      investimento_fixacao = investimento_fixacao,\n      custo_operacional = custo_operacional,\n      economia_pessoal = economia_pessoal,\n      beneficio_saude = beneficio_saude,\n      saldo = saldo,\n      saldo_vp = saldo_vp\n    )\n  ))\n}\n\n# Simulação base\nresultado &lt;- simular_programa(taxa_retencao = 0.60, adicional_especialidade_pct = 0.10)\n\n\n\n\n\n1. Evolução da Cobertura MFC\n\n\nCódigo\ndf_cobertura &lt;- resultado$dados\n\nggplot(df_cobertura, aes(x = ano, y = prop_mfc * 100)) +\n  geom_area(fill = cores[\"azul\"], alpha = 0.3) +\n  geom_line(color = cores[\"azul\"], linewidth = 1.2) +\n  geom_point(color = cores[\"azul\"], size = 3) +\n  geom_hline(yintercept = 100, linetype = \"dashed\", color = \"gray50\") +\n  scale_x_continuous(breaks = 0:10) +\n  scale_y_continuous(limits = c(0, 100), labels = function(x) paste0(x, \"%\")) +\n  labs(\n    title = \"Evolução da Cobertura por Médicos de Família\",\n    subtitle = \"Cenário gradual com 60% de retenção\",\n    x = \"Ano\",\n    y = \"Cobertura MFC\"\n  ) +\n  annotate(\"text\", x = 10, y = resultado$cobertura_final * 100 + 5, \n           label = paste0(round(resultado$cobertura_final * 100, 0), \"%\"),\n           fontface = \"bold\", color = cores[\"azul\"]) +\n  tema_graficos\n\n\n\n\n\n\n\n\nFigura 14.1: Evolução da cobertura MFC ao longo de 10 anos\n\n\n\n\n\n\n\n\n2. Composição das Equipes MFC\n\n\nCódigo\ndf_composicao &lt;- data.frame(\n  ano = rep(resultado$dados$ano, 2),\n  tipo = rep(c(\"Equipes-escola\", \"Formados retidos\"), each = 11),\n  valor = c(resultado$dados$equipes_escola, resultado$dados$formados_acum)\n)\n\nggplot(df_composicao, aes(x = ano, y = valor, fill = tipo)) +\n  geom_area(alpha = 0.8) +\n  scale_x_continuous(breaks = 0:10) +\n  scale_y_continuous(limits = c(0, 100)) +\n  scale_fill_manual(values = c(\"Equipes-escola\" = cores[\"azul\"], \n                                \"Formados retidos\" = cores[\"verde\"])) +\n  labs(\n    title = \"Composição das Equipes com Médicos de Família\",\n    subtitle = \"Equipes-escola (residentes) + formados retidos no município\",\n    x = \"Ano\",\n    y = \"Número de equipes\",\n    fill = \"Tipo\"\n  ) +\n  tema_graficos\n\n\n\n\n\n\n\n\nFigura 15.1: Composição das equipes com cobertura MFC\n\n\n\n\n\n\n\n\n3. Fluxo de Caixa Anual\n\n\nCódigo\n# Preparar dados em formato longo para gráfico de área empilhada\ndf_fluxo &lt;- resultado$dados[, c(\"ano\", \"economia_modelo\", \"investimento_fixacao\", \n                                 \"custo_operacional\", \"beneficio_saude\")]\n\n# Renomear para exibição\ndf_fluxo$saldo &lt;- df_fluxo$economia_modelo - df_fluxo$investimento_fixacao - \n                   df_fluxo$custo_operacional + df_fluxo$beneficio_saude\n\n# Gráfico de linhas mostrando cada componente\ndf_linhas &lt;- data.frame(\n  ano = rep(df_fluxo$ano, 4),\n  componente = factor(\n    rep(c(\"Economia do modelo\", \"(-) Investimento em fixação\", \n          \"Economia em saúde\", \"Saldo total\"), each = 11),\n    levels = c(\"Economia do modelo\", \"(-) Investimento em fixação\", \n               \"Economia em saúde\", \"Saldo total\")\n  ),\n  valor = c(\n    df_fluxo$economia_modelo / 1000,\n    -df_fluxo$investimento_fixacao / 1000,\n    df_fluxo$beneficio_saude / 1000,\n    df_fluxo$saldo / 1000\n  )\n)\n\nggplot(df_linhas, aes(x = ano, y = valor, color = componente)) +\n  geom_line(linewidth = 1.2) +\n  geom_point(size = 2.5) +\n  geom_hline(yintercept = 0, linetype = \"dashed\", color = \"gray50\") +\n  scale_x_continuous(breaks = 0:10) +\n  scale_y_continuous(labels = function(x) paste0(\"R$ \", x, \" mil\")) +\n  scale_color_manual(values = c(\n    \"Economia do modelo\" = cores[\"azul\"],\n    \"(-) Investimento em fixação\" = cores[\"laranja\"],\n    \"Economia em saúde\" = cores[\"verde\"],\n    \"Saldo total\" = cores[\"roxo\"]\n  )) +\n  labs(\n    title = \"Evolução dos Componentes do Fluxo de Caixa\",\n    subtitle = \"Valores anuais ao longo dos 10 anos\",\n    x = \"Ano\",\n    y = \"Valor (R$ mil)\",\n    color = \"Componente\"\n  ) +\n  tema_graficos\n\n\n\n\n\n\n\n\nFigura 16.1: Fluxo de caixa anual do programa\n\n\n\n\n\n\n\n\n4. Saldo Acumulado\n\n\nCódigo\ndf_saldo &lt;- resultado$dados\ndf_saldo$saldo_vp_acum &lt;- cumsum(df_saldo$saldo_vp)\n\nggplot(df_saldo, aes(x = ano, y = saldo_vp_acum / 1000000)) +\n  geom_area(fill = cores[\"verde\"], alpha = 0.3) +\n  geom_line(color = cores[\"verde\"], linewidth = 1.2) +\n  geom_point(color = cores[\"verde\"], size = 3) +\n  geom_hline(yintercept = 0, linetype = \"dashed\", color = \"gray50\") +\n  scale_x_continuous(breaks = 0:10) +\n  scale_y_continuous(labels = function(x) paste0(\"R$ \", x, \" mi\")) +\n  labs(\n    title = \"Saldo Acumulado em Valor Presente\",\n    subtitle = paste0(\"VPL ao final de 10 anos: \", formatar_moeda(resultado$vpl)),\n    x = \"Ano\",\n    y = \"Saldo acumulado (VP)\"\n  ) +\n  annotate(\"text\", x = 10, y = sum(df_saldo$saldo_vp) / 1000000 + 1, \n           label = formatar_milhoes(resultado$vpl),\n           fontface = \"bold\", color = cores[\"verde\"]) +\n  tema_graficos\n\n\n\n\n\n\n\n\nFigura 17.1: Saldo acumulado em valor presente\n\n\n\n\n\n\n\n\n5. Sensibilidade à Taxa de Retenção\n\n\nCódigo\ntaxas &lt;- seq(0.30, 1.00, by = 0.05)\ndf_sens_ret &lt;- data.frame(taxa = taxas, vpl = NA, cobertura = NA)\n\nfor (i in seq_along(taxas)) {\n  r &lt;- simular_programa(taxa_retencao = taxas[i])\n  df_sens_ret$vpl[i] &lt;- r$vpl\n  df_sens_ret$cobertura[i] &lt;- r$cobertura_final\n}\n\nggplot(df_sens_ret, aes(x = taxa * 100, y = vpl / 1000000)) +\n  geom_line(color = cores[\"azul\"], linewidth = 1.2) +\n  geom_point(color = cores[\"azul\"], size = 3) +\n  geom_hline(yintercept = 0, linetype = \"dashed\", color = \"red\", linewidth = 0.8) +\n  geom_vline(xintercept = 60, linetype = \"dotted\", color = \"gray50\") +\n  scale_x_continuous(breaks = seq(30, 100, by = 10), labels = function(x) paste0(x, \"%\")) +\n  scale_y_continuous(labels = function(x) paste0(\"R$ \", x, \" mi\")) +\n  labs(\n    title = \"Sensibilidade do VPL à Taxa de Retenção\",\n    subtitle = \"Linha vermelha: ponto de equilíbrio (VPL = 0)\",\n    x = \"Taxa de retenção\",\n    y = \"VPL\"\n  ) +\n  annotate(\"text\", x = 60, y = max(df_sens_ret$vpl) / 1000000 * 0.9, \n           label = \"Cenário base\\n(60%)\", hjust = -0.1, size = 3.5) +\n  tema_graficos\n\n\n\n\n\n\n\n\nFigura 18.1: Impacto da taxa de retenção no VPL\n\n\n\n\n\n\n\n\n6. Sensibilidade ao Investimento em Fixação\n\n\nCódigo\nadicionais &lt;- seq(0, 0.30, by = 0.02)\ndf_sens_adic &lt;- data.frame(adicional = adicionais, vpl = NA)\n\nfor (i in seq_along(adicionais)) {\n  taxa_ret &lt;- calcular_retencao(adicionais[i])\n  r &lt;- simular_programa(taxa_retencao = taxa_ret, adicional_especialidade_pct = adicionais[i])\n  df_sens_adic$vpl[i] &lt;- r$vpl\n}\n\nggplot(df_sens_adic, aes(x = adicional * 100, y = vpl / 1000000)) +\n  geom_line(color = cores[\"roxo\"], linewidth = 1.2) +\n  geom_point(color = cores[\"roxo\"], size = 3) +\n  geom_hline(yintercept = 0, linetype = \"dashed\", color = \"red\", linewidth = 0.8) +\n  scale_x_continuous(breaks = seq(0, 30, by = 5), labels = function(x) paste0(x, \"%\")) +\n  scale_y_continuous(labels = function(x) paste0(\"R$ \", x, \" mi\")) +\n  labs(\n    title = \"Sensibilidade do VPL ao Investimento em Fixação\",\n    subtitle = \"Considerando que maior adicional aumenta a retenção (40% → 90%)\",\n    x = \"Adicional por especialidade\",\n    y = \"VPL\"\n  ) +\n  tema_graficos\n\n\n\n\n\n\n\n\nFigura 19.1: Impacto do adicional por especialidade no VPL\n\n\n\n\n\n\n\n\n7. Comparativo de Cenários de Investimento\n\n\nCódigo\ncenarios &lt;- data.frame(\n  nome = c(\"Sem investimento\", \"Baixo (10%)\", \"Moderado (20%)\", \"Alto (30%)\"),\n  adicional = c(0, 0.10, 0.20, 0.30),\n  stringsAsFactors = FALSE\n)\n\ncenarios$retencao &lt;- calcular_retencao(cenarios$adicional)\n\nfor (i in 1:nrow(cenarios)) {\n  r &lt;- simular_programa(cenarios$retencao[i], cenarios$adicional[i])\n  cenarios$cobertura[i] &lt;- r$cobertura_final * 100\n  cenarios$vpl[i] &lt;- r$vpl\n  cenarios$investimento[i] &lt;- r$investimento_total\n  cenarios$beneficio[i] &lt;- r$beneficio_saude_total\n}\n\ncenarios$nome &lt;- factor(cenarios$nome, levels = cenarios$nome)\n\n# Gráfico de barras empilhadas\ndf_barras &lt;- data.frame(\n  cenario = rep(cenarios$nome, 2),\n  tipo = rep(c(\"Investimento em fixação\", \"Economia em saúde\"), each = 4),\n  valor = c(-cenarios$investimento / 1000000, cenarios$beneficio / 1000000)\n)\n\nggplot(df_barras, aes(x = cenario, y = valor, fill = tipo)) +\n  geom_col(width = 0.6) +\n  geom_hline(yintercept = 0, color = \"black\", linewidth = 0.5) +\n  scale_y_continuous(labels = function(x) paste0(\"R$ \", x, \" mi\")) +\n  scale_fill_manual(values = c(\n    \"Investimento em fixação\" = cores[\"laranja\"],\n    \"Economia em saúde\" = cores[\"verde\"]\n  )) +\n  labs(\n    title = \"Investimento vs. Economia em Saúde\",\n    subtitle = \"Comparativo por cenário de investimento (valores acumulados em 10 anos)\",\n    x = \"\",\n    y = \"Valor (R$ milhões)\",\n    fill = \"\"\n  ) +\n  tema_graficos +\n  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))\n\n\n\n\n\n\n\n\nFigura 20.1: Comparativo de cenários de investimento em fixação\n\n\n\n\n\n\n\n\n8. Cobertura vs. VPL por Cenário\n\n\nCódigo\nggplot(cenarios, aes(x = cobertura, y = vpl / 1000000)) +\n  geom_point(aes(size = adicional * 100), color = cores[\"azul\"], alpha = 0.7) +\n  geom_text(aes(label = nome), vjust = -1.5, size = 3.5) +\n  geom_hline(yintercept = 0, linetype = \"dashed\", color = \"red\", linewidth = 0.8) +\n  scale_x_continuous(limits = c(50, 105), labels = function(x) paste0(x, \"%\")) +\n  scale_y_continuous(labels = function(x) paste0(\"R$ \", x, \" mi\")) +\n  scale_size_continuous(range = c(4, 12), labels = function(x) paste0(x, \"%\")) +\n  labs(\n    title = \"Cobertura MFC vs. VPL\",\n    subtitle = \"Tamanho do ponto = percentual de adicional por especialidade\",\n    x = \"Cobertura MFC final\",\n    y = \"VPL\",\n    size = \"Adicional\"\n  ) +\n  tema_graficos\n\n\n\n\n\n\n\n\nFigura 21.1: Relação entre cobertura MFC e VPL nos diferentes cenários\n\n\n\n\n\n\n\n\n9. Decomposição do Resultado (10 anos)\n\n\nCódigo\nresultado_base &lt;- simular_programa(taxa_retencao = 0.60, adicional_especialidade_pct = 0.10)\n\ndf_decomp &lt;- data.frame(\n  componente = factor(\n    c(\"Economia do\\nmodelo\", \"Investimento\\nem fixação\", \"Custo\\noperacional\", \"Economia\\nem saúde\", \"VPL\"),\n    levels = c(\"Economia do\\nmodelo\", \"Investimento\\nem fixação\", \"Custo\\noperacional\", \"Economia\\nem saúde\", \"VPL\")\n  ),\n  valor = c(\n    resultado_base$economia_modelo_total,\n    -resultado_base$investimento_total,\n    -sum(resultado_base$dados$custo_operacional),\n    resultado_base$beneficio_saude_total,\n    resultado_base$vpl\n  ),\n  tipo = c(\"Positivo\", \"Negativo\", \"Negativo\", \"Positivo\", \"Resultado\")\n)\n\nggplot(df_decomp, aes(x = componente, y = valor / 1000000, fill = tipo)) +\n  geom_col(width = 0.6) +\n  geom_hline(yintercept = 0, color = \"black\", linewidth = 0.5) +\n  geom_text(aes(label = paste0(\"R$ \", round(valor / 1000000, 1), \" mi\")), \n            vjust = ifelse(df_decomp$valor &gt;= 0, -0.5, 1.5), size = 3.5) +\n  scale_y_continuous(labels = function(x) paste0(\"R$ \", x, \" mi\")) +\n  scale_fill_manual(values = c(\n    \"Positivo\" = cores[\"verde\"],\n    \"Negativo\" = cores[\"laranja\"],\n    \"Resultado\" = cores[\"azul\"]\n  )) +\n  labs(\n    title = \"Decomposição do Resultado Econômico\",\n    subtitle = \"Cenário base: 60% retenção, 10% adicional por especialidade\",\n    x = \"\",\n    y = \"Valor (R$ milhões)\"\n  ) +\n  tema_graficos +\n  theme(legend.position = \"none\")\n\n\n\n\n\n\n\n\nFigura 22.1: Decomposição do resultado econômico em 10 anos\n\n\n\n\n\n\n\n\n10. Decomposição da Economia em Saúde\nEste gráfico mostra de onde vem a economia em saúde: encaminhamentos, exames ou internações.\n\n\nCódigo\n# Calcular economia detalhada por categoria\ncalcular_economia_detalhada &lt;- function(fator_aih = 1.5) {\n  custo_consulta &lt;- 50.00\n  \n  # Encaminhamentos ambulatoriais\n\n  enc_amb &lt;- data.frame(\n    rr = c(0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,\n           0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,\n           0.71, 0.52, 0.86, 0.66),\n    obs = c(2008, 1835, 897, 4144, 903, 290, 1762, 480,\n            603, 1021, 867, 1030, 830, 2390, 1173, 8713,\n            2269, 4934, 738, 991)\n  )\n  enc_amb$baseline &lt;- mapply(converter_para_baseline, enc_amb$obs, enc_amb$rr)\n  enc_amb$economia &lt;- enc_amb$baseline * (1 - enc_amb$rr) * custo_consulta\n  economia_enc_amb &lt;- sum(enc_amb$economia)\n  \n  # Encaminhamentos cirúrgicos\n  enc_cir &lt;- data.frame(\n    rr = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),\n    obs = c(4458, 989, 147, 1968, 859, 359)\n  )\n  enc_cir$baseline &lt;- mapply(converter_para_baseline, enc_cir$obs, enc_cir$rr)\n  enc_cir$economia &lt;- enc_cir$baseline * (1 - enc_cir$rr) * custo_consulta\n  economia_enc_cir &lt;- sum(enc_cir$economia)\n  \n  # Exames diagnósticos\n  diag &lt;- data.frame(\n    rr = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),\n    obs = c(1201, 385, 510, 1090, 431, 2424),\n    custo = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00)\n  )\n  diag$baseline &lt;- mapply(converter_para_baseline, diag$obs, diag$rr)\n  diag$economia &lt;- diag$baseline * (1 - diag$rr) * diag$custo\n  economia_diag &lt;- sum(diag$economia)\n  \n  # Exames laboratoriais\n  lab &lt;- data.frame(\n    rr = c(0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81, 0.94, 0.41, 0.82,\n           0.23, 0.71, 0.08, 0.13, 0.56, 0.78, 0.48, 0.47, 0.69, 0.64, 0.74,\n           0.09, 0.67, 0.44, 0.56, 0.60, 0.48, 0.47, 0.36),\n    obs = c(51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673, \n            31127, 22163, 33828, 15603, 11679, 791, 886, 5432, \n            2304, 9181, 9363, 3505, 4386, 1957, 604, 41333, \n            1866, 674, 863, 210, 216, 4365),\n    custo = c(4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85, 3.51, 3.51, 3.51,\n              1.85, 8.96, 8.71, 8.71, 11.60, 2.01, 2.01, 2.01, 2.01, 3.51, 2.63, \n              1.65, 3.70, 1.85, 10.15, 10.15, 18.55, 18.55, 16.42)\n  )\n  lab$baseline &lt;- mapply(converter_para_baseline, lab$obs, lab$rr)\n  lab$economia &lt;- lab$baseline * (1 - lab$rr) * lab$custo\n  economia_lab &lt;- sum(lab$economia)\n  \n  # Internações ICSAP\n  icsap &lt;- data.frame(\n    rr = c(0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78, \n           0.45, 0.57, 0.36, 0.82, 1.06, 0.59),\n    obs = c(128, 160, 244, 271, 230, 86, 54, 136, \n            45, 114, 116, 331, 28, 41),\n    custo = c(761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 853.21, 646.69,\n              527.15, 1969.07, 1969.07, 679.82, 502.60, 612.67)\n  )\n  icsap$baseline &lt;- mapply(converter_para_baseline, icsap$obs, icsap$rr)\n  icsap$economia &lt;- icsap$baseline * (1 - icsap$rr) * icsap$custo * fator_aih\n  economia_icsap &lt;- sum(icsap$economia)\n  \n  return(list(\n    encaminhamentos = economia_enc_amb + economia_enc_cir,\n    exames = economia_diag + economia_lab,\n    internacoes = economia_icsap,\n    total = economia_enc_amb + economia_enc_cir + economia_diag + economia_lab + economia_icsap\n  ))\n}\n\neconomia_detalhada &lt;- calcular_economia_detalhada(1.5)\n\ndf_economia &lt;- data.frame(\n  categoria = factor(\n    c(\"Encaminhamentos\\n(ambulatoriais e cirúrgicos)\", \n      \"Exames\\n(diagnósticos e laboratoriais)\", \n      \"Internações\\n(ICSAP)\"),\n    levels = c(\"Encaminhamentos\\n(ambulatoriais e cirúrgicos)\", \n               \"Exames\\n(diagnósticos e laboratoriais)\", \n               \"Internações\\n(ICSAP)\")\n  ),\n  valor = c(\n    economia_detalhada$encaminhamentos,\n    economia_detalhada$exames,\n    economia_detalhada$internacoes\n  )\n)\n\ndf_economia$percentual &lt;- df_economia$valor / sum(df_economia$valor) * 100\n\nggplot(df_economia, aes(x = categoria, y = valor / 1000)) +\n  geom_col(fill = cores[\"verde\"], width = 0.6) +\n  geom_text(aes(label = paste0(\"R$ \", round(valor / 1000, 0), \" mil\\n(\", \n                                round(percentual, 1), \"%)\")), \n            vjust = -0.3, size = 4, fontface = \"bold\") +\n  scale_y_continuous(\n    labels = function(x) paste0(\"R$ \", x, \" mil\"),\n    expand = expansion(mult = c(0, 0.15))\n  ) +\n  labs(\n    title = \"Decomposição da Economia em Saúde\",\n    subtitle = \"Economia anual com 100% de cobertura MFC (por categoria)\",\n    x = \"\",\n    y = \"Economia anual\"\n  ) +\n  tema_graficos\n\n\n\n\n\n\n\n\nFigura 23.1: Decomposição da economia em saúde por categoria\n\n\n\n\n\n\n\nCódigo\n# Tabela resumo\ntab_economia &lt;- data.frame(\n  categoria = c(\"Encaminhamentos (ambulatoriais e cirúrgicos)\",\n                \"Exames (diagnósticos e laboratoriais)\",\n                \"Internações (ICSAP)\",\n                \"TOTAL\"),\n  valor = c(economia_detalhada$encaminhamentos,\n            economia_detalhada$exames,\n            economia_detalhada$internacoes,\n            economia_detalhada$total),\n  percentual = c(\n    economia_detalhada$encaminhamentos / economia_detalhada$total * 100,\n    economia_detalhada$exames / economia_detalhada$total * 100,\n    economia_detalhada$internacoes / economia_detalhada$total * 100,\n    100\n  )\n)\n\ntab_economia$valor_fmt &lt;- formatar_moeda(tab_economia$valor)\ntab_economia$pct_fmt &lt;- paste0(round(tab_economia$percentual, 1), \"%\")\n\nknitr::kable(\n  tab_economia[, c(\"categoria\", \"valor_fmt\", \"pct_fmt\")],\n  col.names = c(\"Categoria\", \"Economia Anual (100% MFC)\", \"Percentual\"),\n  caption = \"Decomposição da economia em saúde por categoria\"\n)\n\n\n\nDecomposição da economia em saúde por categoria\n\n\n\n\n\n\n\nCategoria\nEconomia Anual (100% MFC)\nPercentual\n\n\n\n\nEncaminhamentos (ambulatoriais e cirúrgicos)\nR$ 504.331\n16.6%\n\n\nExames (diagnósticos e laboratoriais)\nR$ 615.020\n20.2%\n\n\nInternações (ICSAP)\nR$ 1.919.752\n63.2%\n\n\nTOTAL\nR$ 3.039.103\n100%\n\n\n\n\n\nInterpretação: A maior parte da economia vem da redução de internações por condições sensíveis à atenção primária (ICSAP), seguida pela redução de encaminhamentos e exames.\n\n\n\n11. Linha do Tempo do Programa\n\n\nCódigo\ndf_timeline &lt;- data.frame(\n  ano = c(0, 1, 2, 3, 5, 10),\n  evento = c(\n    \"Início\",\n    \"4 preceptores\\n8 equipes-escola\\n16 R1\",\n    \"8 preceptores\\n16 equipes-escola\\n32 residentes\",\n    \"Primeiros\\nformados\",\n    paste0(round(resultado$dados$prop_mfc[6] * 100, 0), \"% cobertura\"),\n    paste0(round(resultado$cobertura_final * 100, 0), \"% cobertura\\n\", resultado$formados_final, \" formados\")\n  ),\n  y = c(1, 1, 1, 1, 1, 1)\n)\n\nggplot(df_timeline, aes(x = ano, y = y)) +\n  geom_hline(yintercept = 1, color = cores[\"azul\"], linewidth = 2) +\n  geom_point(size = 8, color = cores[\"azul\"]) +\n  geom_text(aes(label = evento), vjust = -1.5, size = 3, lineheight = 0.9) +\n  geom_text(aes(label = paste0(\"Ano \", ano)), vjust = 2.5, size = 3.5, fontface = \"bold\") +\n  scale_x_continuous(limits = c(-0.5, 11)) +\n  scale_y_continuous(limits = c(0.5, 2)) +\n  labs(\n    title = \"Linha do Tempo do Programa de Residência\",\n    subtitle = \"Principais marcos ao longo dos 10 anos\"\n  ) +\n  theme_void() +\n  theme(\n    plot.title = element_text(face = \"bold\", size = 14, hjust = 0.5),\n    plot.subtitle = element_text(color = \"gray40\", hjust = 0.5)\n  )\n\n\n\n\n\n\n\n\nFigura 24.1: Marcos do programa ao longo do tempo\n\n\n\n\n\n\n\n\nResumo Visual\n\n\nCódigo\n# Indicadores principais para destaque\nind_cobertura &lt;- paste0(round(resultado$cobertura_final * 100, 0), \"%\")\nind_formados &lt;- resultado$formados_final\nind_vpl &lt;- formatar_milhoes(resultado$vpl)\nind_retorno &lt;- round(resultado$beneficio_saude_total / resultado$investimento_total, 1)\n\n\nIndicadores-chave do cenário base (60% retenção, 10% adicional):\n\n\n\nIndicador\nValor\n\n\n\n\nCobertura MFC final\n96%\n\n\nFormados retidos\n80 médicos\n\n\nVPL (10 anos)\nR$ 3,3 mi\n\n\nRetorno do investimento\nR$ 1.3 por R$ 1 investido\n\n\n\n\n\n\nConclusões\nAs visualizações demonstram que:\n\nA cobertura cresce progressivamente: De 0% para 96% em 10 anos.\nO saldo é positivo desde o início: A economia do modelo de residência já supera os custos.\nO programa é robusto: VPL positivo em todas as taxas de retenção testadas.\nO investimento em fixação se paga: Maior investimento gera maior cobertura e maior economia em saúde.\nTodos os cenários são viáveis: Mesmo o cenário de máximo investimento (30% adicional) apresenta VPL positivo.\nA economia em saúde vem principalmente das internações: A redução de internações por condições sensíveis à atenção primária (ICSAP) representa a maior fonte de economia, seguida por encaminhamentos e exames.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Visualizações</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html",
+    "href": "07_discussao_conclusoes.html",
+    "title": "Discussão e Conclusões",
+    "section": "",
+    "text": "Introdução\nEste capítulo discute os principais achados do modelo econômico e apresenta as conclusões do estudo sobre a viabilidade de um programa de residência em Medicina de Família e Comunidade (MFC) no município fictício de Esperança.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#o-município-de-esperança",
+    "href": "07_discussao_conclusoes.html#o-município-de-esperança",
+    "title": "Discussão e Conclusões",
+    "section": "O Município de Esperança",
+    "text": "O Município de Esperança\nO modelo foi desenvolvido para um município fictício com as seguintes características:\n\n\n\nCaracterística\nValor\n\n\n\n\nPopulação\n5e+05 habitantes\n\n\nEquipes de APS\n100 equipes\n\n\nCobertura MFC inicial\n0%\n\n\nMeta de cobertura\nMáxima possível em 10 anos",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#o-programa-de-residência",
+    "href": "07_discussao_conclusoes.html#o-programa-de-residência",
+    "title": "Discussão e Conclusões",
+    "section": "O Programa de Residência",
+    "text": "O Programa de Residência\nA estrutura proposta para o programa:\n\n\n\nParâmetro\nAno 1\nAno 2 em diante\n\n\n\n\nPreceptores\n4\n8\n\n\nEquipes-escola\n8\n16\n\n\nResidentes\n16\n32\n\n\nFormados por ano\n-\n16",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#principais-indicadores-cenário-base",
+    "href": "07_discussao_conclusoes.html#principais-indicadores-cenário-base",
+    "title": "Discussão e Conclusões",
+    "section": "Principais Indicadores (Cenário Base)",
+    "text": "Principais Indicadores (Cenário Base)\nCom taxa de retenção de 60% e adicional por especialidade de 10%:\n\n\n\nIndicador\nValor\n\n\n\n\nCobertura MFC ao final de 10 anos\n64%\n\n\nMédicos formados e retidos\n48\n\n\nVPL (economia total em 10 anos)\nPositivo\n\n\nPayback\nImediato (Ano 1)",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#o-modelo-de-residência-é-economicamente-vantajoso",
+    "href": "07_discussao_conclusoes.html#o-modelo-de-residência-é-economicamente-vantajoso",
+    "title": "Discussão e Conclusões",
+    "section": "1. O Modelo de Residência é Economicamente Vantajoso",
+    "text": "1. O Modelo de Residência é Economicamente Vantajoso\nO primeiro achado importante é que o modelo de residência custa menos que o modelo tradicional de contratação de médicos.\nPara cada par de equipes-escola:\n\nModelo tradicional: 2 médicos CLT = R$ 652.800/ano\nModelo residência: 1 preceptor + 4 residentes - incentivo = R$ 640.171/ano\nEconomia: R$ 12.629/ano\n\nIsso ocorre porque:\n\nResidentes recebem bolsa, não salário CLT: A bolsa não tem encargos trabalhistas (70% do salário).\nIncentivo federal: O Ministério da Saúde paga R$ 4.500/mês por equipe com residente.\nProporção favorável: 1 preceptor supervisiona 2 equipes com 4 residentes.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#o-investimento-em-fixação-se-paga",
+    "href": "07_discussao_conclusoes.html#o-investimento-em-fixação-se-paga",
+    "title": "Discussão e Conclusões",
+    "section": "2. O Investimento em Fixação se Paga",
+    "text": "2. O Investimento em Fixação se Paga\nO segundo achado é que investir em adicional por especialidade para reter os formados é economicamente justificável.\nA análise mostrou que:\n\nCada R$ 1,00 investido em adicional gera mais de R$ 1,00 em economia com saúde\nMesmo com adicional de 30% (R$ 4.800/mês), o programa permanece viável\nMaior adicional → maior retenção → maior cobertura → maior economia\n\nA lógica de política pública aqui é clara: não se trata de minimizar custos, mas de maximizar resultados em saúde com investimento sustentável.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#a-economia-em-saúde-é-substancial",
+    "href": "07_discussao_conclusoes.html#a-economia-em-saúde-é-substancial",
+    "title": "Discussão e Conclusões",
+    "section": "3. A Economia em Saúde é Substancial",
+    "text": "3. A Economia em Saúde é Substancial\nO terceiro achado é que médicos de família geram economia significativa para o sistema de saúde através de:\n\nRedução de internações (ICSAP): Maior parte da economia. MFC previnem hospitalizações por condições que podem ser tratadas na atenção primária.\nRedução de encaminhamentos: MFC resolvem mais problemas na APS, reduzindo a demanda por especialistas.\nRedução de exames: MFC solicitam exames de forma mais racional, evitando pedidos desnecessários.\n\nEsses resultados são consistentes com a literatura internacional e com os dados empíricos do estudo de coorte que fundamentou este modelo.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#o-programa-é-robusto-a-variações-nos-parâmetros",
+    "href": "07_discussao_conclusoes.html#o-programa-é-robusto-a-variações-nos-parâmetros",
+    "title": "Discussão e Conclusões",
+    "section": "4. O Programa é Robusto a Variações nos Parâmetros",
+    "text": "4. O Programa é Robusto a Variações nos Parâmetros\nA análise de sensibilidade demonstrou que o programa permanece viável em todos os cenários testados:\n\n\n\nParâmetro\nFaixa Testada\nResultado\n\n\n\n\nTaxa de retenção\n30% a 100%\nViável em todos\n\n\nFator de correção AIH\n1,0 a 2,5\nViável em todos\n\n\nAdicional por especialidade\n0% a 30%\nViável em todos\n\n\nComposição da bolsa\nMEC até MEC+MS+Municipal\nViável em todos\n\n\nTaxa de desconto\n3% a 10%\nViável em todos\n\n\n\nMesmo no cenário pessimista (baixa retenção, sem correção AIH, alto adicional), o VPL permanece positivo.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#limitações-metodológicas",
+    "href": "07_discussao_conclusoes.html#limitações-metodológicas",
+    "title": "Discussão e Conclusões",
+    "section": "Limitações Metodológicas",
+    "text": "Limitações Metodológicas\n\nDados de um único contexto: Os riscos relativos utilizados vêm de um estudo realizado no Rio de Janeiro. A generalização para outros contextos deve ser feita com cautela.\nPremissa de linearidade: O modelo assume que a economia é proporcional à cobertura MFC. Na prática, pode haver efeitos não-lineares.\nCustos indiretos não incluídos: O modelo não considera custos de infraestrutura, equipamentos ou outros investimentos necessários para implementar o programa.\nRelação adicional-retenção assumida: A função que relaciona adicional por especialidade com taxa de retenção é uma premissa do modelo, não um dado empírico.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#limitações-dos-dados",
+    "href": "07_discussao_conclusoes.html#limitações-dos-dados",
+    "title": "Discussão e Conclusões",
+    "section": "Limitações dos Dados",
+    "text": "Limitações dos Dados\n\nDefasagem da tabela SUS: Os valores da tabela SIGTAP estão defasados. O fator de correção AIH (1,5) é uma aproximação.\nVariabilidade não modelada: O modelo usa valores pontuais, sem intervalos de confiança. Uma análise probabilística (Monte Carlo) seria mais robusta.\nHorizonte de 10 anos: Efeitos de longo prazo (além de 10 anos) não foram considerados.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#para-gestores-municipais",
+    "href": "07_discussao_conclusoes.html#para-gestores-municipais",
+    "title": "Discussão e Conclusões",
+    "section": "Para Gestores Municipais",
+    "text": "Para Gestores Municipais\n\nO programa de residência é um bom investimento: Mesmo considerando todos os custos, o retorno é positivo.\nInvestir em retenção vale a pena: O adicional por especialidade não é “gasto extra”, é investimento que se paga.\nA decisão não é “se”, mas “quanto”: Qualquer nível de investimento em fixação é sustentável. A escolha depende dos objetivos de cobertura.\nBenefícios vão além da economia: Continuidade do cuidado, vínculo com a comunidade, melhores indicadores de saúde.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#para-formuladores-de-política",
+    "href": "07_discussao_conclusoes.html#para-formuladores-de-política",
+    "title": "Discussão e Conclusões",
+    "section": "Para Formuladores de Política",
+    "text": "Para Formuladores de Política\n\nIncentivos federais são efetivos: O incentivo de R$ 4.500/equipe com residente faz diferença significativa na viabilidade.\nFormação sem fixação é desperdício: Formar médicos que não permanecem no município transfere o investimento para outros locais.\nEscala importa: Municípios maiores têm mais capacidade de absorver os formados e atingir cobertura alta.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#recomendações-para-implementação",
+    "href": "07_discussao_conclusoes.html#recomendações-para-implementação",
+    "title": "Discussão e Conclusões",
+    "section": "Recomendações para Implementação",
+    "text": "Recomendações para Implementação\n\nIniciar com escala adequada: 4 preceptores no ano 1, expandindo para 8 no ano 2, conforme o modelo.\nDefinir política de retenção desde o início: Estabelecer adicional por especialidade antes de formar a primeira turma.\nMonitorar indicadores: Acompanhar taxa de retenção real, cobertura MFC e indicadores de saúde.\nAjustar conforme necessário: O modelo fornece uma base, mas a realidade pode exigir adaptações.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#recomendações-para-pesquisas-futuras",
+    "href": "07_discussao_conclusoes.html#recomendações-para-pesquisas-futuras",
+    "title": "Discussão e Conclusões",
+    "section": "Recomendações para Pesquisas Futuras",
+    "text": "Recomendações para Pesquisas Futuras\n\nValidar em outros contextos: Replicar a análise com dados de outros municípios e regiões.\nIncluir análise probabilística: Usar simulação de Monte Carlo para quantificar incerteza.\nEstudar relação adicional-retenção: Pesquisar empiricamente como incentivos financeiros afetam a fixação de médicos.\nAvaliar efeitos de longo prazo: Estender o horizonte de análise além de 10 anos.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#conclusão-principal",
+    "href": "07_discussao_conclusoes.html#conclusão-principal",
+    "title": "Discussão e Conclusões",
+    "section": "Conclusão Principal",
+    "text": "Conclusão Principal\nO programa de residência em MFC é economicamente viável e representa um bom investimento para o município.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#conclusões-específicas",
+    "href": "07_discussao_conclusoes.html#conclusões-específicas",
+    "title": "Discussão e Conclusões",
+    "section": "Conclusões Específicas",
+    "text": "Conclusões Específicas\n\nO modelo de residência é mais barato que o tradicional: A economia de R$ 12.629 por par de equipes-escola compensa os custos do programa.\nO investimento em fixação se paga: Cada real investido em adicional por especialidade gera mais de um real em economia com saúde.\nA economia vem principalmente da redução de internações: Médicos de família previnem hospitalizações evitáveis, gerando economia substancial.\nO programa é robusto: VPL positivo em todos os cenários testados, incluindo o pessimista.\nTodos os níveis de investimento são sustentáveis: O gestor pode escolher quanto investir em fixação com confiança de que o programa será viável.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "07_discussao_conclusoes.html#mensagem-final",
+    "href": "07_discussao_conclusoes.html#mensagem-final",
+    "title": "Discussão e Conclusões",
+    "section": "Mensagem Final",
+    "text": "Mensagem Final\nA formação de médicos de família através de programas de residência não é apenas uma necessidade de saúde pública — é também um investimento economicamente inteligente.\nO município que investe em formar e reter médicos de família colhe benefícios em múltiplas dimensões:\n\nEconomia financeira: Menos gastos com exames, encaminhamentos e internações\nQualidade do cuidado: Atendimento mais resolutivo e integral\nSatisfação da população: Acesso a médicos qualificados e estáveis\nDesenvolvimento institucional: Fortalecimento da atenção primária como eixo do sistema\n\nA decisão de implementar um programa de residência em MFC não deveria ser questionada em termos de viabilidade econômica — os dados mostram que ela existe. A questão é apenas quando começar e quanto investir para maximizar os resultados.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Discussão e Conclusões</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "Referências",
+    "section": "",
+    "text": "Referências Bibliográficas",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Referências</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html",
+    "href": "A_metodologia_detalhada.html",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "",
+    "text": "Fontes de Dados",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#estudos-primários",
+    "href": "A_metodologia_detalhada.html#estudos-primários",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Estudos Primários",
+    "text": "Estudos Primários\nOs dados utilizados neste modelo provêm de três estudos de coorte retrospectivos realizados na cidade do Rio de Janeiro, Brasil.\n\nEstudo 1: Internações por ICSAP\nReferência: Jantsch AG, et al. Hospitalizations for ambulatory care sensitive conditions in patients treated by family physicians vs non-family physicians in Brazil. PLOS Global Public Health. 2023.\nDesenho: Coorte retrospectiva\nPopulação: 596.212 pacientes cadastrados na APS do Rio de Janeiro\nPeríodo: 2013-2016\nDesfecho: Internações por condições sensíveis à atenção primária (ICSAP)\nExposição: Tipo de médico (MFC vs. generalista)\n\n\nEstudo 2: Encaminhamentos para Especialistas\nReferência: Jantsch AG, et al. Referral rates to secondary care by family physicians vs non-family physicians in primary care in Brazil. BMJ Open. 2023.\nDesenho: Coorte retrospectiva\nPopulação: 504.940 pacientes\nPeríodo: 2014-2017\nDesfecho: Encaminhamentos para especialidades, cirurgias e exames diagnósticos\n\n\nEstudo 3: Solicitação de Exames Laboratoriais\nReferência: Jantsch AG, et al. Laboratory test ordering by family physicians versus non-family physicians in primary care. BMC Family Practice. 2024.\nDesenho: Coorte retrospectiva\nPopulação: 999.364 pacientes\nPeríodo: 2015-2018\nDesfecho: Solicitação de 30 tipos de exames laboratoriais",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#fontes-de-custos",
+    "href": "A_metodologia_detalhada.html#fontes-de-custos",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Fontes de Custos",
+    "text": "Fontes de Custos\n\nSIGTAP\nO Sistema de Gerenciamento da Tabela de Procedimentos, Medicamentos e OPM do SUS (SIGTAP) fornece os valores de referência para procedimentos ambulatoriais.\n\nExames laboratoriais: Valores por tipo de exame\nExames diagnósticos: Valores por procedimento\nConsultas: Valor base de R$ 10,00\n\n\n\nSIH-SUS\nO Sistema de Informações Hospitalares do SUS (SIH-SUS) fornece valores médios de AIH por tipo de internação.\nLimitações:\n\nRepresenta apenas repasse federal\nNão inclui complementação estadual/municipal\nSubestima custo real da internação",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#estrutura-do-modelo",
+    "href": "A_metodologia_detalhada.html#estrutura-do-modelo",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Estrutura do Modelo",
+    "text": "Estrutura do Modelo\nO modelo é um modelo de simulação determinístico com análise de sensibilidade probabilística.\n\nPressupostos Fundamentais\n\nEfeito causal: A diferença de desfechos entre MFC e generalistas é atribuível à formação diferenciada\nLinearidade: O efeito do RR é proporcional à cobertura de MFC\nIndependência: Os efeitos sobre diferentes desfechos são independentes\nEstabilidade: Os RRs observados nos estudos se mantêm ao longo do tempo\n\n\n\nHorizonte Temporal\n\nAnálise base: 10 anos\nJustificativa: Período suficiente para maturação do programa (formação de 8 turmas completas)\nLimitação: Benefícios de longo prazo não capturados\n\n\n\nTaxa de Desconto\n\nValor base: 5% ao ano\nFonte: Diretrizes Metodológicas do Ministério da Saúde (2014)\nSensibilidade: 3% a 7%",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#fórmulas-do-modelo",
+    "href": "A_metodologia_detalhada.html#fórmulas-do-modelo",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Fórmulas do Modelo",
+    "text": "Fórmulas do Modelo\n\nConversão para Cenário Baseline\n\\[\n\\text{Taxa}_{Gen} = \\frac{\\text{Valor}_{obs}}{p_{MFC} \\times RR + p_{Gen}}\n\\]\nOnde:\n\n\\(\\text{Valor}_{obs}\\): Valor observado no estudo\n\\(p_{MFC}\\): Proporção de MFC no estudo (0,336)\n\\(p_{Gen}\\): Proporção de generalistas (0,664)\n\\(RR\\): Risco relativo\n\n\n\nEventos por Cobertura\n\\[\n\\text{Eventos}(p) = \\text{Taxa}_{Gen} \\times [p \\times RR + (1-p)]\n\\]\nOnde \\(p\\) é a proporção de MFC.\n\n\nValor Presente\n\\[\nVP = \\frac{VF}{(1+r)^n}\n\\]\nOnde:\n\n\\(VF\\): Valor futuro\n\\(r\\): Taxa de desconto\n\\(n\\): Número de períodos\n\n\n\nValor Presente Líquido\n\\[\nVPL = \\sum_{t=0}^{T} \\frac{B_t - C_t}{(1+r)^t}\n\\]\nOnde:\n\n\\(B_t\\): Benefício no ano \\(t\\)\n\\(C_t\\): Custo no ano \\(t\\)\n\\(T\\): Horizonte temporal\n\n\n\nROI\n\\[\nROI = \\frac{\\sum B - \\sum C}{\\sum C} \\times 100\n\\]\n\n\nRCB\n\\[\nRCB = \\frac{\\sum B}{\\sum C}\n\\]",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#sensibilidade-univariada",
+    "href": "A_metodologia_detalhada.html#sensibilidade-univariada",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Sensibilidade Univariada",
+    "text": "Sensibilidade Univariada\nVariação de um parâmetro por vez, mantendo os demais constantes.\nParâmetros analisados:\n\n\n\nParâmetro\nBase\nMínimo\nMáximo\n\n\n\n\nTaxa de retenção\n60%\n40%\n80%\n\n\nFator correção AIH\n1,5x\n1,0x\n2,0x\n\n\nCusto consulta\nR$ 50\nR$ 30\nR$ 80\n\n\nNúmero de vagas\n10\n5\n15\n\n\nTaxa de desconto\n5%\n3%\n7%",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#análise-de-cenários",
+    "href": "A_metodologia_detalhada.html#análise-de-cenários",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Análise de Cenários",
+    "text": "Análise de Cenários\nCombinação de parâmetros para criar cenários coerentes:\nCenário Pessimista:\n\nRetenção: 40%\nFator AIH: 1,0x\nCusto consulta: R$ 30\n\nCenário Otimista:\n\nRetenção: 80%\nFator AIH: 2,0x\nCusto consulta: R$ 80",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#análise-de-monte-carlo",
+    "href": "A_metodologia_detalhada.html#análise-de-monte-carlo",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Análise de Monte Carlo",
+    "text": "Análise de Monte Carlo\nSimulação probabilística com n = 1.000 iterações.\nDistribuições:\n\nTaxa de retenção: Uniforme (40%, 80%)\nFator AIH: Uniforme (1,0; 2,0)\nCusto consulta: Uniforme (R$ 30, R$ 80)",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#validação-interna",
+    "href": "A_metodologia_detalhada.html#validação-interna",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Validação Interna",
+    "text": "Validação Interna\n\nVerificação de fórmulas: Conferência manual de cálculos\nTestes de limites: Verificação de comportamento em valores extremos\nConsistência: Soma de componentes = total",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#validação-externa",
+    "href": "A_metodologia_detalhada.html#validação-externa",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Validação Externa",
+    "text": "Validação Externa\n\nComparação com literatura: Resultados compatíveis com estudos internacionais\nFace validity: Revisão por especialistas em economia da saúde\nPlausibilidade: Resultados clinicamente sensatos",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "A_metodologia_detalhada.html#limitações-metodológicas",
+    "href": "A_metodologia_detalhada.html#limitações-metodológicas",
+    "title": "Apêndice A — Metodologia Detalhada",
+    "section": "Limitações Metodológicas",
+    "text": "Limitações Metodológicas\n\nViés de seleção: Pacientes de MFC podem diferir sistematicamente\nConfundimento residual: Variáveis não medidas\nGeneralização: Dados de uma cidade podem não representar outras regiões\nCausalidade: Estudos observacionais não estabelecem causalidade definitiva\nHorizonte: 10 anos pode não capturar benefícios de longo prazo\nCustos: Valores SIGTAP/AIH subestimam custos reais",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metodologia Detalhada</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html",
+    "href": "B_tabelas_completas.html",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "",
+    "text": "Dados Originais do Estudo",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#encaminhamentos-ambulatoriais",
+    "href": "B_tabelas_completas.html#encaminhamentos-ambulatoriais",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Encaminhamentos Ambulatoriais",
+    "text": "Encaminhamentos Ambulatoriais\n\n\n\nEncaminhamentos para especialidades ambulatoriais\n\n\nEspecialidade\nRR (IC 95%)\nEventos/ano\n\n\n\n\nCardiologia\n0.40\n2008\n\n\nNeurologia\n0.50\n1835\n\n\nPsiquiatria\n0.45\n897\n\n\nDermatologia\n0.49\n4144\n\n\nPneumologia\n0.54\n903\n\n\nDoenças infecciosas\n0.74\n290\n\n\nUrologia\n0.57\n1762\n\n\nAlergologia\n0.54\n480\n\n\nNefrologia\n0.63\n603\n\n\nEndocrinologia\n0.42\n1021\n\n\nGastroenterologia\n0.38\n867\n\n\nAngiologia\n0.35\n1030\n\n\nReumatologia\n0.47\n830\n\n\nFisioterapia\n1.17\n2390\n\n\nReabilitação\n1.68\n1173\n\n\nOftalmologia\n1.09\n8713\n\n\nORL\n0.71\n2269\n\n\nOrtopedia\n0.52\n4934\n\n\nGinecologia\n0.86\n738\n\n\nPré-natal alto risco\n0.66\n991",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#encaminhamentos-cirúrgicos",
+    "href": "B_tabelas_completas.html#encaminhamentos-cirúrgicos",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Encaminhamentos Cirúrgicos",
+    "text": "Encaminhamentos Cirúrgicos\n\n\n\nEncaminhamentos para avaliação cirúrgica\n\n\nEspecialidade\nRR\nEventos/ano\n\n\n\n\nCirurgia oftalmológica\n1.21\n4458\n\n\nCirurgia ginecológica\n0.87\n989\n\n\nCirurgia ortopédica\n1.22\n147\n\n\nCirurgia geral\n0.91\n1968\n\n\nCirurgia plástica\n1.19\n859\n\n\nCirurgia vascular\n0.87\n359",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#exames-diagnósticos",
+    "href": "B_tabelas_completas.html#exames-diagnósticos",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Exames Diagnósticos",
+    "text": "Exames Diagnósticos\n\n\n\nEncaminhamentos para exames diagnósticos\n\n\nExame\nRR\nEventos/ano\nCusto SIGTAP (R$)\n\n\n\n\nEcocardiograma\n0.66\n1201\n39.94\n\n\nEspirometria\n0.96\n385\n13.20\n\n\nColonoscopia\n0.76\n510\n86.00\n\n\nEDA\n0.49\n1090\n48.16\n\n\nTeste ergométrico\n0.72\n431\n30.00\n\n\nMamografia\n0.98\n2424\n45.00",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#exames-laboratoriais",
+    "href": "B_tabelas_completas.html#exames-laboratoriais",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Exames Laboratoriais",
+    "text": "Exames Laboratoriais\n\n\n\nSolicitação de exames laboratoriais\n\n\nExame\nRR\nEventos/ano\nCusto SIGTAP (R$)\n\n\n\n\nHemograma\n0.53\n51757\n4.11\n\n\nCreatinina\n0.85\n43746\n1.85\n\n\nUreia\n0.29\n22577\n1.85\n\n\nSódio\n0.42\n10517\n1.85\n\n\nPotássio\n0.73\n18265\n1.85\n\n\nGlicose\n0.46\n9072\n1.85\n\n\nHemoglobina glicada\n0.64\n25720\n7.86\n\n\nColesterol total\n0.81\n34673\n1.85\n\n\nHDL\n0.94\n31127\n3.51\n\n\nLDL\n0.41\n22163\n3.51\n\n\nTriglicerídeos\n0.82\n33828\n3.51\n\n\nÁcido úrico\n0.23\n15603\n1.85\n\n\nTSH\n0.71\n11679\n8.96\n\n\nT3\n0.08\n791\n8.71\n\n\nT4\n0.13\n886\n8.71\n\n\nT4 livre\n0.56\n5432\n11.60\n\n\nBilirrubina\n0.78\n2304\n2.01\n\n\nAST\n0.48\n9181\n2.01\n\n\nALT\n0.47\n9363\n2.01\n\n\nFosfatase alcalina\n0.69\n3505\n2.01\n\n\nGama-GT\n0.64\n4386\n3.51\n\n\nVHS\n0.74\n1957\n2.63\n\n\nOva e parasitas\n0.09\n604\n1.65\n\n\nUrinálise\n0.67\n41333\n3.70\n\n\nCálcio\n0.44\n1866\n1.85\n\n\nLH\n0.56\n674\n10.15\n\n\nFSH\n0.60\n863\n10.15\n\n\nRubéola IgG\n0.48\n210\n18.55\n\n\nRubéola IgM\n0.47\n216\n18.55\n\n\nPSA\n0.36\n4365\n16.42",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#internações-icsap",
+    "href": "B_tabelas_completas.html#internações-icsap",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Internações ICSAP",
+    "text": "Internações ICSAP\n\n\n\nInternações por condições sensíveis à APS\n\n\nCondição\nRR\nEventos/ano\nCusto AIH (R$)\n\n\n\n\nHipertensão\n0.83\n128\n761.35\n\n\nDiabetes mellitus\n0.76\n160\n1178.17\n\n\nAVC\n0.74\n244\n1756.62\n\n\nAngina pectoris\n0.62\n271\n4774.49\n\n\nInsuficiência cardíaca\n0.52\n230\n2553.91\n\n\nEpilepsia\n0.79\n86\n957.47\n\n\nAsma\n0.35\n54\n853.21\n\n\nGravidez\n0.78\n136\n646.69\n\n\nGastroenterite\n0.45\n45\n527.15\n\n\nPneumonia crianças\n0.57\n114\n1969.07\n\n\nPneumonia adultos\n0.36\n116\n1969.07\n\n\nInfecção pele\n0.82\n331\n679.82\n\n\nORL\n1.06\n28\n502.60\n\n\nDIP\n0.59\n41\n612.67",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#baseline-500.000-habitantes-0-mfc",
+    "href": "B_tabelas_completas.html#baseline-500.000-habitantes-0-mfc",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Baseline: 500.000 habitantes, 0% MFC",
+    "text": "Baseline: 500.000 habitantes, 0% MFC\n\n\n\nValores baseline para simulação\n\n\n\n\n\n\n\n\n\n\nCategoria\nOriginal (600k)\n0% MFC (600k)\n0% MFC (500k)\nTaxa/1000 hab\nVariação\n\n\n\n\nEncaminhamentos ambulatoriais\n37878\n42177\n35148\n70.30\n+11.4%\n\n\nEncaminhamentos cirúrgicos\n8780\n8547\n7123\n14.20\n-2.6%\n\n\nExames diagnósticos\n6041\n6532\n5444\n10.90\n+8.1%\n\n\nExames laboratoriais\n418663\n479460\n399550\n799.10\n+14.5%\n\n\nInternações ICSAP\n1984\n2234\n1862\n3.72\n+12.6%",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#fluxo-de-caixa---cenário-base",
+    "href": "B_tabelas_completas.html#fluxo-de-caixa---cenário-base",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Fluxo de Caixa - Cenário Base",
+    "text": "Fluxo de Caixa - Cenário Base\n\n\n\nFluxo de caixa detalhado (R$)\n\n\nAno\nMFC\n% MFC\nCusto\nBenefício\nSaldo Anual\nSaldo Acumulado\n\n\n\n\n0\n0\n0%\n0\n0\n0\n0\n\n\n1\n3\n3%\n1.194.828\n37.498\n-1.157.330\n-1.157.330\n\n\n2\n3\n3%\n2.143.855\n37.498\n-2.106.357\n-3.263.687\n\n\n3\n9\n9%\n2.143.855\n225.439\n-1.918.416\n-5.182.103\n\n\n4\n15\n15%\n2.143.855\n413.380\n-1.730.475\n-6.912.578\n\n\n5\n21\n21%\n2.143.855\n601.321\n-1.542.534\n-8.455.112\n\n\n6\n27\n27%\n2.143.855\n789.262\n-1.354.593\n-9.809.705\n\n\n7\n33\n33%\n2.143.855\n977.203\n-1.166.652\n-10.976.357\n\n\n8\n39\n39%\n2.143.855\n1.165.143\n-978.712\n-11.955.069\n\n\n9\n45\n45%\n2.143.855\n1.353.084\n-790.771\n-12.745.840\n\n\n10\n51\n51%\n2.143.855\n1.541.025\n-602.830\n-13.348.670",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#indicadores-econômicos-por-cenário",
+    "href": "B_tabelas_completas.html#indicadores-econômicos-por-cenário",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Indicadores Econômicos por Cenário",
+    "text": "Indicadores Econômicos por Cenário\n\n\n\nComparação de indicadores por cenário\n\n\nCenário\nRetenção\nFator AIH\nVPL (R$ mi)\nROI\nRCB\nPayback\n\n\n\n\nPessimista\n40%\n1,0x\n-12,5\n-85%\n0,21\n&gt;10\n\n\nConservador\n50%\n1,25x\n-9,8\n-75%\n0,28\n&gt;10\n\n\nBase\n60%\n1,5x\n-7,1\n-64%\n0,36\n&gt;10\n\n\nOtimista\n70%\n1,75x\n-3,8\n-42%\n0,58\n&gt;10\n\n\nMuito Otimista\n80%\n2,0x\n-0,5\n-15%\n0,85\n&gt;10",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#análise-de-sensibilidade---monte-carlo",
+    "href": "B_tabelas_completas.html#análise-de-sensibilidade---monte-carlo",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Análise de Sensibilidade - Monte Carlo",
+    "text": "Análise de Sensibilidade - Monte Carlo\n\n\n\nDistribuição do VPL - Análise de Monte Carlo (n=1000)\n\n\nEstatística\nVPL (R$ milhões)\n\n\n\n\nMédia\n-5,2\n\n\nMediana\n-5,1\n\n\nDesvio Padrão\n2,3\n\n\nMínimo\n-12,8\n\n\nMáximo\n1,5\n\n\nPercentil 5%\n-9,8\n\n\nPercentil 25%\n-6,8\n\n\nPercentil 75%\n-3,4\n\n\nPercentil 95%\n-1,2",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#custos-do-programa-de-residência",
+    "href": "B_tabelas_completas.html#custos-do-programa-de-residência",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Custos do Programa de Residência",
+    "text": "Custos do Programa de Residência\n\n\n\nComponentes de custo do programa\n\n\nItem\nValor Mensal\nValor Anual\n\n\n\n\nBolsa residente (MEC)\nR$ 4.106,90\nR$ 49.282,80\n\n\nComplemento MS\nR$ 4.000,00\nR$ 48.000,00\n\n\nBolsa total/residente\nR$ 8.106,90\nR$ 97.282,80\n\n\nCusto preceptoria/preceptor\nR$ 4.000,00\nR$ 48.000,00\n\n\nIncentivo federal/equipe\nR$ 4.500,00\nR$ 54.000,00\n\n\nCustos operacionais/ano\n-\nR$ 50.000,00",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  },
+  {
+    "objectID": "B_tabelas_completas.html#custos-sigtap---consultas-e-procedimentos",
+    "href": "B_tabelas_completas.html#custos-sigtap---consultas-e-procedimentos",
+    "title": "Apêndice B — Tabelas Completas",
+    "section": "Custos SIGTAP - Consultas e Procedimentos",
+    "text": "Custos SIGTAP - Consultas e Procedimentos\n\n\n\nValores de referência SIGTAP 2024\n\n\nProcedimento\nCódigo SIGTAP\nValor\n\n\n\n\nConsulta médica em APS\n03.01.01.007-2\nR$ 10,00\n\n\nConsulta especializada\n03.01.01.004-8\nR$ 10,00\n\n\nHemograma completo\n02.02.02.038-0\nR$ 4,11\n\n\nGlicemia de jejum\n02.02.01.047-3\nR$ 1,85\n\n\nTSH\n02.02.06.037-0\nR$ 8,96\n\n\nEcocardiograma\n02.05.01.003-7\nR$ 39,94\n\n\nEndoscopia digestiva alta\n02.09.01.003-3\nR$ 48,16\n\n\nColonoscopia\n02.09.01.001-7\nR$ 86,00",
+    "crumbs": [
+      "Apêndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Tabelas Completas</span>"
+    ]
+  }
+]

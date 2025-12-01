@@ -1,0 +1,1354 @@
+---
+title: "Funções de Simulação"
+---
+
+# Introdução
+
+Este capítulo apresenta as funções R que serão utilizadas para simular o impacto econômico do programa de residência em MFC. 
+
+**Objetivo:** Criar um conjunto de ferramentas que nos permitam responder perguntas como:
+
+- Se aumentarmos a cobertura de MFC de 0% para 50%, quantos exames deixarão de ser solicitados?
+- Quanto dinheiro será economizado com a redução de internações?
+- Em quantos anos o investimento no programa se paga?
+
+Antes de cada função, explicarei **o conceito por trás dela**, **para que serve** e **como interpretar os resultados**.
+
+---
+
+# Preparação: Carregar Dados do Capítulo Anterior
+
+```{r}
+#| label: setup-carregar-dados
+#| include: true
+#| message: false
+#| warning: false
+
+# Configurações
+options(scipen = 999, digits = 2, OutDec = ",")
+
+# Função auxiliar para formatar números
+formatar_numero <- function(x, decimais = 0) {
+  format(round(x, decimais), big.mark = ".", decimal.mark = ",", nsmall = decimais)
+}
+
+# ============================================================
+# NOTA: Em uso real, você carregaria os dados do capítulo 1
+# usando: source("R/01_dados.R") ou load("dados_capitulo1.RData")
+# 
+# Para este documento ser autocontido, vamos recriar os 
+# parâmetros essenciais aqui.
+# ============================================================
+
+# Parâmetros do estudo original
+estudo <- list(
+  populacao = 600000,
+  prop_mfc = 0.336,
+  prop_gen = 0.664
+)
+
+# Parâmetros do município simulado
+municipio <- list(
+  nome = "Esperança",
+  populacao = 500000,
+  n_medicos = 100,
+  prop_mfc_inicial = 0
+)
+
+# Parâmetros econômicos
+economico <- list(
+  taxa_desconto = 0.05,
+  horizonte_anos = 10
+)
+
+# Custos de referência
+custo_consulta_base <- 50.00
+fator_aih_base <- 1.5
+
+cat("Parâmetros carregados com sucesso!\n")
+```
+
+---
+
+# Parte 1: Funções para Cálculo de Eventos
+
+## Conceito: Como a Cobertura MFC Afeta o Número de Eventos?
+
+Imagine que você tem uma população de 100.000 pessoas e sabe que:
+
+- Generalistas solicitam **1.000 hemogramas por ano** para essa população
+- MFC solicitam **530 hemogramas por ano** (RR = 0,53, ou seja, 53% do que generalistas solicitam)
+
+Se **toda** a população for atendida por generalistas (0% MFC), teremos 1.000 hemogramas.
+Se **toda** a população for atendida por MFC (100% MFC), teremos 530 hemogramas.
+E se **metade** for atendida por cada tipo? Teremos uma média ponderada: 765 hemogramas.
+
+**A fórmula geral é:**
+
+$$
+\text{Eventos} = \text{Taxa}_{baseline} \times \left[ p_{MFC} \times RR + (1 - p_{MFC}) \right]
+$$
+
+Onde:
+
+- $\text{Taxa}_{baseline}$ = eventos esperados se 100% fossem generalistas (calculado no Cap. 1)
+- $p_{MFC}$ = proporção de MFC (entre 0 e 1)
+- $RR$ = risco relativo do MFC comparado ao generalista
+
+**Por que isso funciona?**
+
+O termo entre colchetes $[p_{MFC} \times RR + (1 - p_{MFC})]$ é um **fator de ajuste**:
+
+- Quando $p_{MFC} = 0$ (nenhum MFC): fator = 1,0 → eventos = baseline
+- Quando $p_{MFC} = 1$ (todos MFC): fator = RR → eventos = baseline × RR
+- Quando $p_{MFC}$ está entre 0 e 1: fator é uma média ponderada
+
+## Função: calcular_eventos_por_cobertura()
+
+Esta função calcula quantos eventos esperamos para qualquer nível de cobertura MFC.
+
+```{r}
+#| label: funcao-eventos-por-cobertura
+#| include: true
+#| message: false
+#| warning: false
+
+calcular_eventos_por_cobertura <- function(eventos_baseline, rr, prop_mfc) {
+  #' Calcula o número esperado de eventos para um dado nível de cobertura MFC
+  #'
+  #' @param eventos_baseline Número de eventos no cenário 0% MFC (todos generalistas)
+  #' @param rr Risco Relativo - razão entre taxa MFC e taxa generalista
+  #' @param prop_mfc Proporção de cobertura MFC (valor entre 0 e 1)
+  #'
+  #' @return Número esperado de eventos
+  #'
+  #' @details
+  #' A função aplica a fórmula:
+  #' Eventos = baseline × (prop_mfc × RR + prop_gen)
+  #'
+  #' Onde prop_gen = 1 - prop_mfc
+  
+  # Validação: proporção deve estar entre 0 e 1
+  if (prop_mfc < 0 | prop_mfc > 1) {
+    stop("Erro: prop_mfc deve estar entre 0 e 1")
+  }
+  
+  # Calcular proporção de generalistas
+  prop_gen <- 1 - prop_mfc
+  
+  # Calcular fator de ajuste
+  # Este fator representa "quanto" do baseline teremos
+  fator_ajuste <- (prop_mfc * rr) + prop_gen
+  
+  # Calcular eventos esperados
+  eventos <- eventos_baseline * fator_ajuste
+  
+  return(eventos)
+}
+```
+
+## Exemplo Prático: Hemograma
+
+Vamos aplicar a função ao hemograma para entender como ela funciona:
+
+```{r}
+#| label: exemplo-eventos-hemograma
+#| include: true
+#| message: false
+#| warning: false
+
+# Dados do hemograma (do Capítulo 1)
+hemograma_baseline <- 57219  # eventos/ano no cenário 0% MFC para 500k habitantes
+hemograma_rr <- 0.53         # MFC solicita 53% do que generalista solicita
+
+# Calcular eventos para diferentes níveis de cobertura
+coberturas <- c(0, 0.25, 0.50, 0.75, 1.00)
+
+cat("EXEMPLO: HEMOGRAMA\n")
+cat("==================\n")
+cat("Baseline (0% MFC):", formatar_numero(hemograma_baseline), "exames/ano\n")
+cat("RR:", hemograma_rr, "(MFC solicita", hemograma_rr * 100, "% do que generalista)\n\n")
+
+cat("Eventos esperados por nível de cobertura MFC:\n\n")
+
+resultados_hemograma <- data.frame(
+  cobertura_mfc = coberturas,
+  cobertura_pct = paste0(coberturas * 100, "%"),
+  eventos = sapply(coberturas, function(p) {
+    calcular_eventos_por_cobertura(hemograma_baseline, hemograma_rr, p)
+  })
+)
+
+# Adicionar colunas explicativas
+resultados_hemograma$reducao_absoluta <- hemograma_baseline - resultados_hemograma$eventos
+resultados_hemograma$reducao_pct <- round(
+  (1 - resultados_hemograma$eventos / hemograma_baseline) * 100, 
+  1
+)
+
+knitr::kable(
+  resultados_hemograma[, c("cobertura_pct", "eventos", "reducao_absoluta", "reducao_pct")],
+  col.names = c(
+    "Cobertura MFC", 
+    "Hemogramas/ano", 
+    "Redução (absoluta)",
+    "Redução (%)"
+  ),
+  digits = 0,
+  caption = "Impacto da cobertura MFC sobre solicitação de hemograma"
+)
+```
+
+**Interpretação:**
+
+- Com **0% MFC** (todos generalistas): ~57.000 hemogramas/ano
+- Com **50% MFC**: ~44.000 hemogramas/ano (redução de 23,5%)
+- Com **100% MFC**: ~30.000 hemogramas/ano (redução de 47%)
+
+A redução máxima possível (47%) corresponde exatamente a $1 - RR = 1 - 0,53 = 0,47$.
+
+---
+
+## Conceito: O que são "Eventos Evitados"?
+
+**Eventos evitados** são a diferença entre o que teríamos sem intervenção e o que temos com intervenção.
+
+$$
+\text{Eventos evitados} = \text{Eventos}_{antes} - \text{Eventos}_{depois}
+$$
+
+No nosso contexto:
+
+- **Antes** = cenário inicial (ex: 0% MFC)
+- **Depois** = cenário com programa implantado (ex: 60% MFC)
+
+Se antes tínhamos 1.000 internações e depois temos 700, evitamos 300 internações.
+
+**Por que isso é importante?**
+
+Eventos evitados são a base para calcular o **benefício econômico**. Cada internação evitada representa uma economia de dinheiro para o sistema de saúde.
+
+## Função: calcular_eventos_evitados()
+
+```{r}
+#| label: funcao-eventos-evitados
+#| include: true
+#| message: false
+#| warning: false
+
+calcular_eventos_evitados <- function(eventos_baseline, rr, prop_mfc_inicial, prop_mfc_final) {
+  #' Calcula quantos eventos são evitados ao mudar de um nível de cobertura para outro
+  #'
+  #' @param eventos_baseline Eventos no cenário 0% MFC
+  #' @param rr Risco Relativo
+  #' @param prop_mfc_inicial Cobertura MFC no cenário inicial
+  #' @param prop_mfc_final Cobertura MFC no cenário final
+  #'
+  #' @return Lista com eventos inicial, final, evitados e percentual de redução
+  #'
+  #' @details
+  #' Eventos evitados = Eventos(inicial) - Eventos(final)
+  #' Se o resultado for positivo, houve redução de eventos.
+  #' Se for negativo, houve aumento de eventos (pode acontecer se RR > 1).
+  
+  # Calcular eventos em cada cenário
+  eventos_inicial <- calcular_eventos_por_cobertura(eventos_baseline, rr, prop_mfc_inicial)
+  eventos_final <- calcular_eventos_por_cobertura(eventos_baseline, rr, prop_mfc_final)
+  
+  # Calcular eventos evitados
+  eventos_evitados <- eventos_inicial - eventos_final
+  
+  # Calcular redução percentual
+  # (eventos evitados / eventos inicial) × 100
+  if (eventos_inicial > 0) {
+    reducao_pct <- (eventos_evitados / eventos_inicial) * 100
+  } else {
+    reducao_pct <- 0
+  }
+  
+  # Retornar resultados em uma lista organizada
+  return(list(
+    eventos_inicial = eventos_inicial,
+    eventos_final = eventos_final,
+    eventos_evitados = eventos_evitados,
+    reducao_pct = reducao_pct
+  ))
+}
+```
+
+## Exemplo Prático: Internações por Insuficiência Cardíaca
+
+A insuficiência cardíaca é uma das condições com maior impacto econômico devido ao alto custo de internação.
+
+```{r}
+#| label: exemplo-eventos-evitados-ic
+#| include: true
+#| message: false
+#| warning: false
+
+# Dados de internação por IC (do Capítulo 1)
+# Baseline calculado: ~258 internações/ano para 500k habitantes com 0% MFC
+ic_baseline <- 258
+ic_rr <- 0.52  # MFC tem 52% da taxa de internação (48% menos)
+
+# Cenário: expandir de 0% para 60% MFC
+resultado_ic <- calcular_eventos_evitados(
+  eventos_baseline = ic_baseline,
+  rr = ic_rr,
+  prop_mfc_inicial = 0,
+  prop_mfc_final = 0.60
+)
+
+cat("EXEMPLO: INTERNAÇÕES POR INSUFICIÊNCIA CARDÍACA\n")
+cat("================================================\n\n")
+cat("Dados de entrada:\n")
+cat("  - Baseline (0% MFC):", formatar_numero(ic_baseline), "internações/ano\n")
+cat("  - RR:", ic_rr, "(MFC tem", ic_rr * 100, "% da taxa de internação)\n")
+cat("  - Cenário: expandir de 0% para 60% MFC\n\n")
+
+cat("Resultados:\n")
+cat("  - Internações com 0% MFC:", formatar_numero(resultado_ic$eventos_inicial), "/ano\n")
+cat("  - Internações com 60% MFC:", formatar_numero(resultado_ic$eventos_final), "/ano\n")
+cat("  - Internações EVITADAS:", formatar_numero(resultado_ic$eventos_evitados), "/ano\n")
+cat("  - Redução:", round(resultado_ic$reducao_pct, 1), "%\n\n")
+
+cat("Interpretação:\n")
+cat("  Ao expandir a cobertura MFC de 0% para 60%, evitaríamos\n")
+cat("  aproximadamente", formatar_numero(resultado_ic$eventos_evitados), 
+    "internações por insuficiência cardíaca por ano.\n")
+```
+
+---
+
+## Conceito: Transformando Eventos Evitados em Economia
+
+Cada evento evitado representa uma **economia financeira** para o sistema de saúde. Para calcular essa economia, multiplicamos:
+
+$$
+\text{Economia} = \text{Eventos evitados} \times \text{Custo unitário} \times \text{Fator de correção}
+$$
+
+**O que é o "Fator de correção"?**
+
+Os valores da tabela SUS (SIGTAP para procedimentos ambulatoriais, AIH para internações) representam apenas o **repasse federal** e estão muito defasados. O custo real é maior.
+
+Por exemplo:
+
+- Uma internação por insuficiência cardíaca paga AIH média de R$ 2.553
+- Mas o custo real pode ser 1,5x a 2x maior (R$ 3.800 a R$ 5.100)
+
+O fator de correção ajusta os valores tabelados para aproximar do custo real.
+
+## Função: calcular_economia()
+
+```{r}
+#| label: funcao-economia
+#| include: true
+#| message: false
+#| warning: false
+
+calcular_economia <- function(eventos_evitados, custo_unitario, fator_correcao = 1.0) {
+  #' Calcula a economia financeira a partir de eventos evitados
+  #'
+  #' @param eventos_evitados Número de eventos evitados
+  #' @param custo_unitario Custo por evento (R$) - valor tabelado
+  #' @param fator_correcao Multiplicador para aproximar do custo real
+  #'
+  #' @return Economia em R$
+  #'
+  #' @details
+  #' O fator de correção é usado porque os valores SIGTAP/AIH
+  #' subestimam o custo real. Valores típicos:
+  #' - 1.0: usar valor tabelado (subestimado)
+  #' - 1.5: correção moderada
+  #' - 2.0: correção alta (hospitais universitários)
+  
+  economia <- eventos_evitados * custo_unitario * fator_correcao
+  
+  return(economia)
+}
+```
+
+## Exemplo: Economia com Redução de Internações por IC
+
+```{r}
+#| label: exemplo-economia-ic
+#| include: true
+#| message: false
+#| warning: false
+
+# Custo AIH médio para insuficiência cardíaca
+custo_aih_ic <- 2553.91
+
+# Calcular economia com diferentes fatores de correção
+economia_aih_pura <- calcular_economia(resultado_ic$eventos_evitados, custo_aih_ic, 1.0)
+economia_moderada <- calcular_economia(resultado_ic$eventos_evitados, custo_aih_ic, 1.5)
+economia_alta <- calcular_economia(resultado_ic$eventos_evitados, custo_aih_ic, 2.0)
+
+cat("ECONOMIA COM REDUÇÃO DE INTERNAÇÕES POR IC\n")
+cat("==========================================\n\n")
+cat("Internações evitadas:", formatar_numero(resultado_ic$eventos_evitados), "/ano\n")
+cat("Custo AIH médio: R$", formatar_numero(custo_aih_ic, 2), "\n\n")
+
+cat("Economia anual por cenário de custo:\n")
+cat("  - AIH pura (fator 1,0):    R$", formatar_numero(economia_aih_pura, 2), "\n")
+cat("  - Moderado (fator 1,5):    R$", formatar_numero(economia_moderada, 2), "\n")
+cat("  - Alto (fator 2,0):        R$", formatar_numero(economia_alta, 2), "\n")
+```
+
+---
+
+# Parte 2: Função para Simular Expansão do Programa
+
+## Conceito: Como o Programa de Residência Expande a Cobertura MFC?
+
+O programa de residência não aumenta a cobertura MFC instantaneamente. É um processo **gradual** que segue esta lógica:
+
+**Ano 0 (antes do programa):**
+
+- Nenhum MFC no município (0% de cobertura)
+
+**Ano 1 (início do programa):**
+
+- Contratamos preceptores (MFC externos) para supervisionar
+- Abrimos a primeira turma de residentes (R1)
+- Cobertura aumenta apenas pelos preceptores
+
+**Ano 2:**
+
+- R1 se tornam R2 (segundo ano)
+- Nova turma de R1 entra
+- Ainda não há formados
+
+**Ano 3 em diante:**
+
+- R2 se formam
+- Uma **proporção** dos formados fica no município (taxa de retenção)
+- Cobertura aumenta progressivamente
+
+**O que é "Taxa de Retenção"?**
+
+Nem todos os médicos formados pelo programa ficam trabalhando no município. Alguns vão para outras cidades, outros vão para o setor privado, etc.
+
+A **taxa de retenção** é a proporção dos formados que permanece na APS do município:
+
+- 40% (pessimista): de cada 10 formados, 4 ficam
+- 60% (moderado): de cada 10 formados, 6 ficam
+- 80% (otimista): de cada 10 formados, 8 ficam
+
+## Função: simular_expansao_programa()
+
+Esta é uma das funções mais importantes do modelo. Ela simula ano a ano como o programa evolui.
+
+```{r}
+#| label: funcao-simular-expansao
+#| include: true
+#| message: false
+#| warning: false
+
+simular_expansao_programa <- function(
+    n_medicos_total,
+    prop_mfc_inicial = 0,
+    vagas_ano,
+    duracao_residencia = 2,
+    taxa_retencao,
+    horizonte_anos,
+    n_preceptores_inicial
+) {
+  #' Simula a expansão do programa de residência ao longo dos anos
+  #'
+  #' @param n_medicos_total Total de médicos na APS do município
+  #' @param prop_mfc_inicial Proporção inicial de MFC (geralmente 0)
+  #' @param vagas_ano Número de vagas abertas por ano
+  #' @param duracao_residencia Duração da residência em anos (padrão: 2)
+  #' @param taxa_retencao Proporção dos formados que ficam no município
+  #' @param horizonte_anos Número de anos a simular
+  #' @param n_preceptores_inicial MFC contratados no ano 1 para preceptoria
+  #'
+  #' @return Data frame com a evolução ano a ano
+  #'
+  #' @details
+  #' A simulação considera:
+  #' - Ano 1: entram preceptores + primeira turma R1
+  #' - Ano 2: R1 viram R2, nova turma R1
+  #' - Ano 3+: R2 formam (com retenção), R1 viram R2, nova turma R1
+  
+  # Criar vetor de anos (0 = antes do programa)
+  anos <- 0:horizonte_anos
+  n_anos <- length(anos)
+  
+  # Inicializar vetores para armazenar resultados
+  n_mfc <- numeric(n_anos)           # Total de MFC no município
+  n_residentes_r1 <- numeric(n_anos) # Residentes no 1º ano
+  n_residentes_r2 <- numeric(n_anos) # Residentes no 2º ano
+  n_formados_ano <- numeric(n_anos)  # Formados naquele ano
+  n_preceptores <- numeric(n_anos)   # Preceptores contratados
+  
+  # Ano 0: situação inicial (antes do programa)
+  n_mfc[1] <- round(n_medicos_total * prop_mfc_inicial)
+  n_residentes_r1[1] <- 0
+  n_residentes_r2[1] <- 0
+  n_formados_ano[1] <- 0
+  n_preceptores[1] <- 0
+  
+  # Simular cada ano
+  for (i in 2:n_anos) {
+    ano_atual <- anos[i]
+    
+    if (ano_atual == 1) {
+      # ANO 1: Início do programa
+      # - Contratamos preceptores externos
+      # - Abrimos primeira turma R1
+      # - Ninguém forma ainda
+      n_preceptores[i] <- n_preceptores_inicial
+      n_residentes_r1[i] <- vagas_ano
+      n_residentes_r2[i] <- 0
+      n_formados_ano[i] <- 0
+      n_mfc[i] <- n_mfc[i-1] + n_preceptores_inicial
+      
+    } else if (ano_atual == 2) {
+      # ANO 2: Programa em andamento
+      # - R1 do ano passado viram R2
+      # - Nova turma R1 entra
+      # - Ainda ninguém formou
+      n_preceptores[i] <- n_preceptores[i-1]
+      n_residentes_r2[i] <- n_residentes_r1[i-1]  # R1 viram R2
+      n_residentes_r1[i] <- vagas_ano             # Nova turma
+      n_formados_ano[i] <- 0
+      n_mfc[i] <- n_mfc[i-1]  # Sem novos MFC
+      
+    } else {
+      # ANO 3 em diante: Ciclo completo
+      # - R2 do ano passado se formam
+      # - Apenas uma proporção (taxa_retencao) fica no município
+      # - R1 viram R2
+      # - Nova turma R1
+      n_formados_ano[i] <- round(n_residentes_r2[i-1] * taxa_retencao)
+      n_residentes_r2[i] <- n_residentes_r1[i-1]
+      n_residentes_r1[i] <- vagas_ano
+      n_preceptores[i] <- n_preceptores[i-1]
+      n_mfc[i] <- n_mfc[i-1] + n_formados_ano[i]
+    }
+  }
+  
+  # Calcular proporção de MFC (limitada a 100%)
+  prop_mfc <- n_mfc / n_medicos_total
+  prop_mfc <- pmin(prop_mfc, 1)  # Não pode passar de 100%
+  
+  # Montar data frame de resultados
+  resultado <- data.frame(
+    ano = anos,
+    n_mfc = n_mfc,
+    n_residentes_r1 = n_residentes_r1,
+    n_residentes_r2 = n_residentes_r2,
+    n_residentes_total = n_residentes_r1 + n_residentes_r2,
+    n_formados_ano = n_formados_ano,
+    n_formados_acumulado = cumsum(n_formados_ano),
+    n_preceptores = n_preceptores,
+    prop_mfc = prop_mfc,
+    prop_mfc_pct = paste0(round(prop_mfc * 100, 1), "%")
+  )
+  
+  return(resultado)
+}
+```
+
+## Exemplo: Simulação com 15 Vagas/Ano e 60% de Retenção
+
+```{r}
+#| label: exemplo-simulacao-expansao
+#| include: true
+#| message: false
+#| warning: false
+
+# Parâmetros do programa (definidos aqui para o exemplo)
+programa <- list(
+  vagas_por_ano = 15,
+  n_preceptores_inicial = 4,
+  taxa_retencao_moderada = 0.60
+)
+
+# Simular expansão do programa
+expansao <- simular_expansao_programa(
+  n_medicos_total = municipio$n_medicos,       # 100 médicos
+  prop_mfc_inicial = 0,                         # Começa com 0% MFC
+  vagas_ano = programa$vagas_por_ano,           # 15 vagas/ano
+  taxa_retencao = programa$taxa_retencao_moderada,  # 60% ficam
+  horizonte_anos = economico$horizonte_anos,    # 10 anos
+  n_preceptores_inicial = programa$n_preceptores_inicial  # 4 preceptores
+)
+
+# Exibir tabela
+knitr::kable(
+  expansao[, c("ano", "n_mfc", "n_residentes_r1", "n_residentes_r2", 
+               "n_formados_ano", "n_formados_acumulado", "prop_mfc_pct")],
+  col.names = c(
+    "Ano", 
+    "MFC Total", 
+    "Residentes R1", 
+    "Residentes R2", 
+    "Formados/ano",
+    "Formados Acum.",
+    "Cobertura MFC"
+  ),
+  caption = "Simulação da expansão do programa (15 vagas/ano, 60% retenção)"
+)
+```
+
+**Interpretação da tabela:**
+
+- **Ano 0**: Situação inicial - nenhum MFC no município
+- **Ano 1**: Entram 4 preceptores + 15 residentes R1 = 4 MFC (4%)
+- **Ano 2**: R1 viram R2, nova turma R1 = ainda 4 MFC
+- **Ano 3**: Primeira turma se forma! 15 × 60% = 9 novos MFC → total 13 MFC (13%)
+- **Ano 10**: Acumulado de ~76 MFC no município (76%)
+
+**Observação importante:** Com 15 vagas/ano e 60% de retenção, atingimos ~76% de cobertura em 10 anos. Para atingir 100%, precisaríamos de maior retenção (80%) ou mais tempo.
+
+---
+
+# Parte 3: Funções para Cálculo de Custos do Programa
+
+## Conceito: Quais são os Custos do Programa de Residência?
+
+O programa de residência tem vários componentes de custo. Vamos organizá-los em **cenários** para permitir análises mais flexíveis.
+
+### 3.1. Custos com Bolsas dos Residentes
+
+As bolsas de residência médica podem ter diferentes composições, dependendo das fontes de financiamento disponíveis:
+
+```{r}
+#| label: cenarios-bolsa
+#| include: true
+#| message: false
+#| warning: false
+
+# Definir cenários de bolsa
+cenarios_bolsa <- data.frame(
+  cenario = c(
+    "Mínimo (apenas MEC)", 
+    "Intermediário (MEC + MS)", 
+    "Completo (MEC + MS + Municipal)"
+  ),
+  bolsa_mec = c(4106.90, 4106.90, 4106.90),
+  complemento_ms = c(0, 4000.00, 4000.00),
+  complemento_municipal = c(0, 0, 2000.00),
+  stringsAsFactors = FALSE
+)
+
+cenarios_bolsa$total_mensal <- cenarios_bolsa$bolsa_mec + 
+                                cenarios_bolsa$complemento_ms + 
+                                cenarios_bolsa$complemento_municipal
+
+cenarios_bolsa$total_anual <- cenarios_bolsa$total_mensal * 12
+
+knitr::kable(
+  cenarios_bolsa,
+  col.names = c("Cenário", "Bolsa MEC", "Complemento MS", 
+                "Complemento Municipal", "Total Mensal", "Total Anual"),
+  caption = "Cenários de composição da bolsa de residência (R$)",
+  digits = 2
+)
+```
+
+**Explicação dos componentes:**
+
+- **Bolsa MEC (Ministério da Educação)**: Valor pago pelo governo federal a todos os residentes médicos do país. Em 2024, o valor é de R$ 4.106,90 por mês. Este é o valor **mínimo garantido** por lei.
+
+- **Complemento MS (Ministério da Saúde)**: Adicional pago pelo Ministério da Saúde especificamente para residências em áreas consideradas prioritárias para o SUS, como Medicina de Família e Comunidade, Psiquiatria, entre outras. O valor atual é de R$ 4.000,00 por mês. **Nem todos os programas recebem este complemento** - é necessário que o programa esteja credenciado junto ao MS.
+
+- **Complemento Municipal**: Alguns municípios, especialmente aqueles com dificuldade de atrair residentes, oferecem um complemento adicional com recursos próprios. Valores variam de R$ 1.000 a R$ 3.000 por mês. Este é um custo **adicional para o município**.
+
+### 3.2. Custo de Preceptoria
+
+**O que é preceptoria?**
+
+Preceptores são médicos MFC experientes que supervisionam e ensinam os residentes durante suas atividades práticas. A relação preceptor-residente é fundamental para a qualidade da formação.
+
+**Como funciona o pagamento?**
+
+Os preceptores geralmente já são médicos contratados pelo município para atender na APS. A preceptoria representa uma **atividade adicional** às suas funções assistenciais, e por isso recebem um **adicional de preceptoria**.
+
+- **Valor típico**: R$ 4.000,00/mês por preceptor
+- **Proporção recomendada**: 1 preceptor para cada 4-5 residentes
+
+### 3.3. Custos Operacionais
+
+São os custos administrativos e de infraestrutura necessários para o funcionamento do programa:
+
+- Coordenação pedagógica (pode ser um MFC com carga horária dedicada)
+- Materiais didáticos e bibliográficos
+- Espaço físico para atividades teóricas (sala de aula, biblioteca)
+- Eventos científicos (jornadas, congressos, capacitações)
+- Despesas administrativas (secretaria, sistemas de gestão)
+
+**Estimativa**: R$ 50.000,00 por ano para um programa de 15-20 vagas.
+
+### 3.4. Incentivo Federal (RECEITA, não custo)
+
+O Ministério da Saúde paga um **incentivo financeiro** para equipes de Saúde da Família que recebem residentes. Este valor funciona como uma **receita** que reduz o custo líquido do programa para o município.
+
+- **Valor**: R$ 4.500,00 por mês por equipe que recebe residente
+- **Base legal**: Portaria GM/MS nº 3.510/2019
+- **Lógica**: Compensa a equipe pelo tempo dedicado ao ensino e pela menor produtividade esperada durante o treinamento
+
+### 3.5. Adicional por Especialidade MFC (Incentivo à Retenção)
+
+**O que é?**
+
+É um **adicional salarial** pago aos médicos que possuem título de especialista em MFC, fazendo com que ganhem mais do que médicos generalistas sem especialização.
+
+**Para que serve?**
+
+O principal objetivo é **aumentar a retenção** dos MFC formados no município. Se um MFC ganha o mesmo que um generalista, há pouco incentivo financeiro para que ele permaneça na APS do município após se formar. O adicional por especialidade cria uma diferenciação salarial que:
+
+1. **Atrai MFC de outros lugares**: Médicos de família de outros municípios podem querer trabalhar onde há valorização da especialidade
+2. **Retém os formados**: Os residentes formados pelo programa têm incentivo financeiro para permanecer
+3. **Valoriza a formação**: Sinaliza institucionalmente que o município reconhece e valoriza a diferença entre um MFC e um generalista
+
+**Como calcular?**
+
+O adicional é um percentual sobre o salário base do médico:
+
+```{r}
+#| label: cenarios-adicional-especialidade
+#| include: true
+#| message: false
+#| warning: false
+
+# Salário base de médico na APS (estimativa para município de médio porte)
+salario_base_medico <- 15000
+
+# Definir cenários de adicional por especialidade
+cenarios_adicional <- data.frame(
+  cenario = c(
+    "Sem adicional", 
+    "Adicional de 10%", 
+    "Adicional de 20%"
+  ),
+  percentual = c(0, 0.10, 0.20),
+  stringsAsFactors = FALSE
+)
+
+cenarios_adicional$valor_adicional_mensal <- salario_base_medico * cenarios_adicional$percentual
+cenarios_adicional$valor_adicional_anual <- cenarios_adicional$valor_adicional_mensal * 12
+cenarios_adicional$salario_total_mensal <- salario_base_medico + cenarios_adicional$valor_adicional_mensal
+
+knitr::kable(
+  cenarios_adicional,
+  col.names = c("Cenário", "Percentual", "Adicional Mensal (R$)", 
+                "Adicional Anual (R$)", "Salário Total MFC (R$)"),
+  caption = "Cenários de adicional por especialidade MFC (base: salário de R$ 15.000/mês)",
+  digits = 2
+)
+```
+
+**Importante:** O adicional por especialidade é um **custo contínuo e crescente**. Ele incide sobre **todos** os MFC que trabalham no município, não apenas sobre os formados pelo programa. Conforme a cobertura MFC aumenta, este custo também aumenta.
+
+**Exemplo:**
+
+- Ano 3: 13 MFC no município × R$ 1.500/mês (10%) × 12 meses = R$ 234.000/ano
+- Ano 10: 76 MFC no município × R$ 1.500/mês (10%) × 12 meses = R$ 1.368.000/ano
+
+Este é um custo significativo que precisa ser considerado na análise.
+
+## Função: calcular_custos_programa()
+
+Esta função calcula os custos anuais considerando todos os componentes descritos acima. Ela permite configurar diferentes cenários de bolsa e adicional por especialidade.
+
+```{r}
+#| label: funcao-custos-programa
+#| include: true
+#| message: false
+#| warning: false
+
+calcular_custos_programa <- function(
+    expansao_df,
+    bolsa_mensal,
+    custo_preceptor_mensal,
+    incentivo_equipe_mensal,
+    custo_operacional_anual,
+    adicional_especialidade_pct = 0,
+    salario_base_medico = 15000
+) {
+  #' Calcula os custos anuais do programa de residência
+  #'
+  #' @param expansao_df Data frame gerado por simular_expansao_programa()
+  #' @param bolsa_mensal Bolsa total do residente (R$/mês)
+  #' @param custo_preceptor_mensal Adicional de preceptoria (R$/mês)
+  #' @param incentivo_equipe_mensal Incentivo federal por equipe com residente
+  #' @param custo_operacional_anual Custos operacionais fixos (R$/ano)
+  #' @param adicional_especialidade_pct Percentual de adicional para MFC (0.10 = 10%)
+  #' @param salario_base_medico Salário base do médico para cálculo do adicional
+  #'
+  #' @return Data frame com custos detalhados por ano
+  #'
+  #' @details
+  #' Custo líquido = Custo bruto - Receita do incentivo federal
+  #' O adicional por especialidade incide sobre todos os MFC no município.
+  
+  n_anos <- nrow(expansao_df)
+  
+  # 1. Bolsas dos residentes (R1 + R2)
+  custo_bolsas <- expansao_df$n_residentes_total * bolsa_mensal * 12
+  
+  # 2. Custo de preceptoria
+  custo_preceptoria <- expansao_df$n_preceptores * custo_preceptor_mensal * 12
+  
+  # 3. Custos operacionais (só a partir do ano 1)
+  custo_operacional <- ifelse(expansao_df$ano > 0, custo_operacional_anual, 0)
+  
+  # 4. Adicional por especialidade
+  # Incide sobre TODOS os MFC no município (preceptores + formados retidos)
+  adicional_mensal_por_mfc <- salario_base_medico * adicional_especialidade_pct
+  custo_adicional_especialidade <- expansao_df$n_mfc * adicional_mensal_por_mfc * 12
+  
+  # 5. Incentivo federal (receita, não custo)
+  # Cada residente está em uma equipe diferente
+  receita_incentivo <- expansao_df$n_residentes_total * incentivo_equipe_mensal * 12
+  
+  # Calcular totais
+  custo_bruto <- custo_bolsas + custo_preceptoria + custo_operacional + custo_adicional_especialidade
+  custo_liquido <- custo_bruto - receita_incentivo
+  custo_liquido <- pmax(custo_liquido, 0)  # Não pode ser negativo
+  
+  # Montar data frame de resultados
+  custos <- data.frame(
+    ano = expansao_df$ano,
+    n_mfc = expansao_df$n_mfc,
+    n_residentes = expansao_df$n_residentes_total,
+    custo_bolsas = custo_bolsas,
+    custo_preceptoria = custo_preceptoria,
+    custo_operacional = custo_operacional,
+    custo_adicional_esp = custo_adicional_especialidade,
+    custo_bruto = custo_bruto,
+    receita_incentivo = receita_incentivo,
+    custo_liquido = custo_liquido
+  )
+  
+  return(custos)
+}
+```
+
+## Comparação de Cenários de Custo
+
+Vamos comparar quatro cenários para entender o impacto de cada componente:
+
+1. **Cenário Mínimo**: Apenas bolsa MEC, sem adicional por especialidade
+2. **Cenário Intermediário**: Bolsa MEC + MS, sem adicional por especialidade
+3. **Cenário com Adicional 10%**: Bolsa MEC + MS, com 10% de adicional por especialidade
+4. **Cenário com Adicional 20%**: Bolsa MEC + MS, com 20% de adicional por especialidade
+
+```{r}
+#| label: comparacao-cenarios-custo
+#| include: true
+#| message: false
+#| warning: false
+
+# Cenário 1: Mínimo (apenas bolsa MEC, sem adicional)
+custos_minimo <- calcular_custos_programa(
+  expansao_df = expansao,
+  bolsa_mensal = 4106.90,
+  custo_preceptor_mensal = 4000,
+  incentivo_equipe_mensal = 4500,
+  custo_operacional_anual = 50000,
+  adicional_especialidade_pct = 0
+)
+
+# Cenário 2: Intermediário (MEC + MS, sem adicional)
+custos_intermediario <- calcular_custos_programa(
+  expansao_df = expansao,
+  bolsa_mensal = 8106.90,
+  custo_preceptor_mensal = 4000,
+  incentivo_equipe_mensal = 4500,
+  custo_operacional_anual = 50000,
+  adicional_especialidade_pct = 0
+)
+
+# Cenário 3: Com adicional 10%
+custos_adicional_10 <- calcular_custos_programa(
+  expansao_df = expansao,
+  bolsa_mensal = 8106.90,
+  custo_preceptor_mensal = 4000,
+  incentivo_equipe_mensal = 4500,
+  custo_operacional_anual = 50000,
+  adicional_especialidade_pct = 0.10,
+  salario_base_medico = 15000
+)
+
+# Cenário 4: Com adicional 20%
+custos_adicional_20 <- calcular_custos_programa(
+  expansao_df = expansao,
+  bolsa_mensal = 8106.90,
+  custo_preceptor_mensal = 4000,
+  incentivo_equipe_mensal = 4500,
+  custo_operacional_anual = 50000,
+  adicional_especialidade_pct = 0.20,
+  salario_base_medico = 15000
+)
+
+# Comparar totais em 10 anos
+comparacao_custos <- data.frame(
+  cenario = c(
+    "1. Mínimo (MEC)", 
+    "2. Intermediário (MEC+MS)", 
+    "3. MEC+MS + Adicional 10%",
+    "4. MEC+MS + Adicional 20%"
+  ),
+  custo_bruto = c(
+    sum(custos_minimo$custo_bruto),
+    sum(custos_intermediario$custo_bruto),
+    sum(custos_adicional_10$custo_bruto),
+    sum(custos_adicional_20$custo_bruto)
+  ),
+  receita_incentivo = c(
+    sum(custos_minimo$receita_incentivo),
+    sum(custos_intermediario$receita_incentivo),
+    sum(custos_adicional_10$receita_incentivo),
+    sum(custos_adicional_20$receita_incentivo)
+  ),
+  custo_liquido = c(
+    sum(custos_minimo$custo_liquido),
+    sum(custos_intermediario$custo_liquido),
+    sum(custos_adicional_10$custo_liquido),
+    sum(custos_adicional_20$custo_liquido)
+  )
+)
+
+# Formatar para exibição
+comparacao_custos$custo_bruto_fmt <- paste0("R$ ", formatar_numero(comparacao_custos$custo_bruto))
+comparacao_custos$receita_fmt <- paste0("R$ ", formatar_numero(comparacao_custos$receita_incentivo))
+comparacao_custos$custo_liquido_fmt <- paste0("R$ ", formatar_numero(comparacao_custos$custo_liquido))
+
+knitr::kable(
+  comparacao_custos[, c("cenario", "custo_bruto_fmt", "receita_fmt", "custo_liquido_fmt")],
+  col.names = c("Cenário", "Custo Bruto (10 anos)", 
+                "Receita Incentivo", "Custo Líquido (10 anos)"),
+  caption = "Comparação de cenários de custo do programa"
+)
+```
+
+**Análise da comparação:**
+
+- O **incentivo federal** é igual em todos os cenários (depende apenas do número de residentes)
+- A diferença entre cenário 1 e 2 é o **complemento do MS** (R$ 4.000/mês por residente)
+- O **adicional por especialidade** tem impacto crescente ao longo do tempo, pois depende do número de MFC no município
+- Com adicional de 20%, o custo líquido em 10 anos é mais que o dobro do cenário mínimo
+
+## Detalhamento: Cenário Intermediário (base para análises)
+
+O cenário intermediário (bolsa MEC + MS, sem adicional por especialidade) será usado como **cenário base** nas análises seguintes, por representar uma situação realista para municípios com programa credenciado pelo MS.
+
+```{r}
+#| label: detalhamento-custos-intermediario
+#| include: true
+#| message: false
+#| warning: false
+
+# Usar cenário intermediário como base
+custos <- custos_intermediario
+
+# Exibir tabela detalhada (valores em milhares)
+custos_display <- data.frame(
+  ano = custos$ano,
+  n_mfc = custos$n_mfc,
+  n_residentes = custos$n_residentes,
+  bolsas = round(custos$custo_bolsas / 1000, 1),
+  preceptoria = round(custos$custo_preceptoria / 1000, 1),
+  operacional = round(custos$custo_operacional / 1000, 1),
+  bruto = round(custos$custo_bruto / 1000, 1),
+  incentivo = round(custos$receita_incentivo / 1000, 1),
+  liquido = round(custos$custo_liquido / 1000, 1)
+)
+
+knitr::kable(
+  custos_display,
+  col.names = c("Ano", "MFC", "Resid.", "Bolsas", "Precept.", 
+                "Operac.", "Bruto", "Incentivo", "Líquido"),
+  caption = "Custos anuais - Cenário Intermediário (valores em R$ mil)"
+)
+
+# Totais
+cat("\nRESUMO DOS CUSTOS - CENÁRIO INTERMEDIÁRIO (10 anos):\n")
+cat("====================================================\n")
+cat("Custo com bolsas: R$", formatar_numero(sum(custos$custo_bolsas)), "\n")
+cat("Custo com preceptoria: R$", formatar_numero(sum(custos$custo_preceptoria)), "\n")
+cat("Custos operacionais: R$", formatar_numero(sum(custos$custo_operacional)), "\n")
+cat("CUSTO BRUTO TOTAL: R$", formatar_numero(sum(custos$custo_bruto)), "\n")
+cat("Receita incentivo federal: R$", formatar_numero(sum(custos$receita_incentivo)), "\n")
+cat("CUSTO LÍQUIDO TOTAL: R$", formatar_numero(sum(custos$custo_liquido)), "\n")
+```
+
+---
+
+# Parte 4: Funções Econômicas
+
+## Conceito: O que é Valor Presente?
+
+Dinheiro tem **valor temporal**: R$ 100 hoje valem mais que R$ 100 daqui a um ano. Isso acontece por três razões principais:
+
+1. **Inflação**: O dinheiro perde poder de compra ao longo do tempo. R$ 100 hoje compram mais coisas do que R$ 100 daqui a 5 anos.
+
+2. **Custo de oportunidade**: Se você tem R$ 100 hoje, pode investir e receber juros. Daqui a um ano, terá mais do que R$ 100.
+
+3. **Incerteza**: Dinheiro prometido para o futuro é menos certo que dinheiro na mão. Muitas coisas podem acontecer até lá.
+
+O **Valor Presente (VP)** é uma técnica para converter valores futuros em valores equivalentes de hoje. A fórmula é:
+
+$$
+VP = \frac{VF}{(1 + r)^n}
+$$
+
+Onde:
+
+- $VF$ = Valor Futuro (dinheiro no ano $n$)
+- $r$ = Taxa de desconto (ex: 5% = 0,05)
+- $n$ = Número de anos no futuro
+
+**Por que usar taxa de 5%?**
+
+O Ministério da Saúde brasileiro recomenda usar **5% ao ano** como taxa de desconto para avaliações econômicas em saúde. Este valor reflete aproximadamente a taxa real de juros de longo prazo no país.
+
+## Função: calcular_valor_presente()
+
+```{r}
+#| label: funcao-valor-presente
+#| include: true
+#| message: false
+#| warning: false
+
+calcular_valor_presente <- function(valor_futuro, ano, taxa_desconto) {
+  #' Calcula o valor presente de um valor futuro
+  #'
+  #' @param valor_futuro Valor em reais no ano especificado
+  #' @param ano Ano do valor (0 = hoje, 1 = daqui 1 ano, etc.)
+  #' @param taxa_desconto Taxa de desconto anual (ex: 0.05 para 5%)
+  #'
+  #' @return Valor presente em reais
+  
+  valor_presente <- valor_futuro / ((1 + taxa_desconto) ^ ano)
+  
+  return(valor_presente)
+}
+```
+
+## Demonstração do Valor Presente
+
+```{r}
+#| label: demonstracao-valor-presente
+#| include: true
+#| message: false
+#| warning: false
+
+# Demonstrar como R$ 1.000 "valem menos" ao longo do tempo
+demo_vp <- data.frame(
+  ano = 0:10,
+  valor_nominal = 1000
+)
+
+demo_vp$valor_presente <- sapply(demo_vp$ano, function(a) {
+  calcular_valor_presente(1000, a, 0.05)
+})
+
+demo_vp$perda_pct <- round((1 - demo_vp$valor_presente / 1000) * 100, 1)
+
+knitr::kable(
+  demo_vp,
+  col.names = c("Ano", "Valor Nominal (R$)", "Valor Presente (R$)", "\"Perda\" (%)"),
+  digits = c(0, 0, 2, 1),
+  caption = "Efeito do desconto temporal sobre R$ 1.000 (taxa 5% a.a.)"
+)
+```
+
+**Como interpretar:**
+
+- R$ 1.000 **hoje** (ano 0) valem R$ 1.000
+- R$ 1.000 **daqui a 5 anos** valem R$ 783,53 em valores de hoje
+- R$ 1.000 **daqui a 10 anos** valem R$ 613,91 em valores de hoje
+
+**Implicação para nossa análise:**
+
+Os custos do programa acontecem nos primeiros anos (mais "caros" em valor presente), enquanto os benefícios se acumulam ao longo do tempo (mais "baratos" em valor presente). O desconto penaliza projetos com retorno tardio.
+
+---
+
+## Conceito: O que é Valor Presente Líquido (VPL)?
+
+O **Valor Presente Líquido (VPL)** é o indicador mais importante para avaliar a viabilidade econômica de um projeto. Ele responde à pergunta: **"Este projeto gera valor ou destrói valor?"**
+
+O VPL é calculado somando todos os fluxos de caixa futuros (benefícios menos custos), convertidos para valor presente:
+
+$$
+VPL = \sum_{t=0}^{T} \frac{B_t - C_t}{(1 + r)^t}
+$$
+
+Onde:
+
+- $B_t$ = Benefício no ano $t$
+- $C_t$ = Custo no ano $t$
+- $r$ = Taxa de desconto
+- $T$ = Horizonte temporal
+
+**Como interpretar o VPL:**
+
+| VPL | Interpretação |
+|-----|---------------|
+| VPL > 0 | Os benefícios superam os custos (considerando o valor do dinheiro no tempo). **Projeto economicamente viável.** |
+| VPL = 0 | Os benefícios igualam os custos. Projeto "empata" - retorno igual ao custo de oportunidade. |
+| VPL < 0 | Os custos superam os benefícios. **Projeto economicamente inviável** do ponto de vista estritamente financeiro. |
+
+**Importante:** Um VPL negativo não significa automaticamente que o projeto não deva ser implementado. Existem benefícios não monetizáveis (qualidade de vida, equidade no acesso, formação de recursos humanos) que podem justificar o investimento mesmo com VPL negativo.
+
+## Função: calcular_vpl()
+
+```{r}
+#| label: funcao-vpl
+#| include: true
+#| message: false
+#| warning: false
+
+calcular_vpl <- function(fluxos_caixa, taxa_desconto) {
+  #' Calcula o Valor Presente Líquido de uma série de fluxos de caixa
+  #'
+  #' @param fluxos_caixa Vetor com os saldos anuais (benefício - custo)
+  #' @param taxa_desconto Taxa de desconto anual
+  #'
+  #' @return VPL em R$
+  
+  # Identificar anos (começa em 0)
+  anos <- seq_along(fluxos_caixa) - 1
+  
+  # Calcular valor presente de cada fluxo
+  valores_presentes <- mapply(function(valor, ano) {
+    calcular_valor_presente(valor, ano, taxa_desconto)
+  }, fluxos_caixa, anos)
+  
+  # Somar todos os valores presentes
+  vpl <- sum(valores_presentes)
+  
+  return(vpl)
+}
+```
+
+---
+
+## Conceito: O que é ROI (Retorno sobre Investimento)?
+
+O **ROI (Return on Investment)** é uma medida percentual que indica quanto de retorno se obtém para cada real investido. É um indicador simples e intuitivo.
+
+$$
+ROI = \frac{Benefício_{total} - Custo_{total}}{Custo_{total}} \times 100\%
+$$
+
+**Como interpretar:**
+
+| ROI | Interpretação |
+|-----|---------------|
+| ROI = 50% | Para cada R$ 100 investidos, obteve-se R$ 150 de retorno (lucro de R$ 50) |
+| ROI = 0% | Para cada R$ 100 investidos, obteve-se R$ 100 de retorno (empate) |
+| ROI = -30% | Para cada R$ 100 investidos, obteve-se R$ 70 de retorno (prejuízo de R$ 30) |
+
+## Conceito: O que é RCB (Razão Custo-Benefício)?
+
+A **RCB (Razão Custo-Benefício)** indica quantos reais de benefício são gerados para cada real de custo:
+
+$$
+RCB = \frac{Benefício_{total}}{Custo_{total}}
+$$
+
+**Como interpretar:**
+
+| RCB | Interpretação |
+|-----|---------------|
+| RCB > 1 | Benefícios superam custos. Projeto gera valor. |
+| RCB = 1 | Benefícios igualam custos. Empate. |
+| RCB < 1 | Custos superam benefícios. Projeto não gera valor financeiro. |
+
+**Exemplo:** RCB = 1,5 significa que para cada R$ 1 investido, obtém-se R$ 1,50 de benefício.
+
+## Funções: calcular_roi() e calcular_rcb()
+
+```{r}
+#| label: funcoes-roi-rcb
+#| include: true
+#| message: false
+#| warning: false
+
+calcular_roi <- function(custo_total, beneficio_total) {
+  #' Calcula o Retorno sobre Investimento
+  #'
+  #' @param custo_total Soma de todos os custos
+  #' @param beneficio_total Soma de todos os benefícios
+  #'
+  #' @return ROI em percentual
+  
+  roi <- ((beneficio_total - custo_total) / custo_total) * 100
+  return(roi)
+}
+
+calcular_rcb <- function(custo_total, beneficio_total) {
+  #' Calcula a Razão Custo-Benefício
+  #'
+  #' @param custo_total Soma de todos os custos
+  #' @param beneficio_total Soma de todos os benefícios
+  #'
+  #' @return RCB (adimensional)
+  
+  rcb <- beneficio_total / custo_total
+  return(rcb)
+}
+```
+
+---
+
+## Conceito: O que é Payback (Tempo de Retorno)?
+
+O **Payback** é o tempo necessário para "recuperar" o investimento inicial. É o momento em que os benefícios acumulados se igualam aos custos acumulados.
+
+**Existem dois tipos:**
+
+1. **Payback Simples**: Usa valores nominais (sem considerar o valor do dinheiro no tempo). É mais fácil de calcular e comunicar, mas menos preciso.
+
+2. **Payback Descontado**: Usa valores presentes. É tecnicamente mais correto, mas resulta em paybacks mais longos.
+
+**Como interpretar:**
+
+- **Payback = 5 anos**: O investimento se paga em 5 anos. A partir do ano 6, todo benefício é "lucro".
+- **Payback > horizonte**: O investimento não se paga no período analisado.
+
+## Função: calcular_payback()
+
+```{r}
+#| label: funcao-payback
+#| include: true
+#| message: false
+#| warning: false
+
+calcular_payback <- function(custos, beneficios, taxa_desconto = NULL) {
+  #' Calcula o período de payback (simples ou descontado)
+  #'
+  #' @param custos Vetor de custos anuais
+  #' @param beneficios Vetor de benefícios anuais
+  #' @param taxa_desconto Se NULL, calcula payback simples.
+  #'                      Se informado, calcula payback descontado.
+  #'
+  #' @return Ano em que o payback é atingido (ou NA se não atingido)
+  
+  n_anos <- length(custos)
+  anos <- seq_along(custos) - 1  # Começa em 0
+  
+  if (is.null(taxa_desconto)) {
+    # Payback simples: usar valores nominais
+    custo_acum <- cumsum(custos)
+    benef_acum <- cumsum(beneficios)
+  } else {
+    # Payback descontado: converter para valor presente
+    custo_vp <- sapply(seq_along(custos), function(i) {
+      calcular_valor_presente(custos[i], anos[i], taxa_desconto)
+    })
+    benef_vp <- sapply(seq_along(beneficios), function(i) {
+      calcular_valor_presente(beneficios[i], anos[i], taxa_desconto)
+    })
+    custo_acum <- cumsum(custo_vp)
+    benef_acum <- cumsum(benef_vp)
+  }
+  
+  # Encontrar primeiro ano onde benefício acumulado >= custo acumulado
+  saldo_acum <- benef_acum - custo_acum
+  payback_idx <- which(saldo_acum >= 0)[1]
+  
+  if (is.na(payback_idx)) {
+    return(NA)  # Payback não atingido no horizonte
+  } else {
+    return(anos[payback_idx])
+  }
+}
+```
+
+---
+
+# Resumo do Capítulo
+
+## Funções Criadas
+
+```{r}
+#| label: resumo-funcoes
+#| include: true
+#| message: false
+#| warning: false
+
+funcoes_criadas <- data.frame(
+  funcao = c(
+    "calcular_eventos_por_cobertura()",
+    "calcular_eventos_evitados()",
+    "calcular_economia()",
+    "simular_expansao_programa()",
+    "calcular_custos_programa()",
+    "calcular_valor_presente()",
+    "calcular_vpl()",
+    "calcular_roi()",
+    "calcular_rcb()",
+    "calcular_payback()"
+  ),
+  finalidade = c(
+    "Eventos esperados para um nível de cobertura MFC",
+    "Diferença de eventos entre dois cenários",
+    "Converter eventos evitados em economia (R$)",
+    "Evolução do programa ao longo dos anos",
+    "Custos anuais (múltiplos cenários de bolsa e adicional)",
+    "Converter valor futuro em valor presente",
+    "Indicador de viabilidade econômica",
+    "Retorno percentual sobre investimento",
+    "Benefício por real investido",
+    "Tempo para recuperar o investimento"
+  )
+)
+
+knitr::kable(
+  funcoes_criadas,
+  col.names = c("Função", "Finalidade"),
+  caption = "Resumo das funções desenvolvidas"
+)
+```
+
+## Cenários de Custo Disponíveis
+
+```{r}
+#| label: resumo-cenarios
+#| include: true
+#| message: false
+#| warning: false
+
+cat("CENÁRIOS DE CUSTO CONFIGURÁVEIS\n")
+cat("================================\n\n")
+
+cat("1. COMPOSIÇÃO DA BOLSA:\n")
+cat("   • Mínimo: apenas bolsa MEC (R$ 4.106,90/mês)\n")
+cat("   • Intermediário: MEC + MS (R$ 8.106,90/mês) [CENÁRIO BASE]\n")
+cat("   • Completo: MEC + MS + Municipal (R$ 10.106,90/mês)\n\n")
+
+cat("2. ADICIONAL POR ESPECIALIDADE MFC:\n")
+cat("   • Sem adicional: MFC ganha igual ao generalista\n")
+cat("   • 10% adicional: MFC ganha 10% a mais (R$ 1.500/mês extra)\n")
+cat("   • 20% adicional: MFC ganha 20% a mais (R$ 3.000/mês extra)\n\n")
+
+cat("CENÁRIO BASE PARA ANÁLISES:\n")
+cat("   • Bolsa: MEC + MS (R$ 8.106,90/mês)\n")
+cat("   • Adicional por especialidade: 0%\n")
+cat("   • Preceptoria: R$ 4.000/mês por preceptor\n")
+cat("   • Incentivo federal: R$ 4.500/mês por equipe com residente\n")
+cat("   • Custos operacionais: R$ 50.000/ano\n")
+```
+
+---
+
+# Próximos Passos
+
+No próximo capítulo (Simulação de Cenários), utilizaremos estas funções para:
+
+1. **Executar a simulação completa** do cenário base (15 vagas/ano, 60% retenção)
+2. **Calcular benefícios anuais** por categoria (exames, encaminhamentos, internações)
+3. **Montar o fluxo de caixa** consolidado
+4. **Comparar cenário instantâneo (100% MFC)** vs cenário com expansão gradual
+5. **Calcular todos os indicadores econômicos** (VPL, ROI, RCB, Payback)
+6. **Analisar diferentes cenários de custo** (com/sem adicional por especialidade)

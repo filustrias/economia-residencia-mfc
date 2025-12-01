@@ -1,0 +1,225 @@
+---
+title: "Metodologia Detalhada"
+---
+
+# Fontes de Dados
+
+## Estudos Primários
+
+Os dados utilizados neste modelo provêm de três estudos de coorte retrospectivos realizados na cidade do Rio de Janeiro, Brasil.
+
+### Estudo 1: Internações por ICSAP
+
+**Referência**: Jantsch AG, et al. Hospitalizations for ambulatory care sensitive conditions in patients treated by family physicians vs non-family physicians in Brazil. PLOS Global Public Health. 2023.
+
+**Desenho**: Coorte retrospectiva
+
+**População**: 596.212 pacientes cadastrados na APS do Rio de Janeiro
+
+**Período**: 2013-2016
+
+**Desfecho**: Internações por condições sensíveis à atenção primária (ICSAP)
+
+**Exposição**: Tipo de médico (MFC vs. generalista)
+
+### Estudo 2: Encaminhamentos para Especialistas
+
+**Referência**: Jantsch AG, et al. Referral rates to secondary care by family physicians vs non-family physicians in primary care in Brazil. BMJ Open. 2023.
+
+**Desenho**: Coorte retrospectiva
+
+**População**: 504.940 pacientes
+
+**Período**: 2014-2017
+
+**Desfecho**: Encaminhamentos para especialidades, cirurgias e exames diagnósticos
+
+### Estudo 3: Solicitação de Exames Laboratoriais
+
+**Referência**: Jantsch AG, et al. Laboratory test ordering by family physicians versus non-family physicians in primary care. BMC Family Practice. 2024.
+
+**Desenho**: Coorte retrospectiva
+
+**População**: 999.364 pacientes
+
+**Período**: 2015-2018
+
+**Desfecho**: Solicitação de 30 tipos de exames laboratoriais
+
+## Fontes de Custos
+
+### SIGTAP
+
+O Sistema de Gerenciamento da Tabela de Procedimentos, Medicamentos e OPM do SUS (SIGTAP) fornece os valores de referência para procedimentos ambulatoriais.
+
+- **Exames laboratoriais**: Valores por tipo de exame
+- **Exames diagnósticos**: Valores por procedimento
+- **Consultas**: Valor base de R$ 10,00
+
+### SIH-SUS
+
+O Sistema de Informações Hospitalares do SUS (SIH-SUS) fornece valores médios de AIH por tipo de internação.
+
+**Limitações**:
+
+- Representa apenas repasse federal
+- Não inclui complementação estadual/municipal
+- Subestima custo real da internação
+
+---
+
+# Modelo Econômico
+
+## Estrutura do Modelo
+
+O modelo é um **modelo de simulação determinístico** com análise de sensibilidade probabilística.
+
+### Pressupostos Fundamentais
+
+1. **Efeito causal**: A diferença de desfechos entre MFC e generalistas é atribuível à formação diferenciada
+
+2. **Linearidade**: O efeito do RR é proporcional à cobertura de MFC
+
+3. **Independência**: Os efeitos sobre diferentes desfechos são independentes
+
+4. **Estabilidade**: Os RRs observados nos estudos se mantêm ao longo do tempo
+
+### Horizonte Temporal
+
+- **Análise base**: 10 anos
+- **Justificativa**: Período suficiente para maturação do programa (formação de 8 turmas completas)
+- **Limitação**: Benefícios de longo prazo não capturados
+
+### Taxa de Desconto
+
+- **Valor base**: 5% ao ano
+- **Fonte**: Diretrizes Metodológicas do Ministério da Saúde (2014)
+- **Sensibilidade**: 3% a 7%
+
+## Fórmulas do Modelo
+
+### Conversão para Cenário Baseline
+
+$$
+\text{Taxa}_{Gen} = \frac{\text{Valor}_{obs}}{p_{MFC} \times RR + p_{Gen}}
+$$
+
+Onde:
+
+- $\text{Valor}_{obs}$: Valor observado no estudo
+- $p_{MFC}$: Proporção de MFC no estudo (0,336)
+- $p_{Gen}$: Proporção de generalistas (0,664)
+- $RR$: Risco relativo
+
+### Eventos por Cobertura
+
+$$
+\text{Eventos}(p) = \text{Taxa}_{Gen} \times [p \times RR + (1-p)]
+$$
+
+Onde $p$ é a proporção de MFC.
+
+### Valor Presente
+
+$$
+VP = \frac{VF}{(1+r)^n}
+$$
+
+Onde:
+
+- $VF$: Valor futuro
+- $r$: Taxa de desconto
+- $n$: Número de períodos
+
+### Valor Presente Líquido
+
+$$
+VPL = \sum_{t=0}^{T} \frac{B_t - C_t}{(1+r)^t}
+$$
+
+Onde:
+
+- $B_t$: Benefício no ano $t$
+- $C_t$: Custo no ano $t$
+- $T$: Horizonte temporal
+
+### ROI
+
+$$
+ROI = \frac{\sum B - \sum C}{\sum C} \times 100
+$$
+
+### RCB
+
+$$
+RCB = \frac{\sum B}{\sum C}
+$$
+
+---
+
+# Análise de Sensibilidade
+
+## Sensibilidade Univariada
+
+Variação de um parâmetro por vez, mantendo os demais constantes.
+
+**Parâmetros analisados**:
+
+| Parâmetro | Base | Mínimo | Máximo |
+|-----------|------|--------|--------|
+| Taxa de retenção | 60% | 40% | 80% |
+| Fator correção AIH | 1,5x | 1,0x | 2,0x |
+| Custo consulta | R$ 50 | R$ 30 | R$ 80 |
+| Número de vagas | 10 | 5 | 15 |
+| Taxa de desconto | 5% | 3% | 7% |
+
+## Análise de Cenários
+
+Combinação de parâmetros para criar cenários coerentes:
+
+**Cenário Pessimista**:
+
+- Retenção: 40%
+- Fator AIH: 1,0x
+- Custo consulta: R$ 30
+
+**Cenário Otimista**:
+
+- Retenção: 80%
+- Fator AIH: 2,0x
+- Custo consulta: R$ 80
+
+## Análise de Monte Carlo
+
+Simulação probabilística com n = 1.000 iterações.
+
+**Distribuições**:
+
+- Taxa de retenção: Uniforme (40%, 80%)
+- Fator AIH: Uniforme (1,0; 2,0)
+- Custo consulta: Uniforme (R$ 30, R$ 80)
+
+---
+
+# Validação do Modelo
+
+## Validação Interna
+
+1. **Verificação de fórmulas**: Conferência manual de cálculos
+2. **Testes de limites**: Verificação de comportamento em valores extremos
+3. **Consistência**: Soma de componentes = total
+
+## Validação Externa
+
+1. **Comparação com literatura**: Resultados compatíveis com estudos internacionais
+2. **Face validity**: Revisão por especialistas em economia da saúde
+3. **Plausibilidade**: Resultados clinicamente sensatos
+
+## Limitações Metodológicas
+
+1. **Viés de seleção**: Pacientes de MFC podem diferir sistematicamente
+2. **Confundimento residual**: Variáveis não medidas
+3. **Generalização**: Dados de uma cidade podem não representar outras regiões
+4. **Causalidade**: Estudos observacionais não estabelecem causalidade definitiva
+5. **Horizonte**: 10 anos pode não capturar benefícios de longo prazo
+6. **Custos**: Valores SIGTAP/AIH subestimam custos reais

@@ -1,0 +1,8 @@
+---
+title: "Referências"
+---
+
+# Referências Bibliográficas
+
+::: {#refs}
+:::

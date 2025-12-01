@@ -1,0 +1,643 @@
+---
+title: "Metodologia e Funções de Cálculo"
+---
+
+# Introdução
+
+Este capítulo apresenta a metodologia do modelo econômico e as funções de cálculo utilizadas na simulação.
+
+**Estrutura do capítulo:**
+
+1. Conversão dos dados observados para o cenário baseline
+2. Cálculo da economia em saúde
+3. Simulação da evolução do programa
+4. Cálculo dos indicadores econômicos
+
+---
+
+# Preparação
+
+```{r}
+#| label: setup
+#| include: true
+#| message: false
+#| warning: false
+
+options(scipen = 999, digits = 2, OutDec = ",")
+
+formatar_numero <- function(x, decimais = 0) {
+  format(round(x, decimais), big.mark = ".", decimal.mark = ",", nsmall = decimais)
+}
+
+formatar_moeda <- function(x) {
+  paste0("R$ ", formatar_numero(x))
+}
+```
+
+---
+
+# Parte 1: Conversão para o Cenário Baseline
+
+## O Problema
+
+Os estudos originais observaram eventos em uma população **mista**: 33,6% dos pacientes eram atendidos por médicos de família e 66,4% por médicos generalistas.
+
+Para calcular a economia potencial, precisamos saber: **quantos eventos ocorreriam se 100% da população fosse atendida por generalistas?**
+
+Este é o **cenário baseline** (0% de cobertura por médicos de família).
+
+## A Solução Matemática
+
+Se chamarmos de:
+
+- $E_{obs}$ = eventos observados na população mista
+- $E_{base}$ = eventos no cenário baseline (0% médicos de família)
+- $p_{MFC}$ = proporção atendida por médicos de família (0,336)
+- $p_{gen}$ = proporção atendida por generalistas (0,664)
+- $RR$ = risco relativo (taxa em médicos de família ÷ taxa em generalistas)
+
+A relação entre eventos observados e baseline é:
+
+$$E_{obs} = E_{base} \times (p_{MFC} \times RR + p_{gen})$$
+
+Resolvendo para $E_{base}$:
+
+$$E_{base} = \frac{E_{obs}}{p_{MFC} \times RR + p_{gen}}$$
+
+## Função de Conversão
+
+```{r}
+#| label: funcao-conversao
+
+converter_para_baseline <- function(valor_observado, 
+                                     risco_relativo, 
+                                     proporcao_mfc = 0.336, 
+                                     proporcao_gen = 0.664,
+                                     populacao_estudo = 600000, 
+                                     populacao_alvo = 500000) {
+  #' Converte eventos observados para o cenário baseline (0% médicos de família)
+  #'
+
+  #' @param valor_observado Número de eventos observados no estudo
+
+  #' @param risco_relativo Razão entre taxa de médicos de família e generalistas
+  #' @param proporcao_mfc Proporção de pacientes atendidos por médicos de família no estudo
+  #' @param proporcao_gen Proporção de pacientes atendidos por generalistas no estudo
+  #' @param populacao_estudo População do estudo original
+  #' @param populacao_alvo População do município simulado
+  #'
+  #' @return Número de eventos esperados no baseline para a população alvo
+  
+  # Calcular o denominador (fator de mistura)
+  denominador <- (proporcao_mfc * risco_relativo) + proporcao_gen
+  
+  # Converter para baseline na população do estudo
+  baseline_estudo <- valor_observado / denominador
+  
+  # Ajustar para a população alvo
+  baseline_alvo <- baseline_estudo * (populacao_alvo / populacao_estudo)
+  
+  return(baseline_alvo)
+}
+```
+
+## Exemplo: Hemograma
+
+Vamos aplicar a função ao exame de hemograma:
+
+```{r}
+#| label: exemplo-hemograma
+
+# Dados do estudo
+hemograma_observado <- 51757  # eventos/ano na população mista
+hemograma_rr <- 0.53          # médicos de família solicitam 53% do que generalistas
+
+# Converter para baseline
+hemograma_baseline <- converter_para_baseline(
+  valor_observado = hemograma_observado,
+  risco_relativo = hemograma_rr
+)
+```
+
+| Cenário | Hemogramas/ano |
+|---------|----------------|
+| Observado (população mista) | `r formatar_numero(hemograma_observado)` |
+| Baseline (0% médicos de família) | `r formatar_numero(hemograma_baseline)` |
+| Com 100% médicos de família | `r formatar_numero(hemograma_baseline * hemograma_rr)` |
+
+**Interpretação:** Se toda a população fosse atendida por generalistas, esperaríamos `r formatar_numero(hemograma_baseline)` hemogramas por ano. Com 100% de médicos de família, esse número cairia para `r formatar_numero(hemograma_baseline * hemograma_rr)`.
+
+---
+
+# Parte 2: Cálculo da Economia em Saúde
+
+## Conceito
+
+A economia em saúde vem da **diferença** entre o que seria gasto com generalistas e o que é gasto com médicos de família:
+
+$$\text{Economia} = E_{base} \times (1 - RR) \times \text{Custo unitário}$$
+
+Onde:
+
+- $E_{base}$ = eventos no baseline
+- $(1 - RR)$ = redução proporcional de eventos
+- Custo unitário = valor do procedimento na tabela do Sistema Único de Saúde
+
+## Função Principal: Economia com 100% de Cobertura
+
+Esta função calcula a economia anual se **todas** as equipes fossem cobertas por médicos de família:
+
+```{r}
+#| label: funcao-economia-100pct
+
+calcular_economia_total <- function(fator_correcao_internacoes = 1.5) {
+  #' Calcula a economia anual em saúde com 100% de cobertura por médicos de família
+  #'
+  #' @param fator_correcao_internacoes Fator para corrigir defasagem da tabela de internações
+  #'
+  #' @return Lista com economia por categoria e total
+  
+  custo_consulta <- 50.00
+  
+
+  # ==========================================
+  # ENCAMINHAMENTOS AMBULATORIAIS
+  # ==========================================
+  
+  enc_amb <- data.frame(
+    risco_relativo = c(0.40, 0.50, 0.45, 0.49, 0.54, 0.74, 0.57, 0.54,
+                       0.63, 0.42, 0.38, 0.35, 0.47, 1.17, 1.68, 1.09,
+                       0.71, 0.52, 0.86, 0.66),
+    observado = c(2008, 1835, 897, 4144, 903, 290, 1762, 480,
+                  603, 1021, 867, 1030, 830, 2390, 1173, 8713,
+                  2269, 4934, 738, 991)
+  )
+  
+  enc_amb$baseline <- mapply(converter_para_baseline, 
+                              enc_amb$observado, 
+                              enc_amb$risco_relativo)
+  enc_amb$economia <- enc_amb$baseline * (1 - enc_amb$risco_relativo) * custo_consulta
+  economia_enc_amb <- sum(enc_amb$economia)
+  
+  # ==========================================
+  # ENCAMINHAMENTOS CIRÚRGICOS
+  # ==========================================
+  
+  enc_cir <- data.frame(
+    risco_relativo = c(1.21, 0.87, 1.22, 0.91, 1.19, 0.87),
+    observado = c(4458, 989, 147, 1968, 859, 359)
+  )
+  
+  enc_cir$baseline <- mapply(converter_para_baseline, 
+                              enc_cir$observado, 
+                              enc_cir$risco_relativo)
+  enc_cir$economia <- enc_cir$baseline * (1 - enc_cir$risco_relativo) * custo_consulta
+  economia_enc_cir <- sum(enc_cir$economia)
+  
+  # ==========================================
+  # EXAMES DIAGNÓSTICOS
+  # ==========================================
+  
+  diag <- data.frame(
+    risco_relativo = c(0.66, 0.96, 0.76, 0.49, 0.72, 0.98),
+    observado = c(1201, 385, 510, 1090, 431, 2424),
+    custo = c(39.94, 13.20, 86.00, 48.16, 30.00, 45.00)
+  )
+  
+  diag$baseline <- mapply(converter_para_baseline, 
+                           diag$observado, 
+                           diag$risco_relativo)
+  diag$economia <- diag$baseline * (1 - diag$risco_relativo) * diag$custo
+  economia_diag <- sum(diag$economia)
+  
+  # ==========================================
+  # EXAMES LABORATORIAIS
+  # ==========================================
+  
+  lab <- data.frame(
+    risco_relativo = c(0.53, 0.85, 0.29, 0.42, 0.73, 0.46, 0.64, 0.81, 
+                       0.94, 0.41, 0.82, 0.23, 0.71, 0.08, 0.13, 0.56, 
+                       0.78, 0.48, 0.47, 0.69, 0.64, 0.74, 0.09, 0.67, 
+                       0.44, 0.56, 0.60, 0.48, 0.47, 0.36),
+    observado = c(51757, 43746, 22577, 10517, 18265, 9072, 25720, 34673, 
+                  31127, 22163, 33828, 15603, 11679, 791, 886, 5432, 
+                  2304, 9181, 9363, 3505, 4386, 1957, 604, 41333, 
+                  1866, 674, 863, 210, 216, 4365),
+    custo = c(4.11, 1.85, 1.85, 1.85, 1.85, 1.85, 7.86, 1.85, 
+              3.51, 3.51, 3.51, 1.85, 8.96, 8.71, 8.71, 11.60, 
+              2.01, 2.01, 2.01, 2.01, 3.51, 2.63, 1.65, 3.70, 
+              1.85, 10.15, 10.15, 18.55, 18.55, 16.42)
+  )
+  
+  lab$baseline <- mapply(converter_para_baseline, 
+                          lab$observado, 
+                          lab$risco_relativo)
+  lab$economia <- lab$baseline * (1 - lab$risco_relativo) * lab$custo
+  economia_lab <- sum(lab$economia)
+  
+  # ==========================================
+  # INTERNAÇÕES EVITÁVEIS
+  # ==========================================
+  
+  internacoes <- data.frame(
+    risco_relativo = c(0.83, 0.76, 0.74, 0.62, 0.52, 0.79, 0.35, 0.78, 
+                       0.45, 0.57, 0.36, 0.82, 1.06, 0.59),
+    observado = c(128, 160, 244, 271, 230, 86, 54, 136, 
+                  45, 114, 116, 331, 28, 41),
+    custo = c(761.35, 1178.17, 1756.62, 4774.49, 2553.91, 957.47, 
+              853.21, 646.69, 527.15, 1969.07, 1969.07, 679.82, 
+              502.60, 612.67)
+  )
+  
+  internacoes$baseline <- mapply(converter_para_baseline, 
+                                  internacoes$observado, 
+                                  internacoes$risco_relativo)
+  internacoes$economia <- internacoes$baseline * 
+                           (1 - internacoes$risco_relativo) * 
+                           internacoes$custo * 
+                           fator_correcao_internacoes
+  economia_internacoes <- sum(internacoes$economia)
+  
+  # ==========================================
+  # TOTALIZAÇÃO
+  # ==========================================
+  
+  economia_encaminhamentos <- economia_enc_amb + economia_enc_cir
+  economia_exames <- economia_diag + economia_lab
+  economia_total <- economia_encaminhamentos + economia_exames + economia_internacoes
+  
+  return(list(
+    encaminhamentos = economia_encaminhamentos,
+    exames = economia_exames,
+    internacoes = economia_internacoes,
+    total = economia_total
+  ))
+}
+```
+
+## Resultado: Economia Potencial
+
+```{r}
+#| label: resultado-economia
+
+economia <- calcular_economia_total(fator_correcao_internacoes = 1.5)
+```
+
+| Categoria | Economia Anual (100% cobertura) | Percentual |
+|-----------|--------------------------------|------------|
+| Encaminhamentos | `r formatar_moeda(economia$encaminhamentos)` | `r round(economia$encaminhamentos / economia$total * 100, 1)`% |
+| Exames | `r formatar_moeda(economia$exames)` | `r round(economia$exames / economia$total * 100, 1)`% |
+| Internações | `r formatar_moeda(economia$internacoes)` | `r round(economia$internacoes / economia$total * 100, 1)`% |
+| **Total** | **`r formatar_moeda(economia$total)`** | **100%** |
+
+**Interpretação:** Se todas as 100 equipes do município fossem cobertas por médicos de família, a economia anual seria de aproximadamente `r formatar_moeda(economia$total)`.
+
+---
+
+# Parte 3: Economia do Modelo de Residência
+
+## Conceito
+
+O modelo de residência gera economia porque **1 preceptor supervisiona 2 equipes** com apoio de 4 residentes, enquanto o modelo tradicional precisaria de **2 médicos**.
+
+## Parâmetros de Custo
+
+```{r}
+#| label: parametros-custo
+
+custos <- list(
+  # Médico
+  salario_base = 16000,
+  encargos_pct = 0.70,
+  
+
+  # Preceptor
+  adicional_preceptoria_pct = 0.10,
+  
+  # Residente
+  bolsa_mec = 4106.90,
+  complemento_ms = 4000.00,
+  
+  # Incentivo
+  incentivo_federal = 4500,
+  
+  # Operacional
+  custo_operacional_anual = 50000
+)
+
+# Cálculos derivados
+custos$custo_medico <- custos$salario_base * (1 + custos$encargos_pct)
+custos$adicional_preceptoria <- custos$salario_base * custos$adicional_preceptoria_pct
+custos$custo_preceptor <- custos$custo_medico + 
+                           custos$adicional_preceptoria * (1 + custos$encargos_pct)
+custos$bolsa_total <- custos$bolsa_mec + custos$complemento_ms
+```
+
+## Comparativo: Modelo Tradicional versus Residência
+
+```{r}
+#| label: comparativo-modelos
+
+# Para 2 equipes:
+
+# Modelo tradicional
+custo_tradicional <- 2 * custos$custo_medico * 12
+
+# Modelo residência
+custo_preceptor_anual <- custos$custo_preceptor * 12
+custo_residentes_anual <- 4 * custos$bolsa_total * 12
+receita_incentivo_anual <- 2 * custos$incentivo_federal * 12
+custo_residencia <- custo_preceptor_anual + custo_residentes_anual - receita_incentivo_anual
+
+# Economia
+economia_modelo <- custo_tradicional - custo_residencia
+```
+
+| Item | Modelo Tradicional | Modelo Residência |
+|------|-------------------|-------------------|
+| Médicos/Preceptor | 2 médicos | 1 preceptor |
+| Custo médicos/preceptor | `r formatar_moeda(2 * custos$custo_medico * 12)` | `r formatar_moeda(custo_preceptor_anual)` |
+| Residentes | - | 4 residentes |
+| Custo residentes | - | `r formatar_moeda(custo_residentes_anual)` |
+| Incentivo federal | - | `r formatar_moeda(-receita_incentivo_anual)` |
+| **Custo total anual** | **`r formatar_moeda(custo_tradicional)`** | **`r formatar_moeda(custo_residencia)`** |
+
+**Economia por par de equipes-escola:** `r formatar_moeda(economia_modelo)` por ano
+
+---
+
+# Parte 4: Simulação do Programa
+
+## Função de Simulação
+
+Esta função simula a evolução do programa ao longo de 10 anos:
+
+```{r}
+#| label: funcao-simulacao
+
+simular_programa <- function(
+    taxa_retencao = 0.60,
+    adicional_especialidade_pct = 0.10,
+    fator_correcao_internacoes = 1.5,
+    taxa_desconto = 0.05,
+    horizonte = 10
+) {
+  #' Simula o programa de residência e calcula indicadores econômicos
+  #'
+  #' @param taxa_retencao Proporção dos formados que permanece no município
+  #' @param adicional_especialidade_pct Adicional salarial para médicos de família (sobre salário base)
+  #' @param fator_correcao_internacoes Fator de correção para custos de internação
+  #' @param taxa_desconto Taxa de desconto anual para valor presente
+  #' @param horizonte Número de anos da simulação
+  #'
+  #' @return Lista com indicadores e dados anuais
+  
+  # Parâmetros fixos
+  salario_base <- 16000
+  encargos_pct <- 0.70
+  bolsa_total <- 4106.90 + 4000.00
+  incentivo_federal <- 4500
+  custo_operacional <- 50000
+  n_equipes_total <- 100
+  
+  # Custos calculados
+  custo_medico <- salario_base * (1 + encargos_pct)
+  custo_preceptor <- custo_medico + salario_base * 0.10 * (1 + encargos_pct)
+  
+  # Vetores de evolução
+  anos <- 0:horizonte
+  n_anos <- length(anos)
+  
+  n_preceptores <- c(0, 4, rep(8, horizonte - 1))
+  n_equipes_escola <- c(0, 8, rep(16, horizonte - 1))
+  n_residentes <- c(0, 16, rep(32, horizonte - 1))
+  
+  # Formados retidos (acumulado)
+  formados_retidos <- numeric(n_anos)
+  for (i in 1:n_anos) {
+    if (i <= 3) {
+      formados_retidos[i] <- 0
+    } else if (i == 4) {
+      formados_retidos[i] <- round(16 * taxa_retencao)
+    } else {
+      formados_retidos[i] <- formados_retidos[i-1] + round(16 * taxa_retencao)
+    }
+  }
+  
+  # Cobertura por médicos de família
+  equipes_mfc <- pmin(n_equipes_escola + formados_retidos, n_equipes_total)
+  cobertura_mfc <- equipes_mfc / n_equipes_total
+  
+  # ==========================================
+  # ECONOMIA DO MODELO DE RESIDÊNCIA
+  # ==========================================
+  
+  custo_2medicos <- 2 * custo_medico * 12
+  custo_1prec_4res <- custo_preceptor * 12 + 
+                       4 * bolsa_total * 12 - 
+                       2 * incentivo_federal * 12
+  economia_por_par <- custo_2medicos - custo_1prec_4res
+  economia_modelo <- (n_equipes_escola / 2) * economia_por_par
+  
+  # ==========================================
+  # INVESTIMENTO EM FIXAÇÃO
+  # ==========================================
+  
+  adicional_mensal <- salario_base * adicional_especialidade_pct
+  investimento_fixacao <- formados_retidos * adicional_mensal * (1 + encargos_pct) * 12
+  
+  # ==========================================
+  # CUSTO OPERACIONAL
+  # ==========================================
+  
+  custo_operacional_vetor <- c(0, rep(custo_operacional, horizonte))
+  
+  # ==========================================
+  # ECONOMIA EM SAÚDE
+  # ==========================================
+  
+  economia_saude <- calcular_economia_total(fator_correcao_internacoes)
+  beneficio_saude <- economia_saude$total * cobertura_mfc
+  
+  # ==========================================
+  # SALDO E VALOR PRESENTE
+  # ==========================================
+  
+  economia_pessoal <- economia_modelo - investimento_fixacao - custo_operacional_vetor
+  saldo <- economia_pessoal + beneficio_saude
+  
+  fator_desconto <- 1 / ((1 + taxa_desconto) ^ anos)
+  saldo_valor_presente <- saldo * fator_desconto
+  valor_presente_liquido <- sum(saldo_valor_presente)
+  
+  # ==========================================
+  # RETORNO
+  # ==========================================
+  
+  dados <- data.frame(
+    ano = anos,
+    preceptores = n_preceptores,
+    equipes_escola = n_equipes_escola,
+    residentes = n_residentes,
+    formados_retidos = formados_retidos,
+    equipes_mfc = equipes_mfc,
+    cobertura_mfc = cobertura_mfc,
+    economia_modelo = economia_modelo,
+    investimento_fixacao = investimento_fixacao,
+    custo_operacional = custo_operacional_vetor,
+    economia_pessoal = economia_pessoal,
+    beneficio_saude = beneficio_saude,
+    saldo = saldo,
+    saldo_valor_presente = saldo_valor_presente
+  )
+  
+  return(list(
+    valor_presente_liquido = valor_presente_liquido,
+    cobertura_final = cobertura_mfc[n_anos],
+    formados_total = formados_retidos[n_anos],
+    economia_modelo_total = sum(economia_modelo),
+    investimento_fixacao_total = sum(investimento_fixacao),
+    beneficio_saude_total = sum(beneficio_saude),
+    dados = dados
+  ))
+}
+```
+
+## Exemplo: Cenário Base
+
+```{r}
+#| label: exemplo-simulacao
+
+resultado <- simular_programa(
+  taxa_retencao = 0.60,
+  adicional_especialidade_pct = 0.10
+)
+```
+
+### Evolução do Programa
+
+```{r}
+#| label: tabela-evolucao
+
+evolucao <- resultado$dados[, c("ano", "preceptores", "equipes_escola", 
+                                 "residentes", "formados_retidos", "equipes_mfc")]
+evolucao$cobertura <- paste0(round(resultado$dados$cobertura_mfc * 100, 0), "%")
+
+knitr::kable(
+  evolucao,
+  col.names = c("Ano", "Preceptores", "Equipes-Escola", "Residentes", 
+                "Formados Retidos", "Equipes com Médico de Família", "Cobertura"),
+  caption = "Evolução do programa ao longo de 10 anos"
+)
+```
+
+### Fluxo Financeiro
+
+```{r}
+#| label: tabela-fluxo
+
+fluxo <- data.frame(
+  ano = resultado$dados$ano,
+  economia_modelo = round(resultado$dados$economia_modelo / 1000, 0),
+  investimento = round(resultado$dados$investimento_fixacao / 1000, 0),
+  beneficio = round(resultado$dados$beneficio_saude / 1000, 0),
+  saldo = round(resultado$dados$saldo / 1000, 0)
+)
+
+knitr::kable(
+  fluxo,
+  col.names = c("Ano", "Economia do Modelo", "Investimento em Fixação", 
+                "Economia em Saúde", "Saldo"),
+  caption = "Fluxo financeiro anual (R$ mil)"
+)
+```
+
+### Indicadores Finais
+
+| Indicador | Valor |
+|-----------|-------|
+| Cobertura por médicos de família (ano 10) | `r round(resultado$cobertura_final * 100, 0)`% |
+| Médicos formados e retidos | `r resultado$formados_total` |
+| Economia do modelo (10 anos) | `r formatar_moeda(resultado$economia_modelo_total)` |
+| Investimento em fixação (10 anos) | `r formatar_moeda(resultado$investimento_fixacao_total)` |
+| Economia em saúde (10 anos) | `r formatar_moeda(resultado$beneficio_saude_total)` |
+| **Valor Presente Líquido** | **`r formatar_moeda(resultado$valor_presente_liquido)`** |
+
+---
+
+# Parte 5: Conceitos Econômicos
+
+## Taxa de Desconto
+
+A **taxa de desconto** reflete o fato de que dinheiro hoje vale mais do que dinheiro no futuro. O Ministério da Saúde recomenda usar **5% ao ano** para avaliações econômicas em saúde.
+
+**Fórmula do valor presente:**
+
+$$VP = \frac{VF}{(1 + r)^n}$$
+
+Onde:
+
+- $VP$ = valor presente
+- $VF$ = valor futuro
+- $r$ = taxa de desconto (0,05)
+- $n$ = número de anos
+
+## Valor Presente Líquido
+
+O **Valor Presente Líquido** é a soma de todos os saldos anuais convertidos para valor presente:
+
+$$VPL = \sum_{t=0}^{T} \frac{Saldo_t}{(1 + r)^t}$$
+
+**Interpretação:**
+
+| Resultado | Significado |
+|-----------|-------------|
+| Valor Presente Líquido > 0 | Programa economicamente viável |
+| Valor Presente Líquido = 0 | Programa se paga exatamente |
+| Valor Presente Líquido < 0 | Programa tem custo líquido |
+
+## Demonstração do Desconto Temporal
+
+```{r}
+#| label: demonstracao-desconto
+
+demo <- data.frame(
+  ano = 0:10,
+  valor_nominal = 1000
+)
+
+demo$fator <- 1 / ((1 + 0.05) ^ demo$ano)
+demo$valor_presente <- demo$valor_nominal * demo$fator
+
+knitr::kable(
+  demo[, c("ano", "valor_nominal", "valor_presente")],
+  col.names = c("Ano", "Valor Nominal (R$)", "Valor Presente (R$)"),
+  digits = c(0, 0, 2),
+  caption = "Efeito do desconto temporal sobre R$ 1.000 (taxa 5% ao ano)"
+)
+```
+
+**Interpretação:** R$ 1.000 recebidos no ano 10 equivalem a R$ `r round(1000 / (1.05^10), 2)` em valores de hoje.
+
+---
+
+# Resumo
+
+Este capítulo apresentou:
+
+1. **Função de conversão para baseline:** Transforma dados observados em estimativas para o cenário sem médicos de família
+
+2. **Função de economia em saúde:** Calcula a economia potencial com encaminhamentos, exames e internações
+
+3. **Economia do modelo de residência:** Demonstra que 1 preceptor + 4 residentes custa menos que 2 médicos
+
+4. **Função de simulação:** Projeta a evolução do programa e calcula indicadores econômicos
+
+5. **Conceitos econômicos:** Taxa de desconto e valor presente líquido
+
+**Principais achados do cenário base:**
+
+- Taxa de retenção: 60%
+- Adicional por especialidade: 10%
+- Cobertura final: `r round(resultado$cobertura_final * 100, 0)`%
+- Valor Presente Líquido: `r formatar_moeda(resultado$valor_presente_liquido)`

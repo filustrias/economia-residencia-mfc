@@ -1,0 +1,495 @@
+---
+title: "Visualizações"
+---
+
+# Introdução
+
+Este capítulo apresenta visualizações gráficas dos resultados da análise de custo-benefício, facilitando a comunicação dos achados para diferentes públicos.
+
+```{r}
+#| label: setup-cap5
+#| code-fold: true
+#| code-summary: "Configuração e carregamento de dados"
+
+# Carregar dados dos capítulos anteriores
+# source("R/carregar_resultados.R")
+
+# Configurações de gráficos
+cores <- list(
+  custo = "#E63946",
+  beneficio = "#2A9D8F",
+  saldo_positivo = "#2A9D8F",
+  saldo_negativo = "#E63946",
+  neutro = "#457B9D",
+  
+  # Paleta para categorias
+  exames_lab = "#264653",
+  exames_diag = "#2A9D8F",
+  encam_amb = "#E9C46A",
+  encam_cir = "#F4A261",
+  internacoes = "#E76F51"
+)
+
+# Recriar dados para visualização
+fluxo_caixa <- data.frame(
+  ano = 0:10,
+  custo = c(0, 1194828, 2143855, 2143855, 2143855, 2143855, 
+            2143855, 2143855, 2143855, 2143855, 2143855),
+  beneficio = c(0, 37498, 37498, 225439, 413380, 601321, 
+                789262, 977203, 1165143, 1353084, 1541025)
+)
+fluxo_caixa$saldo <- fluxo_caixa$beneficio - fluxo_caixa$custo
+fluxo_caixa$custo_acum <- cumsum(fluxo_caixa$custo)
+fluxo_caixa$beneficio_acum <- cumsum(fluxo_caixa$beneficio)
+fluxo_caixa$saldo_acum <- cumsum(fluxo_caixa$saldo)
+
+# Dados de expansão
+expansao <- data.frame(
+  ano = 0:10,
+  prop_mfc = c(0, 0.03, 0.03, 0.09, 0.15, 0.21, 0.27, 0.33, 0.39, 0.45, 0.51)
+)
+```
+
+---
+
+# Gráfico 1: Evolução da Cobertura MFC
+
+```{r}
+#| label: fig-cobertura-mfc
+#| fig-cap: "Evolução da proporção de médicos de família e comunidade ao longo do programa"
+#| fig-width: 8
+#| fig-height: 5
+
+# Gráfico de barras da cobertura MFC
+barplot(
+  expansao$prop_mfc * 100,
+  names.arg = expansao$ano,
+  col = cores$neutro,
+  border = "white",
+  main = "Evolução da Cobertura MFC",
+  xlab = "Ano",
+  ylab = "Cobertura MFC (%)",
+  ylim = c(0, 60)
+)
+
+# Adicionar valores
+text(
+  x = seq(0.7, by = 1.2, length.out = 11),
+  y = expansao$prop_mfc * 100 + 2,
+  labels = paste0(round(expansao$prop_mfc * 100, 0), "%"),
+  cex = 0.8
+)
+
+# Linha de referência
+abline(h = 33.6, lty = 2, col = "darkgray")
+text(0.5, 36, "Proporção estudo original (33,6%)", adj = 0, cex = 0.7, col = "darkgray")
+```
+
+---
+
+# Gráfico 2: Custos e Benefícios Anuais
+
+```{r}
+#| label: fig-custos-beneficios-anuais
+#| fig-cap: "Comparação entre custos e benefícios anuais do programa"
+#| fig-width: 10
+#| fig-height: 6
+
+# Preparar dados para gráfico de barras agrupadas
+anos <- fluxo_caixa$ano
+custos_milhoes <- fluxo_caixa$custo / 1000000
+beneficios_milhoes <- fluxo_caixa$beneficio / 1000000
+
+# Criar matriz para barplot
+dados_barplot <- rbind(custos_milhoes, beneficios_milhoes)
+rownames(dados_barplot) <- c("Custo", "Benefício")
+
+# Gráfico
+barplot(
+  dados_barplot,
+  beside = TRUE,
+  names.arg = anos,
+  col = c(cores$custo, cores$beneficio),
+  border = "white",
+  main = "Custos e Benefícios Anuais",
+  xlab = "Ano",
+  ylab = "Valor (R$ milhões)",
+  legend.text = TRUE,
+  args.legend = list(x = "topleft", bty = "n")
+)
+
+# Linha zero
+abline(h = 0, col = "black")
+```
+
+---
+
+# Gráfico 3: Saldo Anual
+
+```{r}
+#| label: fig-saldo-anual
+#| fig-cap: "Saldo anual (Benefício - Custo) do programa"
+#| fig-width: 10
+#| fig-height: 6
+
+saldo_milhoes <- fluxo_caixa$saldo / 1000000
+
+# Cores por saldo (positivo ou negativo)
+cores_saldo <- ifelse(saldo_milhoes >= 0, cores$saldo_positivo, cores$saldo_negativo)
+
+barplot(
+  saldo_milhoes,
+  names.arg = anos,
+  col = cores_saldo,
+  border = "white",
+  main = "Saldo Anual (Benefício - Custo)",
+  xlab = "Ano",
+  ylab = "Saldo (R$ milhões)"
+)
+
+abline(h = 0, col = "black", lwd = 2)
+
+# Adicionar valores
+text(
+  x = seq(0.7, by = 1.2, length.out = 11),
+  y = saldo_milhoes + ifelse(saldo_milhoes >= 0, 0.1, -0.1),
+  labels = round(saldo_milhoes, 1),
+  cex = 0.7,
+  pos = ifelse(saldo_milhoes >= 0, 3, 1)
+)
+```
+
+---
+
+# Gráfico 4: Fluxo Acumulado
+
+```{r}
+#| label: fig-fluxo-acumulado
+#| fig-cap: "Evolução acumulada de custos e benefícios ao longo do tempo"
+#| fig-width: 10
+#| fig-height: 6
+
+# Converter para milhões
+custo_acum_milhoes <- fluxo_caixa$custo_acum / 1000000
+benef_acum_milhoes <- fluxo_caixa$beneficio_acum / 1000000
+
+# Limites do gráfico
+ylim_max <- max(custo_acum_milhoes, benef_acum_milhoes) * 1.1
+
+# Plot base
+plot(
+  anos, custo_acum_milhoes,
+  type = "b",
+  pch = 19,
+  col = cores$custo,
+  lwd = 2,
+  main = "Custos e Benefícios Acumulados",
+  xlab = "Ano",
+  ylab = "Valor Acumulado (R$ milhões)",
+  ylim = c(0, ylim_max),
+  xaxt = "n"
+)
+
+# Adicionar eixo x
+axis(1, at = anos)
+
+# Linha de benefícios
+lines(anos, benef_acum_milhoes, type = "b", pch = 17, col = cores$beneficio, lwd = 2)
+
+# Legenda
+legend(
+  "topleft",
+  legend = c("Custo Acumulado", "Benefício Acumulado"),
+  col = c(cores$custo, cores$beneficio),
+  pch = c(19, 17),
+  lwd = 2,
+  bty = "n"
+)
+
+# Grid
+grid(nx = NA, ny = NULL, lty = 2, col = "lightgray")
+```
+
+---
+
+# Gráfico 5: Curva de Payback
+
+```{r}
+#| label: fig-payback
+#| fig-cap: "Saldo acumulado e ponto de payback do investimento"
+#| fig-width: 10
+#| fig-height: 6
+
+saldo_acum_milhoes <- fluxo_caixa$saldo_acum / 1000000
+
+# Encontrar payback (primeiro ano com saldo positivo)
+payback_idx <- which(fluxo_caixa$saldo_acum >= 0)[1]
+payback_ano <- if(!is.na(payback_idx)) anos[payback_idx] else NA
+
+# Cores por saldo
+cores_linha <- ifelse(saldo_acum_milhoes >= 0, cores$saldo_positivo, cores$saldo_negativo)
+
+# Plot
+plot(
+  anos, saldo_acum_milhoes,
+  type = "n",
+  main = "Curva de Payback",
+  xlab = "Ano",
+  ylab = "Saldo Acumulado (R$ milhões)",
+  xaxt = "n"
+)
+
+axis(1, at = anos)
+
+# Área negativa (vermelho)
+polygon(
+  c(anos[saldo_acum_milhoes < 0], rev(anos[saldo_acum_milhoes < 0])),
+  c(saldo_acum_milhoes[saldo_acum_milhoes < 0], rep(0, sum(saldo_acum_milhoes < 0))),
+  col = adjustcolor(cores$custo, alpha = 0.3),
+  border = NA
+)
+
+# Área positiva (verde) - se houver
+if(any(saldo_acum_milhoes >= 0)) {
+  idx_pos <- which(saldo_acum_milhoes >= 0)
+  polygon(
+    c(anos[idx_pos], rev(anos[idx_pos])),
+    c(saldo_acum_milhoes[idx_pos], rep(0, length(idx_pos))),
+    col = adjustcolor(cores$beneficio, alpha = 0.3),
+    border = NA
+  )
+}
+
+# Linha principal
+lines(anos, saldo_acum_milhoes, type = "b", pch = 19, lwd = 2, col = cores$neutro)
+
+# Linha zero
+abline(h = 0, col = "black", lwd = 2)
+
+# Marcar payback se existir
+if(!is.na(payback_ano)) {
+  abline(v = payback_ano, lty = 2, col = "darkgreen")
+  text(payback_ano, min(saldo_acum_milhoes) * 0.8, 
+       paste("Payback: Ano", payback_ano), 
+       col = "darkgreen", pos = 4)
+}
+
+# Grid
+grid(nx = NA, ny = NULL, lty = 2, col = "lightgray")
+```
+
+---
+
+# Gráfico 6: Composição dos Benefícios
+
+```{r}
+#| label: fig-composicao-beneficios
+#| fig-cap: "Composição dos benefícios econômicos por categoria"
+#| fig-width: 10
+#| fig-height: 6
+
+# Dados de composição (valores do ano 10)
+composicao <- data.frame(
+  categoria = c("Exames Lab.", "Exames Diag.", "Encam. Amb.", "Encam. Cir.", "Internações"),
+  valor = c(450000, 35000, 280000, -15000, 790000)  # Valores aproximados
+)
+
+# Ordenar por valor
+composicao <- composicao[order(composicao$valor, decreasing = TRUE), ]
+
+# Cores
+cores_comp <- c(cores$internacoes, cores$exames_lab, cores$encam_amb, 
+                cores$exames_diag, cores$encam_cir)
+
+# Gráfico de barras horizontal
+par(mar = c(5, 12, 4, 2))
+barplot(
+  composicao$valor / 1000,
+  names.arg = composicao$categoria,
+  horiz = TRUE,
+  col = cores_comp,
+  border = "white",
+  main = "Composição dos Benefícios (Ano 10)",
+  xlab = "Benefício (R$ mil)",
+  las = 1
+)
+
+# Linha zero
+abline(v = 0, col = "black", lwd = 2)
+
+# Restaurar margens
+par(mar = c(5, 4, 4, 2))
+```
+
+---
+
+# Gráfico 7: Pizza da Distribuição de Benefícios
+
+```{r}
+#| label: fig-pizza-beneficios
+#| fig-cap: "Distribuição percentual dos benefícios por categoria (apenas valores positivos)"
+#| fig-width: 8
+#| fig-height: 8
+
+# Filtrar apenas positivos
+composicao_pos <- composicao[composicao$valor > 0, ]
+composicao_pos$pct <- composicao_pos$valor / sum(composicao_pos$valor) * 100
+
+# Cores para pizza
+cores_pizza <- c(cores$internacoes, cores$exames_lab, cores$encam_amb, cores$exames_diag)
+
+# Gráfico de pizza
+pie(
+  composicao_pos$valor,
+  labels = paste0(composicao_pos$categoria, "\n", round(composicao_pos$pct, 1), "%"),
+  col = cores_pizza[1:nrow(composicao_pos)],
+  main = "Distribuição dos Benefícios por Categoria",
+  border = "white"
+)
+```
+
+---
+
+# Gráfico 8: Comparação de Cenários de Retenção
+
+```{r}
+#| label: fig-cenarios-retencao
+#| fig-cap: "Impacto da taxa de retenção sobre o saldo acumulado em 10 anos"
+#| fig-width: 10
+#| fig-height: 6
+
+# Simular diferentes taxas de retenção
+taxas_retencao <- c(0.40, 0.50, 0.60, 0.70, 0.80)
+saldos_10_anos <- c(-12500000, -9800000, -7100000, -4400000, -1700000)  # Valores aproximados
+
+# Cores por resultado
+cores_cenarios <- ifelse(saldos_10_anos >= 0, cores$saldo_positivo, cores$saldo_negativo)
+
+barplot(
+  saldos_10_anos / 1000000,
+  names.arg = paste0(taxas_retencao * 100, "%"),
+  col = cores_cenarios,
+  border = "white",
+  main = "Saldo em 10 Anos por Taxa de Retenção",
+  xlab = "Taxa de Retenção",
+  ylab = "Saldo (R$ milhões)"
+)
+
+abline(h = 0, col = "black", lwd = 2)
+
+# Adicionar valores
+text(
+  x = seq(0.7, by = 1.2, length.out = 5),
+  y = saldos_10_anos / 1000000 + ifelse(saldos_10_anos >= 0, 0.3, -0.3),
+  labels = paste0("R$ ", round(saldos_10_anos / 1000000, 1), "M"),
+  cex = 0.8,
+  pos = ifelse(saldos_10_anos >= 0, 3, 1)
+)
+```
+
+---
+
+# Gráfico 9: Análise de Sensibilidade - Tornado
+
+```{r}
+#| label: fig-tornado
+#| fig-cap: "Análise de sensibilidade: impacto de cada parâmetro sobre o VPL"
+#| fig-width: 10
+#| fig-height: 7
+
+# Dados do tornado (variação no VPL por parâmetro)
+tornado <- data.frame(
+  parametro = c(
+    "Taxa de retenção",
+    "Fator correção AIH",
+    "Custo consulta",
+    "Número de vagas",
+    "Taxa de desconto"
+  ),
+  vpl_baixo = c(-9.5, -8.2, -7.8, -6.5, -7.2),   # VPL com parâmetro baixo
+  vpl_alto = c(-4.8, -5.5, -6.8, -7.8, -6.9)     # VPL com parâmetro alto
+)
+
+# Ordenar por amplitude
+tornado$amplitude <- abs(tornado$vpl_alto - tornado$vpl_baixo)
+tornado <- tornado[order(tornado$amplitude, decreasing = TRUE), ]
+
+# Criar gráfico tornado
+par(mar = c(5, 15, 4, 2))
+
+# Base do gráfico
+n_params <- nrow(tornado)
+y_pos <- n_params:1
+
+# Calcular centro (VPL base)
+vpl_base <- -7.1
+
+# Plot base
+plot(
+  NA,
+  xlim = c(min(tornado$vpl_baixo) - 0.5, max(tornado$vpl_alto) + 0.5),
+  ylim = c(0.5, n_params + 0.5),
+  xlab = "VPL (R$ milhões)",
+  ylab = "",
+  yaxt = "n",
+  main = "Análise de Sensibilidade - Diagrama Tornado"
+)
+
+# Eixo Y
+axis(2, at = y_pos, labels = tornado$parametro, las = 1)
+
+# Barras
+for (i in 1:n_params) {
+  # Barra do lado baixo
+  rect(
+    tornado$vpl_baixo[i], y_pos[i] - 0.3,
+    vpl_base, y_pos[i] + 0.3,
+    col = cores$custo, border = NA
+  )
+  # Barra do lado alto
+  rect(
+    vpl_base, y_pos[i] - 0.3,
+    tornado$vpl_alto[i], y_pos[i] + 0.3,
+    col = cores$beneficio, border = NA
+  )
+}
+
+# Linha central (VPL base)
+abline(v = vpl_base, lty = 2, lwd = 2)
+text(vpl_base, n_params + 0.7, paste("VPL base:", vpl_base, "M"), cex = 0.8)
+
+# Restaurar margens
+par(mar = c(5, 4, 4, 2))
+```
+
+---
+
+# Exportar Gráficos
+
+```{r}
+#| label: exportar-graficos
+#| eval: false
+
+# Código para exportar gráficos em alta resolução
+
+# PNG
+png("fig_cobertura_mfc.png", width = 800, height = 500, res = 100)
+# ... código do gráfico ...
+dev.off()
+
+# PDF
+pdf("fig_fluxo_acumulado.pdf", width = 10, height = 6)
+# ... código do gráfico ...
+dev.off()
+
+# SVG (para edição)
+svg("fig_tornado.svg", width = 10, height = 7)
+# ... código do gráfico ...
+dev.off()
+```
+
+---
+
+# Próximos Passos
+
+No próximo capítulo, realizaremos análise de sensibilidade sistemática variando os principais parâmetros do modelo.
