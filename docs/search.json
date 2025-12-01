@@ -44,17 +44,7 @@
     "href": "index.html#reprodutibilidade",
     "title": "Análise de Custo-Benefício da Residência em MFC",
     "section": "Reprodutibilidade",
-    "text": "Reprodutibilidade\nTodo o código R utilizado nas análises está disponível neste documento. Para reproduzir as análises:",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Análise de Custo-Benefício da Residência em MFC</span>"
-    ]
-  },
-  {
-    "objectID": "index.html#citação",
-    "href": "index.html#citação",
-    "title": "Análise de Custo-Benefício da Residência em MFC",
-    "section": "Citação",
-    "text": "Citação\nPara citar este trabalho:\n\nJantsch, A.G. (2025). Análise de Custo-Benefício da Residência em Medicina de Família e Comunidade: Modelo de Simulação Econômica.\n\n\nÚltima atualização: r Sys.Date()",
+    "text": "Reprodutibilidade\nTodo o código R utilizado nas análises está disponível neste documento. Para reproduzir as análises:\n\nÚltima atualização: r Sys.Date()",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Análise de Custo-Benefício da Residência em MFC</span>"
     ]
@@ -64,7 +54,7 @@
     "href": "00_sumario_executivo.html",
     "title": "Sumário Executivo",
     "section": "",
-    "text": "O Problema\nO Brasil enfrenta escassez de médicos de família qualificados na atenção primária. Programas de residência podem formar esses profissionais, mas gestores municipais frequentemente questionam: vale a pena o investimento?\n\n\n\nA Proposta\nImplantar um programa de residência em Medicina de Família e Comunidade em um município de 500 mil habitantes com 100 equipes de saúde da família.\n\n\n\nEstrutura do Programa\n\n\n\n\n\nPreceptores\n8\n\n\nEquipes-escola\n16\n\n\nResidentes por ano\n32\n\n\nFormados por ano\n16\n\n\nHorizonte de análise\n10 anos\n\n\n\n\n\n\nA Resposta\nSim, vale a pena. O programa se paga desde o primeiro ano e gera economia crescente ao longo do tempo.\n\n\n\n\n\n\n\n\n\n\n\n\nNúmeros-Chave\n\n\n\nIndicador\nValor\n\n\n\n\nCobertura por médicos de família ao final\n64%\n\n\nMédicos formados e retidos\n48\n\n\nEconomia acumulada em 10 anos\nR$ 4,5 milhões\n\n\nRetorno desde o\nAno 1\n\n\n\n\n\n\nPor que Funciona?\nO programa gera economia de três formas:\n\nModelo de residência mais barato: Um preceptor com 4 residentes custa menos que 2 médicos contratados, gerando economia de R$ 12.600 por par de equipes por ano.\nEconomia em saúde: Médicos de família reduzem internações (64% menos por insuficiência cardíaca), encaminhamentos (60% menos para cardiologia) e exames (92% menos dosagens de TSH).\nInvestimento que se paga: O adicional por especialidade para reter os formados (10% do salário) é compensado pela economia em saúde que eles geram.\n\n\n\n\nConclusão\nO programa de residência em Medicina de Família e Comunidade não é apenas uma necessidade de saúde pública — é um investimento economicamente inteligente que gera retorno positivo desde o primeiro ano e benefícios crescentes ao longo do tempo.\nA decisão não é “se”, mas “quando começar”.",
+    "text": "O Problema\nO Brasil enfrenta escassez de médicos de família qualificados na atenção primária. Programas de residência podem formar esses profissionais, mas gestores municipais frequentemente questionam: vale a pena o investimento?\n\n\n\nA Proposta\nImplantar um programa de residência em Medicina de Família e Comunidade em um município de 500 mil habitantes com 100 equipes de saúde da família.\n\n\n\nEstrutura do Programa\n\n\n\n\n\nPreceptores\n8\n\n\nEquipes-escola\n16\n\n\nResidentes por ano\n32\n\n\nFormados por ano\n16\n\n\nHorizonte de análise\n10 anos\n\n\n\n\n\n\nA Resposta\nSim, vale a pena. O programa se paga desde o primeiro ano e gera economia crescente ao longo do tempo.\n\n\n\n\n\n\n\n\n\n\n\n\nNúmeros-Chave\n\n\n\nIndicador\nValor\n\n\n\n\nCobertura por médicos de família ao final\n64%\n\n\nMédicos formados e retidos\n48\n\n\nEconomia acumulada em 10 anos\nR$ 4,5 milhões\n\n\nRetorno desde o\nAno 1\n\n\n\n\n\n\nPor que Funciona?\nO programa gera economia de três formas:\n\nModelo de residência mais barato: Um preceptor com 4 residentes custa menos que 2 médicos contratados, gerando economia de R$ 12.600 por par de equipes por ano.\nEconomia em saúde: Médicos de família reduzem internações (64% menos por insuficiência cardíaca), encaminhamentos (60% menos para cardiologia) e exames (92% menos dosagens de TSH).\nInvestimento que se paga: O adicional por especialidade para reter os formados (10% do salário) é compensado pela economia em saúde que eles geram.\n\n\n\n\nConclusão\nO programa de residência em Medicina de Família e Comunidade não é apenas uma necessidade de saúde pública — é um investimento economicamente inteligente que gera retorno positivo desde o primeiro ano e benefícios crescentes ao longo do tempo.",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Sumário Executivo</span>"
     ]
