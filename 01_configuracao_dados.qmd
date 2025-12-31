@@ -8,12 +8,12 @@ Este capítulo apresenta todos os dados de entrada necessários para o modelo ec
 
 **Objetivo:** Documentar de forma transparente e reproduzível:
 
-1. Os parâmetros do município simulado
-2. Os custos de pessoal e do programa
-3. Os dados epidemiológicos dos estudos originais
-4. Os custos unitários de procedimentos
+1.  Os parâmetros do município simulado
+2.  Os custos de pessoal e do programa
+3.  Os dados epidemiológicos dos estudos originais
+4.  Os custos unitários de procedimentos
 
----
+------------------------------------------------------------------------
 
 # Preparação
 
@@ -34,7 +34,7 @@ formatar_moeda <- function(x) {
 }
 ```
 
----
+------------------------------------------------------------------------
 
 # 1. O Município Simulado
 
@@ -52,14 +52,14 @@ municipio <- list(
 ```
 
 | Parâmetro | Valor |
-|-----------|-------|
+|------------------------------------|------------------------------------|
 | Nome | `r municipio$nome` |
 | População | `r formatar_numero(municipio$populacao)` habitantes |
 | Equipes de APS | `r municipio$n_equipes` |
 | População por equipe | `r formatar_numero(municipio$pop_por_equipe)` habitantes |
 | Cobertura MFC inicial | 0% |
 
----
+------------------------------------------------------------------------
 
 # 2. Custos de Pessoal
 
@@ -105,7 +105,7 @@ custos_pessoal$bolsa_total_completa <- custos_pessoal$bolsa_total_mec_ms +
 ### Custo do Médico CLT
 
 | Item | Valor Mensal |
-|------|--------------|
+|------------------------------------|------------------------------------|
 | Salário base | `r formatar_moeda(custos_pessoal$salario_base_medico)` |
 | Encargos trabalhistas (70%) | `r formatar_moeda(custos_pessoal$salario_base_medico * custos_pessoal$encargos_trabalhistas_pct)` |
 | **Custo total médico CLT** | **`r formatar_moeda(custos_pessoal$custo_medico_total)`** |
@@ -114,17 +114,17 @@ custos_pessoal$bolsa_total_completa <- custos_pessoal$bolsa_total_mec_ms +
 
 Os 70% de encargos incluem:
 
-- INSS patronal (20%)
-- FGTS (8%)
-- Férias + 1/3 constitucional (11,1%)
-- 13º salário (8,3%)
-- Provisão para rescisão (estimado)
-- Outros encargos (SAT, Sistema S, etc.)
+-   INSS patronal (20%)
+-   FGTS (8%)
+-   Férias + 1/3 constitucional (11,1%)
+-   13º salário (8,3%)
+-   Provisão para rescisão (estimado)
+-   Outros encargos (SAT, Sistema S, etc.)
 
 ### Custo do Preceptor
 
 | Item | Valor Mensal |
-|------|--------------|
+|------------------------------------|------------------------------------|
 | Custo base (médico CLT) | `r formatar_moeda(custos_pessoal$custo_medico_total)` |
 | Adicional preceptoria (10% do salário base) | `r formatar_moeda(custos_pessoal$adicional_preceptoria_valor)` |
 | Encargos sobre adicional (70%) | `r formatar_moeda(custos_pessoal$adicional_preceptoria_valor * custos_pessoal$encargos_trabalhistas_pct)` |
@@ -133,7 +133,7 @@ Os 70% de encargos incluem:
 ### Bolsa do Residente
 
 | Fonte | Valor Mensal |
-|-------|--------------|
+|------------------------------------|------------------------------------|
 | Bolsa MEC | `r formatar_moeda(custos_pessoal$bolsa_mec)` |
 | Complemento Ministério da Saúde | `r formatar_moeda(custos_pessoal$complemento_ms)` |
 | **Bolsa total (MEC + MS)** | **`r formatar_moeda(custos_pessoal$bolsa_total_mec_ms)`** |
@@ -142,7 +142,7 @@ Os 70% de encargos incluem:
 
 **Importante:** A bolsa do residente não tem encargos trabalhistas, pois não é relação de emprego CLT.
 
----
+------------------------------------------------------------------------
 
 # 3. Estrutura do Programa de Residência
 
@@ -178,17 +178,17 @@ programa$formados_por_ano <- programa$residentes_ano2 / programa$duracao_residen
 ### Estrutura do Programa
 
 | Parâmetro | Ano 1 | Ano 2 em diante |
-|-----------|-------|-----------------|
+|------------------------|------------------------|------------------------|
 | Preceptores | `r programa$preceptores_ano1` | `r programa$preceptores_ano2` |
 | Equipes-escola | `r programa$equipes_escola_ano1` | `r programa$equipes_escola_ano2` |
 | Residentes (R1 + R2) | `r programa$residentes_ano1` | `r programa$residentes_ano2` |
-| Formados por ano | - | `r programa$formados_por_ano` |
+| Formados por ano | \- | `r programa$formados_por_ano` |
 
 ### Modelo de Supervisão
 
-- Cada **preceptor** supervisiona **`r programa$equipes_por_preceptor` equipes-escola**
-- Cada **equipe-escola** tem **`r programa$residentes_por_equipe` residentes** (1 R1 + 1 R2)
-- **1 preceptor** faz o trabalho de **2 médicos** (com apoio dos residentes)
+-   Cada **preceptor** supervisiona **`r programa$equipes_por_preceptor` equipes-escola**
+-   Cada **equipe-escola** tem **`r programa$residentes_por_equipe` residentes** (1 R1 + 1 R2)
+-   **1 preceptor** faz o trabalho de **2 médicos** (com apoio dos residentes)
 
 ### Incentivo Federal
 
@@ -197,10 +197,10 @@ O Ministério da Saúde paga um incentivo de **`r formatar_moeda(programa$incent
 ### Custos Operacionais
 
 | Item | Valor Anual |
-|------|-------------|
+|------------------------------------|------------------------------------|
 | Coordenação, materiais, eventos, etc. | `r formatar_moeda(programa$custo_operacional_anual)` |
 
----
+------------------------------------------------------------------------
 
 # 4. Parâmetros Econômicos
 
@@ -215,7 +215,7 @@ economico <- list(
 ```
 
 | Parâmetro | Valor | Justificativa |
-|-----------|-------|---------------|
+|------------------------|------------------------|------------------------|
 | Taxa de desconto | `r economico$taxa_desconto * 100`% ao ano | Recomendação do Ministério da Saúde para avaliações econômicas |
 | Horizonte de análise | `r economico$horizonte_anos` anos | Tempo suficiente para avaliar o ciclo completo do programa |
 | Fator de correção AIH | `r economico$fator_correcao_aih` | Corrige defasagem da tabela SUS em relação aos custos reais |
@@ -224,7 +224,7 @@ economico <- list(
 
 Os valores da tabela SUS (SIGTAP) para internações estão significativamente defasados em relação aos custos reais. O fator de 1,5 é uma estimativa conservadora baseada em estudos que mostram que os custos reais de internação podem ser 50% a 100% maiores que os valores pagos pelo SUS.
 
----
+------------------------------------------------------------------------
 
 # 5. Dados Epidemiológicos
 
@@ -243,7 +243,7 @@ estudo <- list(
 ```
 
 | Parâmetro | Valor |
-|-----------|-------|
+|------------------------------------|------------------------------------|
 | População do estudo | `r formatar_numero(estudo$populacao)` pacientes |
 | Pacientes atendidos por MFC | `r estudo$prop_mfc * 100`% |
 | Pacientes atendidos por generalistas | `r estudo$prop_gen * 100`% |
@@ -251,7 +251,7 @@ estudo <- list(
 ### Os Três Estudos
 
 | Estudo | Desfecho | Publicação |
-|--------|----------|------------|
+|------------------------|------------------------|------------------------|
 | 1 | Internações por Condições Sensíveis à APS (ICSAP) | PLOS Global Public Health, 2023 |
 | 2 | Encaminhamentos e exames diagnósticos | BMJ Open, 2023 |
 | 3 | Exames laboratoriais | BMC Primary Care, 2024 |
@@ -260,13 +260,13 @@ estudo <- list(
 
 $$RR = \frac{\text{Taxa em pacientes de MFC}}{\text{Taxa em pacientes de generalistas}}$$
 
-- **RR = 1,00**: Sem diferença
-- **RR < 1,00**: MFC tem **menor** taxa (economia)
-- **RR > 1,00**: MFC tem **maior** taxa (custo adicional)
+-   **RR = 1,00**: Sem diferença
+-   **RR \< 1,00**: MFC tem **menor** taxa (economia)
+-   **RR \> 1,00**: MFC tem **maior** taxa (custo adicional)
 
 **Exemplo:** RR = 0,50 significa que pacientes de MFC têm metade da taxa de eventos.
 
----
+------------------------------------------------------------------------
 
 ## Encaminhamentos Ambulatoriais
 
@@ -301,9 +301,9 @@ knitr::kable(
 )
 ```
 
-**Nota:** RR > 1 em Fisioterapia, Reabilitação e Oftalmologia sugere que MFC identifica mais necessidades nestas áreas.
+**Nota:** RR \> 1 em Fisioterapia, Reabilitação e Oftalmologia sugere que MFC identifica mais necessidades nestas áreas.
 
----
+------------------------------------------------------------------------
 
 ## Encaminhamentos Cirúrgicos
 
@@ -327,7 +327,7 @@ knitr::kable(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 ## Exames Diagnósticos
 
@@ -354,7 +354,7 @@ knitr::kable(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 ## Exames Laboratoriais
 
@@ -404,11 +404,11 @@ knitr::kable(
 
 **Destaques:**
 
-- **TSH (RR = 0,08):** MFC solicita 92% menos dosagens de TSH
-- **Cálcio (RR = 0,09):** MFC solicita 91% menos dosagens de cálcio
-- **Colesterol total (RR = 0,29):** MFC solicita 71% menos dosagens de colesterol
+-   **TSH (RR = 0,08):** MFC solicita 92% menos dosagens de TSH
+-   **Cálcio (RR = 0,09):** MFC solicita 91% menos dosagens de cálcio
+-   **Colesterol total (RR = 0,29):** MFC solicita 71% menos dosagens de colesterol
 
----
+------------------------------------------------------------------------
 
 ## Internações por Condições Sensíveis à APS (ICSAP)
 
@@ -449,12 +449,12 @@ knitr::kable(
 
 **Destaques:**
 
-- **Asma (RR = 0,35):** MFC reduz internações por asma em 65%
-- **Insuficiência cardíaca (RR = 0,36):** MFC reduz internações em 64%
-- **Hipertensão (RR = 0,45):** MFC reduz internações em 55%
-- **Diabetes (RR = 1,06):** Único grupo com RR > 1 (sem diferença significativa)
+-   **Asma (RR = 0,35):** MFC reduz internações por asma em 65%
+-   **Insuficiência cardíaca (RR = 0,36):** MFC reduz internações em 64%
+-   **Hipertensão (RR = 0,45):** MFC reduz internações em 55%
+-   **Diabetes (RR = 1,06):** Único grupo com RR \> 1 (sem diferença significativa)
 
----
+------------------------------------------------------------------------
 
 # 6. Custos Unitários
 
@@ -467,10 +467,10 @@ custo_consulta <- 50.00
 ```
 
 | Procedimento | Custo Unitário | Fonte |
-|--------------|----------------|-------|
+|------------------------|------------------------|------------------------|
 | Consulta especializada (média) | `r formatar_moeda(custo_consulta)` | Estimativa baseada em SIGTAP |
 
-**Nota:** O valor de R$ 50,00 é uma média ponderada considerando consultas médicas especializadas na tabela SIGTAP.
+**Nota:** O valor de R\$ 50,00 é uma média ponderada considerando consultas médicas especializadas na tabela SIGTAP.
 
 ## Resumo dos Custos de Internação
 
@@ -496,7 +496,7 @@ knitr::kable(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 # 7. Resumo: Economia do Modelo de Residência
 
@@ -517,19 +517,19 @@ economia_por_par <- custo_tradicional - custo_residencia
 ```
 
 | Modelo | Custo Anual (2 equipes) |
-|--------|-------------------------|
+|------------------------------------|------------------------------------|
 | Tradicional (2 médicos CLT) | `r formatar_moeda(custo_tradicional)` |
 | Residência (1 preceptor + 4 residentes) | `r formatar_moeda(custo_residencia)` |
 | **Economia por par de equipes** | **`r formatar_moeda(economia_por_par)`** |
 
----
+------------------------------------------------------------------------
 
 # 8. Objetos Criados
 
 Este capítulo criou os seguintes objetos R para uso nos capítulos seguintes:
 
 | Objeto | Descrição |
-|--------|-----------|
+|----|----|
 | `municipio` | Parâmetros do município simulado |
 | `custos_pessoal` | Custos de médicos, preceptores e residentes |
 | `programa` | Estrutura do programa de residência |
@@ -542,4 +542,4 @@ Este capítulo criou os seguintes objetos R para uso nos capítulos seguintes:
 | `icsap` | Dados de internações por ICSAP |
 | `custo_consulta` | Custo unitário de consulta especializada |
 
----
+------------------------------------------------------------------------

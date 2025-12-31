@@ -8,14 +8,14 @@ Este capítulo calcula a economia em saúde gerada pela cobertura de médicos de
 
 **Estrutura:**
 
-1. Economia com encaminhamentos
-2. Economia com exames
-3. Economia com internações
-4. Totalização e interpretação
+1.  Economia com encaminhamentos
+2.  Economia com exames
+3.  Economia com internações
+4.  Totalização e interpretação
 
----
+------------------------------------------------------------------------
 
-# Preparação
+## Preparação
 
 ```{r}
 #| label: setup
@@ -34,13 +34,14 @@ formatar_moeda <- function(x) {
 }
 ```
 
----
+------------------------------------------------------------------------
 
-# Função de Conversão para Baseline
+## Função de Conversão para Baseline
 
 Os dados dos estudos foram observados em uma população mista (33,6% médicos de família + 66,4% generalistas). Precisamos converter para o cenário baseline (0% médicos de família).
 
 ```{r}
+
 #| label: funcao-conversao
 
 converter_para_baseline <- function(valor_observado, 
@@ -56,9 +57,10 @@ converter_para_baseline <- function(valor_observado,
   
   return(baseline_alvo)
 }
+
 ```
 
----
+------------------------------------------------------------------------
 
 # Parâmetros
 
@@ -70,11 +72,11 @@ fator_correcao_internacoes <- 1.5
 ```
 
 | Parâmetro | Valor | Justificativa |
-|-----------|-------|---------------|
+|-----------------------|------------------|-------------------------------|
 | Custo da consulta especializada | `r formatar_moeda(custo_consulta)` | Média ponderada da tabela do Sistema Único de Saúde |
 | Fator de correção para internações | `r fator_correcao_internacoes` | Corrige defasagem da tabela de internações |
 
----
+------------------------------------------------------------------------
 
 # 1. Economia com Encaminhamentos
 
@@ -170,7 +172,7 @@ economia_enc_amb <- sum(enc_ambulatoriais$economia)
 
 **Economia total com encaminhamentos ambulatoriais:** `r formatar_moeda(economia_enc_amb)` por ano
 
----
+------------------------------------------------------------------------
 
 ## Encaminhamentos Cirúrgicos
 
@@ -221,7 +223,7 @@ economia_enc_cir <- sum(enc_cirurgicos$economia)
 
 **Nota:** O valor negativo indica que médicos de família geram custo adicional nesta categoria, principalmente por encaminharem mais para cirurgia geral, neurocirurgia e cirurgia de cabeça e pescoço.
 
----
+------------------------------------------------------------------------
 
 ## Total de Encaminhamentos
 
@@ -232,12 +234,12 @@ economia_encaminhamentos <- economia_enc_amb + economia_enc_cir
 ```
 
 | Categoria | Economia Anual |
-|-----------|----------------|
+|------------------------------|------------------------------------------|
 | Encaminhamentos ambulatoriais | `r formatar_moeda(economia_enc_amb)` |
 | Encaminhamentos cirúrgicos | `r formatar_moeda(economia_enc_cir)` |
 | **Total encaminhamentos** | **`r formatar_moeda(economia_encaminhamentos)`** |
 
----
+------------------------------------------------------------------------
 
 # 2. Economia com Exames
 
@@ -282,7 +284,7 @@ economia_diag <- sum(exames_diag$economia)
 
 **Economia total com exames diagnósticos:** `r formatar_moeda(economia_diag)` por ano
 
----
+------------------------------------------------------------------------
 
 ## Exames Laboratoriais
 
@@ -374,7 +376,7 @@ economia_lab <- sum(exames_lab$economia)
 
 **Economia total com exames laboratoriais:** `r formatar_moeda(economia_lab)` por ano
 
----
+------------------------------------------------------------------------
 
 ## Total de Exames
 
@@ -384,13 +386,13 @@ economia_lab <- sum(exames_lab$economia)
 economia_exames <- economia_diag + economia_lab
 ```
 
-| Categoria | Economia Anual |
-|-----------|----------------|
-| Exames diagnósticos | `r formatar_moeda(economia_diag)` |
-| Exames laboratoriais | `r formatar_moeda(economia_lab)` |
-| **Total exames** | **`r formatar_moeda(economia_exames)`** |
+| Categoria            | Economia Anual                          |
+|----------------------|-----------------------------------------|
+| Exames diagnósticos  | `r formatar_moeda(economia_diag)`       |
+| Exames laboratoriais | `r formatar_moeda(economia_lab)`        |
+| **Total exames**     | **`r formatar_moeda(economia_exames)`** |
 
----
+------------------------------------------------------------------------
 
 # 3. Economia com Internações
 
@@ -471,12 +473,12 @@ economia_internacoes <- sum(internacoes$economia)
 
 **Destaques:**
 
-- **Asma:** Redução de 65% nas internações
-- **Insuficiência cardíaca:** Redução de 64% nas internações
-- **Hipertensão:** Redução de 55% nas internações
-- **Diabetes:** Único grupo com aumento (6%), mas não estatisticamente significativo
+-   **Asma:** Redução de 65% nas internações
+-   **Insuficiência cardíaca:** Redução de 64% nas internações
+-   **Hipertensão:** Redução de 55% nas internações
+-   **Diabetes:** Único grupo com aumento (6%), mas não estatisticamente significativo
 
----
+------------------------------------------------------------------------
 
 # 4. Totalização
 
@@ -510,13 +512,13 @@ A economia total de **`r formatar_moeda(economia_total)`** por ano representa o 
 
 **Composição da economia:**
 
-- **Internações (`r round(economia_internacoes / economia_total * 100, 0)`%):** A maior parte da economia vem da prevenção de hospitalizações evitáveis. Médicos de família conseguem manejar melhor condições crônicas como hipertensão, insuficiência cardíaca e asma, evitando descompensações que levam a internações.
+-   **Internações (`r round(economia_internacoes / economia_total * 100, 0)`%):** A maior parte da economia vem da prevenção de hospitalizações evitáveis. Médicos de família conseguem manejar melhor condições crônicas como hipertensão, insuficiência cardíaca e asma, evitando descompensações que levam a internações.
 
-- **Encaminhamentos (`r round(economia_encaminhamentos / economia_total * 100, 0)`%):** Médicos de família resolvem mais problemas na atenção primária, reduzindo a necessidade de consultas com especialistas. A maior economia está em cardiologia, endocrinologia e ortopedia.
+-   **Encaminhamentos (`r round(economia_encaminhamentos / economia_total * 100, 0)`%):** Médicos de família resolvem mais problemas na atenção primária, reduzindo a necessidade de consultas com especialistas. A maior economia está em cardiologia, endocrinologia e ortopedia.
 
-- **Exames (`r round(economia_exames / economia_total * 100, 0)`%):** Médicos de família solicitam exames de forma mais racional, evitando pedidos desnecessários. As maiores reduções estão em exames hormonais (TSH, T4) e perfil lipídico.
+-   **Exames (`r round(economia_exames / economia_total * 100, 0)`%):** Médicos de família solicitam exames de forma mais racional, evitando pedidos desnecessários. As maiores reduções estão em exames hormonais (TSH, T4) e perfil lipídico.
 
----
+------------------------------------------------------------------------
 
 # Função Consolidada
 
@@ -546,14 +548,14 @@ calcular_economia_saude <- function(fator_correcao = 1.5) {
 resultado <- calcular_economia_saude(1.5)
 ```
 
----
+------------------------------------------------------------------------
 
 # Resumo
 
 Este capítulo calculou a economia em saúde que seria gerada se todas as equipes do município fossem cobertas por médicos de família:
 
 | Categoria | Economia Anual | Percentual |
-|-----------|----------------|------------|
+|---------------------|-----------------------------|----------------------|
 | Encaminhamentos | `r formatar_moeda(economia_encaminhamentos)` | `r round(economia_encaminhamentos / economia_total * 100, 1)`% |
 | Exames | `r formatar_moeda(economia_exames)` | `r round(economia_exames / economia_total * 100, 1)`% |
 | Internações | `r formatar_moeda(economia_internacoes)` | `r round(economia_internacoes / economia_total * 100, 1)`% |
